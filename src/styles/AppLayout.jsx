@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import React from 'react';
 
 const AppLayout = ({ children }) => {
   return (
@@ -8,15 +9,13 @@ const AppLayout = ({ children }) => {
   );
 };
 
-export default AppLayout;
-
 // 바깥쪽 영역
 const Background = styled.div`
   display: flex;
   justify-content: center;
   width: 100vw;
   height: 100dvh;
-  background-color: #f0f0f5;
+  background-color: #f1f3f5;
 `;
 
 // 실제 모바일 화면 영역
@@ -32,3 +31,5 @@ const MobileContainer = styled.div`
     display: none;
   }
 `;
+
+export default AppLayout;
