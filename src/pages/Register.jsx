@@ -7,7 +7,7 @@ function Register () {
 
    return (
      <section className="r1">
-        <button className="backbutton">←</button>
+        <button className="backbutton" type="button">←</button>
         <h1 className="registertitle">회원가입</h1>
 
         <div className="inputbox">

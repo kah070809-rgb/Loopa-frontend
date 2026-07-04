@@ -20,6 +20,7 @@
   margin-bottom: 40px;
 }
 
+
 .inputbox {
   display: flex;
   flex-direction: column;
@@ -30,6 +31,7 @@
   font-size: 14px;
   font-weight: 700;
 }
+
 
 .emailrow {
   display: flex;
@@ -56,6 +58,17 @@
   cursor: pointer;
 }
 
+
+.textinput {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
 .codebottom {
   display: flex;
   justify-content: space-between;
@@ -79,6 +92,7 @@
   cursor: pointer;
 }
 
+
 .divider {
   width: 100%;
   height: 1px;
@@ -86,15 +100,6 @@
   margin: 40px 0;
 }
 
-.textinput {
-  width: 100%;
-  height: 56px;
-  padding: 0 16px;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
 
 .passwordrow {
   position: relative;
@@ -123,6 +128,7 @@
   cursor: pointer;
   font-size: 18px;
 }
+
 
 .genderagebox {
   display: flex;
@@ -178,6 +184,7 @@
   box-sizing: border-box;
 }
 
+
 .jobselect {
   width: 100%;
   height: 56px;
@@ -188,6 +195,7 @@
   box-sizing: border-box;
   background-color: white;
 }
+
 
 .agreebox {
   display: flex;
