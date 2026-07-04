@@ -1,0 +1,21 @@
+.r1 {
+  width: 100%;
+  min-height: 100vh;
+  padding: 56px 24px;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+.backbutton {
+  border: none;
+  background: none;
+  font-size: 28px;
+  cursor: pointer;
+  margin-bottom: 56px;
+}
+
+.registertitle {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
