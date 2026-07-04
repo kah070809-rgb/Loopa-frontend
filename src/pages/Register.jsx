@@ -5,6 +5,8 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 function Register () {
    const [showPassword, setShowPassword] = useState(false);
 
+   const ages = Array.from({ length: 100 }, (_, index) => index + 1);
+
    return (
      <section className="r1">
         <button className="backbutton" type="button">←</button>
@@ -79,11 +81,15 @@ function Register () {
            <div className="agebox">
              <label className="agelabel">나이</label>
 
-             <input
-              className="ageinput"
-              type="number"
-              placeholder="-"
-             />
+             <select className="ageselect">
+                <option value="">-</option>
+
+                {ages.map((age) => (
+                <option key={age} value={age}>
+                {age}
+                </option>
+                ))}
+             </select>
            </div>
         </div>
 
