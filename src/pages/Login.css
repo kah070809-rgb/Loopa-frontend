@@ -6,7 +6,7 @@
   background-color: white;
 }
 
-.backbutton {
+.loginbackbutton {
   border: none;
   background: none;
   font-size: 28px;
@@ -29,4 +29,157 @@
   margin-top: 24px;
   font-size: 20px;
   font-weight: 400;
+}
+
+.loginForm {
+  width: 100%;
+  max-width: 620px;
+  margin: 120px auto 0;
+}
+
+.loginEmailBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loginEmailLabel {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.loginEmailInput {
+  width: 100%;
+  height: 64px;
+  padding: 0 24px;
+  box-sizing: border-box;
+
+  border: 1px solid #999;
+  border-radius: 8px;
+
+  font-size: 18px;
+  outline: none;
+}
+
+.loginEmailInput::placeholder {
+  color: #999;
+}
+
+.loginPasswordBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.loginPasswordLabel {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.loginPasswordInputWrap {
+  width: 100%;
+  height: 64px;
+  position: relative;
+}
+
+.loginPasswordInput {
+  width: 100%;
+  height: 100%;
+  padding: 0 56px 0 24px;
+  box-sizing: border-box;
+
+  border: 1px solid #999;
+  border-radius: 8px;
+
+  font-size: 18px;
+  outline: none;
+}
+
+.loginPasswordInput::placeholder {
+  color: #999;
+}
+
+.loginEyeButton {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  border: none;
+  background: none;
+  padding: 0;
+
+  font-size: 22px;
+  color: #999;
+  cursor: pointer;
+}
+
+.loginFindPasswordButton {
+  display: block;
+  margin: 28px 0 0 auto;
+
+  border: none;
+  background: none;
+  padding: 0;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+
+  cursor: pointer;
+}
+
+.loginButton {
+  width: 100%;
+  height: 68px;
+  margin-top: 56px;
+
+  border: none;
+  border-radius: 8px;
+  background-color: #111;
+
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.loginDivider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  margin-top: 40px;
+}
+
+.loginDivider span {
+  flex: 1;
+  height: 2px;
+  background-color: #d9d9d9;
+}
+
+.loginDivider p {
+  margin: 0;
+  font-size: 16px;
+  color: #777;
+  white-space: nowrap;
+}
+
+.loginSignupButton {
+  display: block;
+  width: 100%;
+  height: 68px;
+  margin: 32px auto 0;
+
+  border: 1px solid #111;
+  border-radius: 8px;
+  background-color: white;
+
+  color: #111;
+  font-size: 22px;
+  font-weight: 700;
+
+  cursor: pointer;
 }

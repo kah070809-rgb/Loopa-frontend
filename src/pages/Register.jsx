@@ -9,56 +9,56 @@ function Register () {
 
    return (
      <section className="r1">
-        <button className="backbutton" type="button">←</button>
+        <button className="registerbackbutton" type="button">←</button>
         <h1 className="registertitle">회원가입</h1>
 
-        <div className="inputbox">
-          <label className="inputlabel">이메일</label>
+        <div className="registerinputbox">
+          <label className="registerinputlabel">이메일</label>
 
-           <div className="emailrow">
+           <div className="registeremailrow">
               <input
-               className="emailinput"
+               className="registeremailinput"
                type="email"
                placeholder="이메일을 입력해주세요"
                />
 
-              <button className="codebutton" type="button">
+              <button className="registercodebutton" type="button">
                 인증번호 받기
               </button>
            </div>
          </div>
 
-         <div className="inputbox">
-            <label className="inputlabel">인증번호</label>
+         <div className="registerinputbox">
+            <label className="registerinputlabel">인증번호</label>
 
             <input
-            className="textinput"
+            className="registertextinput"
             type="text"
             placeholder="인증번호를 입력해주세요"
             />
 
-          <div className="codebottom">
-             <p className="codeguide">⊙ 이메일로 받은 인증번호를 입력해주세요.</p>
+          <div className="registercodebottom">
+             <p className="registercodeguide">⊙ 이메일로 받은 인증번호를 입력해주세요.</p>
 
-              <button className="resendbutton" type="button">
+              <button className="registerresendbutton" type="button">
                 인증번호 재발송
               </button>
            </div>
         </div>
 
-        <div className="divider"></div>
+        <div className="registerdivider"></div>
            
-        <div className="inputbox">
-           <label className="inputlabel">비밀번호</label>
-           <div className="passwordrow">
+        <div className="registerinputbox">
+           <label className="registerinputlabel">비밀번호</label>
+           <div className="registerpasswordrow">
              <input
-              className="passwordinput"
+              className="registerpasswordinput"
               type={showPassword ? "text" : "password"}
               placeholder="비밀번호를 입력해주세요"
              />
 
              <button
-              className="eyebutton"
+              className="registereyebutton"
               type="button"
               onClick={() => setShowPassword(!showPassword)}
              >
@@ -67,21 +67,21 @@ function Register () {
            </div>
         </div>
 
-        <div className="genderagebox">
-          <div className="genderbuttons">
-             <button className="genderbutton" type="button">
+        <div className="registergenderagebox">
+          <div className="registergenderbuttons">
+             <button className="registergenderbutton" type="button">
                 남자
              </button>
 
-             <button className="genderbutton" type="button">
+             <button className="registergenderbutton" type="button">
                 여자
              </button>
            </div>
 
-           <div className="agebox">
-             <label className="agelabel">나이</label>
+           <div className="registeragebox">
+             <label className="registeragelabel">나이</label>
 
-             <select className="ageselect">
+             <select className="registerageselect">
                 <option value="">-</option>
 
                 {ages.map((age) => (
@@ -93,10 +93,10 @@ function Register () {
            </div>
         </div>
 
-        <div className="inputbox">
-          <label className="inputlabel">직업(선택)</label>
+        <div className="registerinputbox">
+          <label className="registerinputlabel">직업(선택)</label>
 
-          <select className="jobselect">
+          <select className="registerjobselect">
              <option value="">직업을 선택해주세요</option>
              <option value="student">학생</option>
              <option value="college_student">대학생</option>
@@ -112,16 +112,16 @@ function Register () {
           </select>
         </div>
 
-        <div className="agreebox">
-          <input className="agreecheck" type="checkbox" />
+        <div className="registeragreebox">
+          <input className="registeragreecheck" type="checkbox" />
 
-          <p className="agreetext">
+          <p className="registeragreetext">
              Loopa의 <button type="button">이용약관</button> 및{" "}
              <button type="button">개인정보처리방침</button>에 동의합니다.
           </p>
         </div>
 
-        <button className="submitbutton" type="button">
+        <button className="registersubmitbutton" type="button">
            회원가입 완료
         </button>
      </section>

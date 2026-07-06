@@ -6,7 +6,7 @@
   background-color: white;
 }
 
-.backbutton {
+.registerbackbutton {
   border: none;
   background: none;
   font-size: 28px;
@@ -21,24 +21,24 @@
 }
 
 
-.inputbox {
+.registerinputbox {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.inputlabel {
+.registerinputlabel {
   font-size: 14px;
   font-weight: 700;
 }
 
 
-.emailrow {
+.registeremailrow {
   display: flex;
   gap: 12px;
 }
 
-.emailinput {
+.registeremailinput {
   flex: 1;
   height: 56px;
   padding: 0 16px;
@@ -48,7 +48,7 @@
   box-sizing: border-box;
 }
 
-.codebutton {
+.registercodebutton {
   width: 140px;
   height: 56px;
   border: 1px solid #333;
@@ -59,7 +59,7 @@
 }
 
 
-.textinput {
+.registertextinput {
   width: 100%;
   height: 56px;
   padding: 0 16px;
@@ -69,20 +69,20 @@
   box-sizing: border-box;
 }
 
-.codebottom {
+.registercodebottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 8px;
 }
 
-.codeguide {
+.registercodeguide {
   margin: 0;
   font-size: 13px;
   color: #8c8c8c;
 }
 
-.resendbutton {
+.registerresendbutton {
   border: none;
   background: none;
   padding: 0;
@@ -93,7 +93,7 @@
 }
 
 
-.divider {
+.registerdivider {
   width: 100%;
   height: 1px;
   background-color: #d9d9d9;
@@ -101,12 +101,12 @@
 }
 
 
-.passwordrow {
+.registerpasswordrow {
   position: relative;
   width: 100%;
 }
 
-.passwordinput {
+.registerpasswordinput {
   width: 100%;
   height: 56px;
   padding: 0 48px 0 16px;
@@ -116,7 +116,7 @@
   box-sizing: border-box;
 }
 
-.eyebutton {
+.registereyebutton {
   position: absolute;
   right: 16px;
   top: 50%;
@@ -130,7 +130,7 @@
 }
 
 
-.genderagebox {
+.registergenderagebox {
   display: flex;
   align-items: center;
   gap: 24px;
@@ -138,12 +138,12 @@
   margin-bottom: 24px;
 }
 
-.genderbuttons {
+.registergenderbuttons {
   display: flex;
   flex: 1;
 }
 
-.genderbutton {
+.registergenderbutton {
   flex: 1;
   height: 56px;
   border: 1px solid #d9d9d9;
@@ -152,28 +152,28 @@
   cursor: pointer;
 }
 
-.genderbutton:first-child {
+.registergenderbutton:first-child {
   border-radius: 6px 0 0 6px;
 }
 
-.genderbutton:last-child {
+.registergenderbutton:last-child {
   border-radius: 0 6px 6px 0;
   border-left: none;
 }
 
-.agebox {
+.registeragebox {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.agelabel {
+.registeragelabel {
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.ageselect {
+.registerageselect {
   width: 72px;
   height: 56px;
   padding: 0 8px;
@@ -186,7 +186,7 @@
 }
 
 
-.jobselect {
+.registerjobselect {
   width: 100%;
   height: 56px;
   padding: 0 16px;
@@ -198,7 +198,7 @@
 }
 
 
-.agreebox {
+.registeragreebox {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -206,20 +206,20 @@
   margin-bottom: 24px;
 }
 
-.agreecheck {
+.registeragreecheck {
   width: 28px;
   height: 28px;
   cursor: pointer;
 }
 
-.agreetext {
+.registeragreetext {
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
   color: #333;
 }
 
-.agreetext button {
+.registeragreetext button {
   border: none;
   background: none;
   padding: 0;
@@ -229,7 +229,7 @@
   cursor: pointer;
 }
 
-.submitbutton {
+.registersubmitbutton {
   width: 100%;
   height: 64px;
   border: none;
