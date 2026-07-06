@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './styles/AppLayout'; 
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Landing from './pages/Landing';
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/landing" element={<Landing />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>

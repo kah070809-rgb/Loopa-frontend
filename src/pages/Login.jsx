@@ -1,13 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     return(
         <section className="r2">
-            <button className="loginbackbutton" type="button">←</button>
+            <button 
+             className="loginbackbutton" 
+             type="button"
+             onClick={() => navigate("/landing")}>←</button>
 
             <div className="loginHeader">
               <h1 className="loginTitle">Loopa</h1>
@@ -61,7 +66,10 @@ function Login() {
                  <span></span>
               </div>
 
-              <button className="loginSignupButton" type="button">
+              <button 
+               className="loginSignupButton" 
+               type="button"
+               onClick={() => navigate("/register")}>
                  회원가입
               </button>
             </div>

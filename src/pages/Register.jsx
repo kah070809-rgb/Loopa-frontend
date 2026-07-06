@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Register.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
@@ -7,9 +8,16 @@ function Register () {
 
    const ages = Array.from({ length: 100 }, (_, index) => index + 1);
 
+   const navigate = useNavigate();
+
    return (
      <section className="r1">
-        <button className="registerbackbutton" type="button">←</button>
+        <button 
+         className="registerbackbutton" 
+         type="button"
+         onClick={() => navigate("/login")}>
+            ←
+        </button>
         <h1 className="registertitle">회원가입</h1>
 
         <div className="registerinputbox">
