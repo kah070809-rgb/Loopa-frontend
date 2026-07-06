@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './styles/AppLayout'; 
 import Register from "./pages/Register";
-import Rogin from "./pages/Login";
+import Login from "./pages/Login";
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
@@ -24,7 +24,7 @@ function App() {
           {/* 💡 2. 기본 주소('/')로 접속했을 때 Home 컴포넌트를 보여주도록 설정합니다 */}
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/rogin" element={<Login />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
