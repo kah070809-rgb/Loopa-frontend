@@ -1,0 +1,15 @@
+.r2 {
+  width: 100%;
+  min-height: 100vh;
+  padding: 56px 24px;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+.backbutton {
+  border: none;
+  background: none;
+  font-size: 28px;
+  cursor: pointer;
+  margin-bottom: 56px;
+}
