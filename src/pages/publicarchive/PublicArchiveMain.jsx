@@ -1,35 +1,41 @@
+import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SurveyPreviewCard from "./archivecomponents/SurveyPreviewCard";
 import "./PublicArchiveMain.css"
 
 function publicArchiveMain () {
+  const navigate = useNavigate();
+  
   const surveyList = [
-    {
-      id: 1,
-      title: '대학생 소비 습관 설문',
-      description:
-        '대학생들의 월별 소비 패턴과 지출 우선순위를 조사한 설문입니다.',
-      category: '생활',
-      responseCount: 128,
-      updatedAt: '2026.07.07',
-    },
-    {
-      id: 2,
-      title: '전공 만족도 조사',
-      description:
-        '대학생의 전공 선택 이유와 만족도를 분석하기 위한 설문입니다.',
-      category: '교육',
-      responseCount: 92,
-      updatedAt: '2026.07.06',
-    },
-    {
-      id: 3,
-      title: '대학생 수면 패턴 조사',
-      description: '대학생들의 평균 수면 시간과 생활 리듬을 분석한 설문입니다.',
-      category: '건강',
-      responseCount: 76,
-      updatedAt: '2026.07.05',
-    },
-  ];
+  {
+    id: 1,
+    title: "대학생 AI 활용 실태 조사",
+    target: "대학생 대상",
+    responseCount: 52,
+    category: "IT·AI",
+    updatedAt: "2026.01.01",
+  },
+  {
+    id: 2,
+    title: "대학생 AI 활용 실태 조사",
+    target: "대학생 대상",
+    responseCount: 52,
+    category: "IT·AI",
+    updatedAt: "2026.01.01",
+  },
+  {
+    id: 3,
+    title: "대학생 AI 활용 실태 조사",
+    target: "대학생 대상",
+    responseCount: 52,
+    category: "IT·AI",
+    updatedAt: "2026.01.01",
+  },
+];
+
+ const [selectedSurveyId, setSelectedSurveyId] = useState(null);
+
 
   return (
     <div>
@@ -60,7 +66,7 @@ function publicArchiveMain () {
           />
 
           <button className="archive-search-button" type="button">
-            🔍
+            <FiSearch />
           </button>
         </div>
 
@@ -85,28 +91,23 @@ function publicArchiveMain () {
         <div className="archive-section-header">
           <h2 className="archive-section-title">최근 업데이트</h2>
 
-          <button className="archive-more-button" type="button">
+          <button 
+           className="archive-more-button" 
+           type="button"
+           onClick={() => navigate("/archiveextra")}>
             더보기 &gt;
           </button>
         </div>
 
         <div className="archive-card-list">
-          {surveyList.map((survey) => (
-            <article className="archive-survey-card" key={survey.id}>
-              <div className="archive-card-top">
-                <span className="archive-card-category">{survey.category}</span>
-                <span className="archive-card-date">{survey.updatedAt}</span>
-              </div>
-
-              <h3 className="archive-card-title">{survey.title}</h3>
-
-              <p className="archive-card-description">{survey.description}</p>
-
-              <div className="archive-card-bottom">
-                <span>응답 {survey.responseCount}개</span>
-              </div>
-            </article>
-          ))}
+           {surveyList.map((survey) => (
+            <SurveyPreviewCard
+             key={survey.id}
+             survey={survey}
+             isSelected={selectedSurveyId === survey.id}
+             onClick={() => setSelectedSurveyId(survey.id)}
+            />
+            ))}
         </div>
 
         <button className="archive-add-button" type="button">

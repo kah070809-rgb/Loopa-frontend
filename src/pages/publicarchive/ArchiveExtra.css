@@ -1,0 +1,112 @@
+.archive-extra-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 44px 30px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+.archive-extra-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.archive-extra-back-button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #6a00b9;
+  font-size: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.archive-extra-title {
+  margin: 0;
+  color: #6a00b9;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.archive-extra-search-box {
+  width: 100%;
+  height: 76px;
+  border: 3px solid #e2b5ff;
+  border-radius: 40px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 42px;
+  margin-bottom: 36px;
+}
+
+.archive-extra-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  color: #6a00b9;
+  font-size: 24px;
+  font-weight: 400;
+  background: transparent;
+}
+
+.archive-extra-search-input::placeholder {
+  color: #d9b4ec;
+}
+
+.archive-extra-search-button {
+  flex-shrink: 0;
+  width: 62px;
+  height: 62px;
+  border: none;
+  border-radius: 50%;
+  background-color: #e2b5ff;
+  color: #3d006f;
+  font-size: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.archive-extra-filter-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  margin-bottom: 34px;
+  padding-bottom: 4px;
+}
+
+.archive-extra-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+.archive-extra-filter-button {
+  flex-shrink: 0;
+  min-width: 92px;
+  height: 44px;
+  border: 2px solid #e2b5ff;
+  border-radius: 24px;
+  background-color: #ffffff;
+  color: #4b008c;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.archive-extra-filter-button.selected {
+  border: none;
+  background-color: #ddbfff;
+  color: #4b008c;
+}
+
+.archive-extra-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

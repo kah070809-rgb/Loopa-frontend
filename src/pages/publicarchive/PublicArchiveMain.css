@@ -96,6 +96,11 @@
   cursor: pointer;
 }
 
+.archive-search-button svg {
+  width: 28px;
+  height: 28px;
+}
+
 .archive-filter-list {
   display: flex;
   gap: 14px;
@@ -154,58 +159,7 @@
 .archive-card-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-}
-
-.archive-survey-card {
-  width: 100%;
-  padding: 24px 26px;
-  box-sizing: border-box;
-  border-radius: 22px;
-  border: 2px solid #e2b6ff;
-  background-color: white;
-}
-
-.archive-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.archive-card-category {
-  padding: 6px 14px;
-  border-radius: 999px;
-  background-color: #f1dcff;
-  color: #4b008c;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.archive-card-date {
-  color: #a976d0;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.archive-card-title {
-  margin: 0 0 10px;
-  color: #4b008c;
-  font-size: 21px;
-  font-weight: 900;
-}
-
-.archive-card-description {
-  margin: 0 0 18px;
-  color: #7b4ca0;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-.archive-card-bottom {
-  color: #7b1fd1;
-  font-size: 15px;
-  font-weight: 800;
+  gap: 24px;
 }
 
 .archive-add-button {

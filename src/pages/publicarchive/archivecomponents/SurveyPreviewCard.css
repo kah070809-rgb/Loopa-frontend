@@ -1,0 +1,78 @@
+.archive-survey-card {
+  width: 100%;
+  min-height: 160px;
+  padding: 28px 30px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 28px;
+  background-color: #f7efff;
+  color: #4b008c;
+  cursor: pointer;
+  text-align: left;
+}
+
+.archive-survey-card.selected {
+  background-color: #ddbfff;
+}
+
+.archive-card-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+}
+
+.archive-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.archive-card-title {
+  margin: 0 0 22px;
+  color: #4b008c;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.archive-card-info {
+  margin: 0 0 18px;
+  color: #6d1bab;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.archive-card-category {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background-color: white;
+  color: #4b008c;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.archive-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: 4px 0 6px;
+}
+
+.archive-card-date {
+  color: #4b008c;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.archive-card-detail {
+  color: #4b008c;
+  font-size: 17px;
+  font-weight: 800;
+}
