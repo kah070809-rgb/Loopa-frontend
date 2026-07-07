@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Landing from './pages/Landing';
 import PublicArchiveMain from './pages/publicarchive/PublicArchiveMain';
 import ArchiveExtra from './pages/publicarchive/ArchiveExtra';
+import MyArchive from './pages/publicarchive/MyArchive';
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/landing" element={<Landing />} />
           <Route path="/archivemain" element={<PublicArchiveMain />}/>
           <Route path="/archiveextra" element={<ArchiveExtra />}/>
+          <Route path="/myarchive" element={<MyArchive />}/>
         </Routes>
       </AppLayout>
     </BrowserRouter>

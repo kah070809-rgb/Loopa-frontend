@@ -110,7 +110,10 @@ function publicArchiveMain () {
             ))}
         </div>
 
-        <button className="archive-add-button" type="button">
+        <button 
+         className="archive-add-button" 
+         type="button"
+         onClick={() => navigate("/myarchive")}>
           +
         </button>
       </section>

@@ -1,0 +1,269 @@
+.myarchive-page {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px 18px 100px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.myarchive-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.myarchive-back-button {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 32px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.myarchive-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #111111;
+}
+
+.myarchive-sub-title {
+  margin: 36px 0 0;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.myarchive-line {
+  width: calc(100% + 60px);
+  height: 2px;
+  margin: 18px 0 36px -30px;
+  background-color: #222222;
+}
+
+.myarchive-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.myarchive-card {
+  position: relative;
+  width: 100%;
+  min-height: 116px;
+  padding: 20px 14px 14px 14px;
+  box-sizing: border-box;
+
+  border: 1.5px solid #222222;
+  border-radius: 8px;
+  background-color: #ffffff;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.myarchive-card.selected {
+  border: 1.5px solid #222222;
+  box-shadow: 0 0 0 1.5px #222222;
+}
+
+.myarchive-check-box {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #222222;
+  border-radius: 5px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: #222222;
+  background-color: #ffffff;
+}
+
+.myarchive-card-icon {
+  flex-shrink: 0;
+
+  width: 62px;
+  height: 62px;
+  margin-left: 22px;
+
+  border-radius: 8px;
+  background-color: #dddddd;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+}
+
+.myarchive-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.myarchive-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.myarchive-status {
+  display: inline-block;
+  padding: 3px 9px;
+
+  border-radius: 12px;
+  background-color: #dddddd;
+
+  font-size: 10px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.myarchive-date {
+  flex-shrink: 0;
+  margin: 0;
+
+  font-size: 11px;
+  font-weight: 500;
+  color: #222222;
+}
+
+.myarchive-card-title {
+  margin: 8px 0 6px;
+
+  font-size: 14px;
+  font-weight: 800;
+  color: #111111;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.myarchive-category {
+  display: inline-block;
+  padding: 3px 9px;
+
+  border-radius: 12px;
+  background-color: #dddddd;
+
+  font-size: 10px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.myarchive-card-info {
+  margin: 7px 0 0;
+
+  font-size: 11px;
+  font-weight: 500;
+  color: #222222;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.myarchive-share-button {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+
+  width: calc(100% - 36px);
+  max-width: 394px;
+  height: 56px;
+
+  border: none;
+  border-radius: 8px;
+
+  background-color: #222222;
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+  z-index: 100;
+}
+
+.myarchive-share-button:disabled {
+  background-color: #d9d9d9;
+  color: #222222;
+  cursor: default;
+}
+
+.myarchive-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background-color: rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 200;
+}
+
+.myarchive-popup {
+  width: calc(100% - 48px);
+  max-width: 360px;
+  min-height: 190px;
+  padding: 44px 24px 32px;
+  box-sizing: border-box;
+
+  border-radius: 32px;
+  background-color: #ecdbff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.myarchive-popup-message {
+  margin: 0 0 44px;
+  text-align: center;
+
+  font-size: 18px;
+  font-weight: 600;
+  color: #5d01c6;
+  word-break: keep-all;
+}
+
+.myarchive-popup-button {
+  width: 170px;
+  height: 48px;
+
+  border: none;
+  border-radius: 16px;
+  background-color: #ddbfff;
+
+  font-size: 18px;
+  font-weight: 600;
+  color: #450093;
+
+  cursor: pointer;
+}
