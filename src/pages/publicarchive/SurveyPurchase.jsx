@@ -13,7 +13,7 @@ function SurveyPurchase() {
  
   const PURCHASE_TOKEN = 15;
 
-  const userToken = 52;
+  const userToken = 42;
 
   const surveyData = {
     title: '대학생 AI 활용 실태 조사',

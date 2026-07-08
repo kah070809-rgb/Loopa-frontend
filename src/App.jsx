@@ -9,6 +9,9 @@ import ArchiveExtra from './pages/publicarchive/ArchiveExtra';
 import MyArchive from './pages/publicarchive/MyArchive';
 import SurveyPurchase from './pages/publicarchive/SurveyPurchase';
 import SurveyDetail from './pages/publicarchive/SurveyDetail';
+import SurveyJoinFirst from './pages/surveyjoin/SurveyJoinFirst';
+import SurveyJoinQuestion from './pages/surveyjoin/SurveyJoinQuestion';
+import SurveyJoinFinish from './pages/surveyjoin/SurveyJoinFinish';
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
@@ -37,6 +40,9 @@ function App() {
           <Route path="/myarchive" element={<MyArchive />}/>
           <Route path="/surveypurchase" element={<SurveyPurchase />}/>
           <Route path="/surveydetail" element={<SurveyDetail />}/>
+          <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />}/>
+          <Route path="/survey/join/:surveyId/question" element={<SurveyJoinQuestion />} />
+          <Route path="/surveyjoinfinish" element={<SurveyJoinFinish />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
