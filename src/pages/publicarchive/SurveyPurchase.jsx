@@ -13,7 +13,7 @@ function SurveyPurchase() {
  
   const PURCHASE_TOKEN = 15;
 
-  const userToken = 2;
+  const userToken = 52;
 
   const surveyData = {
     title: '대학생 AI 활용 실태 조사',
@@ -89,7 +89,7 @@ function SurveyPurchase() {
        type="button"
        onClick={() => {
        if (isPurchased) {
-       navigate("/survey-result");
+       navigate("/SurveyDetail");
        return;
        }
 
