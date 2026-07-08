@@ -105,7 +105,10 @@ function publicArchiveMain () {
              key={survey.id}
              survey={survey}
              isSelected={selectedSurveyId === survey.id}
-             onClick={() => setSelectedSurveyId(survey.id)}
+             onClick={() => {
+             setSelectedSurveyId(survey.id);
+             navigate("/surveypurchase");
+             }}
             />
             ))}
         </div>
