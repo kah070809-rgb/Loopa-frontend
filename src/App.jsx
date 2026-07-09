@@ -12,6 +12,7 @@ import SurveyDetail from './pages/publicarchive/SurveyDetail';
 import SurveyJoinFirst from './pages/surveyjoin/SurveyJoinFirst';
 import SurveyJoinQuestion from './pages/surveyjoin/SurveyJoinQuestion';
 import SurveyJoinFinish from './pages/surveyjoin/SurveyJoinFinish';
+import RegisterComplete from './pages/RegisterComplete';
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
@@ -43,6 +44,7 @@ function App() {
           <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />}/>
           <Route path="/survey/join/:surveyId/question" element={<SurveyJoinQuestion />} />
           <Route path="/surveyjoinfinish" element={<SurveyJoinFinish />} />
+          <Route path="/registercomplete" element={<RegisterComplete />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
