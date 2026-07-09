@@ -60,6 +60,10 @@ function SurveyJoinQuestion() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
+  // 임시 로그인 여부
+// true면 로그인 회원 팝업, false면 게스트 팝업
+const isLogin = false;
+
   const currentQuestion = orderedQuestions[currentIndex];
 
   const isLastQuestion = currentIndex === orderedQuestions.length - 1;
@@ -171,7 +175,7 @@ const handleCloseSubmitModal = () => {
   setIsSubmitModalOpen(false);
 };
 
-const handleSubmitSurvey = () => {
+const handleSubmitMemberSurvey = () => {
   const submitData = {
     surveyId,
     answers: orderedQuestions.map((question) => ({
@@ -183,16 +187,34 @@ const handleSubmitSurvey = () => {
     skippedSubjectiveCount,
   };
 
-  console.log("백엔드로 보낼 제출 데이터:", submitData);
+  console.log("로그인 회원 제출 데이터:", submitData);
 
   setIsSubmitModalOpen(false);
 
   navigate("/surveyjoinfinish", {
-  state: {
-    rewardToken: totalRewardToken,
-    userToken: 140 + totalRewardToken,
-  },
-});
+    state: {
+      rewardToken: totalRewardToken,
+      userToken: 140 + totalRewardToken,
+    },
+  });
+};
+
+const handleSubmitGuestSurvey = () => {
+  const submitData = {
+    surveyId,
+    answers: orderedQuestions.map((question) => ({
+      questionId: question.id,
+      type: question.type,
+      answer: answers[question.id] || "",
+    })),
+    isGuest: true,
+  };
+
+  console.log("게스트 제출 데이터:", submitData);
+
+  setIsSubmitModalOpen(false);
+
+  navigate("/guestsurveyjoinfinish");
 };
 
   return (
@@ -289,52 +311,80 @@ const handleSubmitSurvey = () => {
         </button>
       </footer>
 
-      {isSubmitModalOpen && (
-        <div className="survey-submit-modal-overlay">
-          <div className="survey-submit-modal">
-            <h2 className="survey-submit-modal-title">
-              제출하시겠습니까?
-            </h2>
+      {isSubmitModalOpen && isLogin && (
+  <div className="survey-submit-modal-overlay">
+    <div className="survey-submit-modal">
+      <h2 className="survey-submit-modal-title">
+        제출하시겠습니까?
+      </h2>
 
-            <div className="survey-submit-modal-info">
-              <div className="survey-submit-modal-row">
-                <span>최대 획득 가능</span>
-                <span>{maxRewardToken} 토큰</span>
-              </div>
-
-              <div className="survey-submit-modal-row">
-                <span>건너 뛴 문항</span>
-                <span>주관식 ({skippedSubjectiveCount}문항)</span>
-              </div>
-            </div>
-
-            <div className="survey-submit-modal-line" />
-
-            <div className="survey-submit-modal-total">
-              <span>총 획득 토큰</span>
-              <span>{totalRewardToken} 토큰</span>
-            </div>
-
-            <div className="survey-submit-modal-buttons">
-              <button
-                className="survey-submit-modal-cancel"
-                type="button"
-                onClick={handleCloseSubmitModal}
-              >
-                취소
-              </button>
-
-              <button
-                className="survey-submit-modal-confirm"
-                type="button"
-                onClick={handleSubmitSurvey}
-              >
-                등록
-              </button>
-            </div>
-          </div>
+      <div className="survey-submit-modal-info">
+        <div className="survey-submit-modal-row">
+          <span>최대 획득 가능</span>
+          <span>{maxRewardToken} 토큰</span>
         </div>
-      )}
+
+        <div className="survey-submit-modal-row">
+          <span>건너 뛴 문항</span>
+          <span>주관식 ({skippedSubjectiveCount}문항)</span>
+        </div>
+      </div>
+
+      <div className="survey-submit-modal-line" />
+
+      <div className="survey-submit-modal-total">
+        <span>총 획득 토큰</span>
+        <span>{totalRewardToken} 토큰</span>
+      </div>
+
+      <div className="survey-submit-modal-buttons">
+        <button
+          className="survey-submit-modal-cancel"
+          type="button"
+          onClick={handleCloseSubmitModal}
+        >
+          취소
+        </button>
+
+        <button
+          className="survey-submit-modal-confirm"
+          type="button"
+          onClick={handleSubmitMemberSurvey}
+        >
+          등록
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{isSubmitModalOpen && !isLogin && (
+  <div className="survey-guest-submit-modal-overlay">
+    <div className="survey-guest-submit-modal">
+      <h2 className="survey-guest-submit-modal-title">
+        제출하시겠습니까?
+      </h2>
+
+      <div className="survey-guest-submit-modal-buttons">
+        <button
+          className="survey-guest-submit-modal-cancel"
+          type="button"
+          onClick={handleCloseSubmitModal}
+        >
+          취소
+        </button>
+
+        <button
+          className="survey-guest-submit-modal-confirm"
+          type="button"
+          onClick={handleSubmitGuestSurvey}
+        >
+          제출
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {isExitModalOpen && (
   <div className="survey-exit-modal-overlay">

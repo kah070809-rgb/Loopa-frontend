@@ -15,6 +15,7 @@ import SurveyJoinFinish from './pages/surveyjoin/SurveyJoinFinish';
 import RegisterComplete from './pages/RegisterComplete';
 import FindPassword from './pages/FindPassword';
 import PasswordChangeComplete from './pages/PasswordChangeComplete';
+import GuestSurveyJoinFinish from './pages/surveyjoin/GuestSurveyJoinFinish';
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="/registercomplete" element={<RegisterComplete />} />
           <Route path="/findpassword" element={<FindPassword />} />
           <Route path="/passwordchangecomplete" element={<PasswordChangeComplete />} />
+          <Route path="/guestsurveyjoinfinish" element={<GuestSurveyJoinFinish />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>

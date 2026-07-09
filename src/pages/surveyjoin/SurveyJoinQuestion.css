@@ -354,3 +354,60 @@
 .survey-exit-modal-confirm {
   background-color: #d8b8ff;
 }
+
+.survey-guest-submit-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  box-sizing: border-box;
+  z-index: 20;
+}
+
+.survey-guest-submit-modal {
+  width: 100%;
+  min-height: 220px;
+  padding: 72px 28px 42px;
+  box-sizing: border-box;
+  border-radius: 42px;
+  background-color: #ead8ff;
+  color: #6a0dad;
+}
+
+.survey-guest-submit-modal-title {
+  margin: 0;
+  text-align: center;
+  color: #6a0dad;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.survey-guest-submit-modal-buttons {
+  display: flex;
+  gap: 26px;
+  margin-top: 72px;
+}
+
+.survey-guest-submit-modal-cancel,
+.survey-guest-submit-modal-confirm {
+  flex: 1;
+  height: 58px;
+  border: none;
+  border-radius: 18px;
+  color: #6a0dad;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.survey-guest-submit-modal-cancel {
+  background-color: #ffffff;
+}
+
+.survey-guest-submit-modal-confirm {
+  background-color: #d8b8ff;
+}
