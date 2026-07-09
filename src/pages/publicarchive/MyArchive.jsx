@@ -60,7 +60,7 @@ function MyArchive () {
                  ←
              </button>
 
-             <h1 className="myarchive-title">아카이브</h1>
+             <h1 className="myarchive-title">공공 아카이브</h1>
          </header>
 
          <h2 className="myarchive-sub-title">공유 가능한 내 설문</h2>
@@ -82,8 +82,6 @@ function MyArchive () {
                      {isSelected && "✓"}
                  </div>
 
-                 <div className="myarchive-card-icon">📋</div>
-
                  <div className="myarchive-card-content">
                      <div className="myarchive-card-top">
                          <span className="myarchive-status">{survey.status}</span>
@@ -92,11 +90,14 @@ function MyArchive () {
 
                      <h3 className="myarchive-card-title">{survey.title}</h3>
 
-                     <span className="myarchive-category">{survey.category}</span>
-
                      <p className="myarchive-card-info">
-                         {survey.target} · 응답자 수: {survey.responseCount}
+                         {survey.target} · 응답자 수 : {survey.responseCount}
                      </p>
+
+                     <div className="myarchive-card-bottom">
+                         <span className="myarchive-category">{survey.category}</span>
+                         <span className="myarchive-detail-text">자세히 보기 &gt;</span>
+                     </div>
                  </div>
              </button>
               );
@@ -109,7 +110,7 @@ function MyArchive () {
           disabled={selectedSurveyIds.length === 0}
           onClick={() => setIsPopupOpen(true)}
          >
-             공유하고 {rewardToken} T 받기
+             공유하고 {rewardToken} 토큰 받기
          </button>
 
          {isPopupOpen && (
