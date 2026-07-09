@@ -4,78 +4,152 @@ import "./Login.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Login() {
-    const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-    return(
-        <section className="r2">
-            <button 
-             className="loginbackbutton" 
-             type="button"
-             onClick={() => navigate("/landing")}>←</button>
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-            <div className="loginHeader">
-              <h1 className="loginTitle">Loopa</h1>
-              <p className="loginSubTitle">
-                 로그인하고 설문과 데이터를 활용해보세요!
-              </p>
-            </div>
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-            <div className="loginForm">
-              <div className="loginEmailBox">
-                  <label className="loginEmailLabel">이메일</label>
+  const navigate = useNavigate();
 
-                  <input
-                   className="loginEmailInput"
-                   type="email"
-                   placeholder="이메일을 입력해주세요"
-                  />
-              </div>
+  const handleLogin = async () => {
+    setEmailError("");
+    setPasswordError("");
 
-              <div className="loginPasswordBox">
-                 <label className="loginPasswordLabel">비밀번호</label>
+    let hasError = false;
 
-                 <div className="loginPasswordInputWrap">
-                     <input
-                      className="loginPasswordInput"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="비밀번호를 입력해주세요"
-                     />
+    if (!email.trim()) {
+      setEmailError("이메일을 입력해주세요.");
+      hasError = true;
+    }
 
-                     <button
-                         className="loginEyeButton"
-                         type="button"
-                         onClick={() => setShowPassword(!showPassword)}
-                         >
-                         {showPassword ? <FiEye /> : <FiEyeOff />}
-                     </button>
-                 </div>
-              </div>
+    if (!password.trim()) {
+      setPasswordError("비밀번호를 입력해주세요.");
+      hasError = true;
+    }
 
-              <button className="loginFindPasswordButton" type="button">
-                 비밀번호 찾기 &gt;
-              </button>
+    if (hasError) return;
 
-              <button className="loginButton" type="button">
-                 로그인
-              </button>
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-              <div className="loginDivider">
-                 <span></span>
-                 <p>또는</p>
-                 <span></span>
-              </div>
+      const data = await response.json();
 
-              <button 
-               className="loginSignupButton" 
-               type="button"
-               onClick={() => navigate("/register")}>
-                 회원가입
-              </button>
-            </div>
+      if (!response.ok) {
+        setPasswordError("비밀번호가 일치하지 않습니다.");
+        return;
+      }
 
-        </section>
-    )
+      console.log("로그인 성공:", data);
+
+      // 백엔드에서 토큰을 준다면 저장
+      // 예: data.accessToken
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+      }
+
+      // 로그인 성공 후 메인화면 이동
+      navigate("//surveyjoinfirst");
+    } catch (error) {
+      console.error("로그인 요청 실패:", error);
+      setPasswordError("로그인 중 오류가 발생했습니다.");
+    }
+  };
+
+  return (
+    <section className="login-page">
+      <button
+        className="login-back-button"
+        type="button"
+        onClick={() => navigate("/landing")}
+      >
+        ←
+      </button>
+
+      <h1 className="login-title">로그인</h1>
+
+      <div className="login-form">
+        <div className="login-input-box">
+          <label className="login-label">이메일</label>
+
+          <input
+            className={`login-input ${emailError ? "login-input-error" : ""}`}
+            type="email"
+            placeholder="이메일을 입력해주세요."
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailError("");
+            }}
+          />
+
+          {emailError && <p className="login-error-message">{emailError}</p>}
+        </div>
+
+        <div className="login-input-box login-password-box">
+          <label className="login-label">비밀번호</label>
+
+          <div className="login-password-input-wrap">
+            <input
+              className={`login-input login-password-input ${
+                passwordError ? "login-input-error" : ""
+              }`}
+              type={showPassword ? "text" : "password"}
+              placeholder="비밀번호를 입력해주세요."
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError("");
+              }}
+            />
+
+            <button
+              className="login-eye-button"
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEye /> : <FiEyeOff />}
+            </button>
+          </div>
+
+          {passwordError && (
+  <p className="login-error-message">{passwordError}</p>
+)}
+
+<button className="login-find-password-button" type="button">
+  비밀번호 찾기
+</button>
+        </div>
+      </div>
+
+      <div className="login-bottom-area">
+        <button className="login-button" type="button" onClick={handleLogin}>
+          로그인
+        </button>
+
+        <div className="login-divider"></div>
+
+        <button
+          className="login-signup-button"
+          type="button"
+          onClick={() => navigate("/register")}
+        >
+          회원가입
+        </button>
+      </div>
+    </section>
+  );
 }
 
 export default Login;

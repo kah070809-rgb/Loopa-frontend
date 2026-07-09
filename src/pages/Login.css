@@ -1,185 +1,195 @@
-.r2 {
+.login-page {
   width: 100%;
   min-height: 100vh;
-  padding: 56px 24px;
+  padding: 0 34px 48px;
   box-sizing: border-box;
-  background-color: white;
-}
+  background-color: #ffffff;
 
-.loginbackbutton {
-  border: none;
-  background: none;
-  font-size: 28px;
-  cursor: pointer;
-  margin-bottom: 56px;
-}
-
-.loginHeader {
-  margin-top: 120px;
-  text-align: center;
-}
-
-.loginTitle {
-  margin: 0;
-  font-size: 52px;
-  font-weight: 500;
-}
-
-.loginSubTitle {
-  margin-top: 24px;
-  font-size: 20px;
-  font-weight: 400;
-}
-
-.loginForm {
-  width: 100%;
-  max-width: 620px;
-  margin: 120px auto 0;
-}
-
-.loginEmailBox {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
 
-.loginEmailLabel {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.loginEmailInput {
-  width: 100%;
-  height: 64px;
-  padding: 0 24px;
-  box-sizing: border-box;
-
-  border: 1px solid #999;
-  border-radius: 8px;
-
-  font-size: 18px;
-  outline: none;
-}
-
-.loginEmailInput::placeholder {
-  color: #999;
-}
-
-.loginPasswordBox {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 32px;
-}
-
-.loginPasswordLabel {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.loginPasswordInputWrap {
-  width: 100%;
-  height: 64px;
   position: relative;
 }
 
-.loginPasswordInput {
+.login-back-button {
+  position: absolute;
+  top: 42px;
+  left: 24px;
+
+  border: none;
+  background: none;
+  padding: 0;
+
+  color: #6a0dad;
+  font-size: 34px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.login-title {
+  margin: 0;
+  padding-top: 150px;
+
+  text-align: center;
+  color: #6a0dad;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.login-form {
   width: 100%;
-  height: 100%;
-  padding: 0 56px 0 24px;
+  margin-top: 180px;
+}
+
+.login-input-box {
+  width: 100%;
+}
+
+.login-password-box {
+  margin-top: 58px;
+  position: relative;
+  padding-bottom: 36px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 18px;
+
+  color: #6a0dad;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.login-input {
+  width: 100%;
+  height: 58px;
+  padding: 0 24px;
   box-sizing: border-box;
 
-  border: 1px solid #999;
-  border-radius: 8px;
+  border: 2px solid #d19bff;
+  border-radius: 999px;
+  background-color: #ffffff;
 
+  color: #6a0dad;
   font-size: 18px;
+  font-weight: 500;
+
   outline: none;
 }
 
-.loginPasswordInput::placeholder {
-  color: #999;
+.login-input::placeholder {
+  color: #e3c4ee;
 }
 
-.loginEyeButton {
+.login-input:focus {
+  border-color: #b66cff;
+}
+
+.login-password-input-wrap {
+  position: relative;
+  width: 100%;
+  height: 58px;
+}
+
+.login-password-input {
+  height: 100%;
+  padding-right: 58px;
+}
+
+.login-eye-button {
   position: absolute;
-  right: 20px;
   top: 50%;
+  right: 22px;
   transform: translateY(-50%);
 
   border: none;
   background: none;
   padding: 0;
 
+  color: #b985e8;
   font-size: 22px;
-  color: #999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
 }
 
-.loginFindPasswordButton {
-  display: block;
-  margin: 28px 0 0 auto;
+.login-bottom-area {
+  width: 100%;
+  margin-top: 96px;
+}
+
+.login-button {
+  width: 100%;
+  height: 62px;
+
+  border: none;
+  border-radius: 999px;
+  background-color: #d9b5ff;
+
+  color: #6a0dad;
+  font-size: 20px;
+  font-weight: 800;
+
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.25);
+
+  cursor: pointer;
+}
+
+.login-divider {
+  width: 100%;
+  height: 2px;
+  margin: 44px 0 38px;
+
+  background-color: #d9b5ff;
+}
+
+.login-signup-button {
+  width: 100%;
+  height: 58px;
+
+  border: 2px solid #d9b5ff;
+  border-radius: 999px;
+  background-color: #ffffff;
+
+  color: #6a0dad;
+  font-size: 20px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.login-input-error {
+  border-color: #e02020;
+}
+
+.login-error-message {
+  margin: 12px 0 0 0;
+
+  color: #d82121;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.login-password-box .login-error-message {
+  padding-right: 130px;
+}
+
+.login-find-password-button {
+  position: absolute;
+  right: 18px;
+  bottom: 0;
 
   border: none;
   background: none;
   padding: 0;
 
+  color: #6a0dad;
   font-size: 16px;
-  font-weight: 600;
-  color: #111;
-
-  cursor: pointer;
-}
-
-.loginButton {
-  width: 100%;
-  height: 68px;
-  margin-top: 56px;
-
-  border: none;
-  border-radius: 8px;
-  background-color: #111;
-
-  color: white;
-  font-size: 22px;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.loginDivider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  margin-top: 40px;
-}
-
-.loginDivider span {
-  flex: 1;
-  height: 2px;
-  background-color: #d9d9d9;
-}
-
-.loginDivider p {
-  margin: 0;
-  font-size: 16px;
-  color: #777;
-  white-space: nowrap;
-}
-
-.loginSignupButton {
-  display: block;
-  width: 100%;
-  height: 68px;
-  margin: 32px auto 0;
-
-  border: 1px solid #111;
-  border-radius: 8px;
-  background-color: white;
-
-  color: #111;
-  font-size: 22px;
-  font-weight: 700;
+  font-weight: 800;
 
   cursor: pointer;
 }
