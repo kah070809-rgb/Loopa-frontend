@@ -127,7 +127,10 @@ function Login() {
   <p className="login-error-message">{passwordError}</p>
 )}
 
-<button className="login-find-password-button" type="button">
+<button 
+ className="login-find-password-button" 
+ type="button"
+ onClick={() => navigate("/findpassword")}>
   비밀번호 찾기
 </button>
         </div>
