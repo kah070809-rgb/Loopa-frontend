@@ -1,0 +1,69 @@
+.guest-survey-finish-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0 42px 72px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.guest-survey-finish-content {
+  width: 100%;
+  margin-top: 300px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guest-survey-finish-icon-circle {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background-color: #ead8ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-survey-finish-check {
+  color: #a78bfa;
+  font-size: 92px;
+  font-weight: 900;
+  line-height: 1;
+
+  transform: rotate(-4deg);
+  text-shadow: 0 5px 8px rgba(106, 13, 173, 0.22);
+}
+
+.guest-survey-finish-title {
+  margin: 76px 0 0;
+  color: #6a0dad;
+  font-size: 26px;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.guest-survey-finish-button {
+  width: 100%;
+  height: 58px;
+  border: none;
+  border-radius: 999px;
+  background-color: #ead8ff;
+  color: #6a0dad;
+
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.guest-survey-finish-button:active {
+  transform: scale(0.98);
+}

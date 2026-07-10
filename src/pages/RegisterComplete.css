@@ -1,0 +1,73 @@
+.register-complete-page {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 30px 34px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.register-complete-content {
+  padding-top: 210px;
+  text-align: center;
+}
+
+.register-complete-icon-circle {
+  width: 132px;
+  height: 132px;
+  margin: 0 auto 82px;
+  border-radius: 50%;
+  background-color: #ead8ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-complete-check {
+  color: #a78bfa;
+  font-size: 82px;
+  font-weight: 800;
+  line-height: 1;
+  transform: rotate(8deg);
+  text-shadow: 0 5px 8px rgba(106, 13, 173, 0.18);
+}
+
+.register-complete-title {
+  margin: 0;
+  color: #6a0dad;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -1px;
+}
+
+.register-complete-description {
+  margin: 46px 0 0;
+  color: #7b1fc2;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.register-complete-login-button {
+  width: 100%;
+  height: 58px;
+  margin-top: auto;
+
+  border: none;
+  border-radius: 999px;
+  background-color: #ead8ff;
+  color: #6a0dad;
+
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.register-complete-login-button:active {
+  transform: scale(0.98);
+}
