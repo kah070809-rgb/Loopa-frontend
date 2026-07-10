@@ -23,3 +23,17 @@ export const getArchiveSurveyViewInfo = async (surveyId) => {
 
   return response.data.result;
 };
+
+export const getMyShareableSurveys = async ({
+  cursor = null,
+  size = 20,
+} = {}) => {
+  const response = await axiosInstance.get("/archive/my-surveys", {
+    params: {
+      ...(cursor !== null && { cursor }),
+      size,
+    },
+  });
+
+  return response.data.result;
+};
