@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './styles/AppLayout'; 
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Landing from './pages/Landing';
+import Register from './pages/auth/Register'
+import Login from "./pages/auth/Login";
+import Landing from './pages/auth/Landing';
+import RegisterComplete from './pages/auth/RegisterComplete';
+import FindPassword from './pages/auth/FindPassword';
+import PasswordChangeComplete from './pages/auth/PasswordChangeComplete';
 import PublicArchiveMain from './pages/publicarchive/PublicArchiveMain';
 import ArchiveExtra from './pages/publicarchive/ArchiveExtra';
 import MyArchive from './pages/publicarchive/MyArchive';
@@ -12,9 +15,6 @@ import SurveyDetail from './pages/publicarchive/SurveyDetail';
 import SurveyJoinFirst from './pages/surveyjoin/SurveyJoinFirst';
 import SurveyJoinQuestion from './pages/surveyjoin/SurveyJoinQuestion';
 import SurveyJoinFinish from './pages/surveyjoin/SurveyJoinFinish';
-import RegisterComplete from './pages/RegisterComplete';
-import FindPassword from './pages/FindPassword';
-import PasswordChangeComplete from './pages/PasswordChangeComplete';
 import GuestSurveyJoinFinish from './pages/surveyjoin/GuestSurveyJoinFinish';
 import SurveyExpired from './pages/surveyjoin/SurveyExpired';
 // 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
