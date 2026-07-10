@@ -23,6 +23,7 @@ const MobileContainer = styled.div`
   width: 100%;
   max-width: 430px;
   height: 100dvh;
+  max-height: 850px;
   background-color: #ffffff;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
   overflow-y: auto;
