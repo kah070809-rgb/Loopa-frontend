@@ -37,3 +37,11 @@ export const getMyShareableSurveys = async ({
 
   return response.data.result;
 };
+
+export const shareArchiveSurveys = async (surveyIds) => {
+  const response = await axiosInstance.post("/archive/shares", {
+    surveyIds,
+  });
+
+  return response.data.result;
+};

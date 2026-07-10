@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMyShareableSurveys } from "../../api/archiveApi";
+import {
+  getMyShareableSurveys,
+  shareArchiveSurveys,
+} from "../../api/archiveApi";
 import "./MyArchive.css";
 
 function MyArchive() {
@@ -11,7 +14,10 @@ function MyArchive() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isSharing, setIsSharing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [shareResult, setShareResult] = useState(null);
 
   useEffect(() => {
     const fetchMySurveys = async () => {
@@ -23,7 +29,7 @@ function MyArchive() {
           size: 20,
         });
 
-        setMySurveyList(result.items);
+        setMySurveyList(result.items ?? []);
       } catch (error) {
         console.error("공유 가능한 설문 조회 실패:", error);
 
@@ -48,6 +54,51 @@ function MyArchive() {
 
       return [...prevSelectedIds, surveyId];
     });
+  };
+
+  const handleShareSurveys = async () => {
+    if (selectedSurveyIds.length === 0 || isSharing) {
+      return;
+    }
+
+    try {
+      setIsSharing(true);
+      setErrorMessage("");
+
+      const result = await shareArchiveSurveys(selectedSurveyIds);
+
+      setShareResult(result);
+      setIsPopupOpen(true);
+
+      setMySurveyList((prevSurveyList) =>
+        prevSurveyList.filter(
+          (survey) => !selectedSurveyIds.includes(survey.surveyId)
+        )
+      );
+
+      setSelectedSurveyIds([]);
+    } catch (error) {
+      console.error("설문 공유 실패:", error);
+
+      const status = error.response?.status;
+      const serverMessage = error.response?.data?.message;
+
+      if (status === 401) {
+        setErrorMessage("로그인이 필요하거나 로그인이 만료되었습니다.");
+      } else if (status === 403) {
+        setErrorMessage("공유할 권한이 없는 설문이 포함되어 있습니다.");
+      } else if (status === 404) {
+        setErrorMessage("존재하지 않는 설문이 포함되어 있습니다.");
+      } else if (status === 409) {
+        setErrorMessage("이미 공유된 설문이 포함되어 있습니다.");
+      } else {
+        setErrorMessage(
+          serverMessage || "설문을 공유하지 못했습니다."
+        );
+      }
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   const rewardToken = selectedSurveyIds.length * 10;
@@ -77,9 +128,7 @@ function MyArchive() {
       )}
 
       {!isLoading && errorMessage && (
-        <p className="myarchive-message">
-          {errorMessage}
-        </p>
+        <p className="myarchive-message">{errorMessage}</p>
       )}
 
       {!isLoading &&
@@ -104,7 +153,7 @@ function MyArchive() {
                   isSelected ? "selected" : ""
                 }`}
                 type="button"
-                disabled={survey.sharedToArchive}
+                disabled={survey.sharedToArchive || isSharing}
                 onClick={() =>
                   handleSelectSurvey(survey.surveyId)
                 }
@@ -126,7 +175,7 @@ function MyArchive() {
                     </span>
 
                     <span className="myarchive-date">
-                      {survey.createdAt}
+                      {survey.createdAt?.slice(0, 10)}
                     </span>
                   </div>
 
@@ -161,24 +210,37 @@ function MyArchive() {
         className="myarchive-share-button"
         type="button"
         disabled={
-          selectedSurveyIds.length === 0 || isLoading
+          selectedSurveyIds.length === 0 ||
+          isLoading ||
+          isSharing
         }
-        onClick={() => setIsPopupOpen(true)}
+        onClick={handleShareSurveys}
       >
-        공유하고 {rewardToken} 토큰 받기
+        {isSharing
+          ? "공유 중..."
+          : `공유하고 ${rewardToken} 토큰 받기`}
       </button>
 
-      {isPopupOpen && (
+      {isPopupOpen && shareResult && (
         <div className="myarchive-popup-overlay">
           <div className="myarchive-popup">
             <p className="myarchive-popup-message">
-              설문을 공유하여 {rewardToken} 토큰을 받았습니다.
+              설문 {shareResult.sharedCount}개를 공유하여{" "}
+              {shareResult.totalRewardToken} 토큰을 받았습니다.
+            </p>
+
+            <p className="myarchive-popup-message">
+              보유 토큰: {shareResult.tokenBalanceBefore} →{" "}
+              {shareResult.tokenBalanceAfter}
             </p>
 
             <button
               className="myarchive-popup-button"
               type="button"
-              onClick={() => setIsPopupOpen(false)}
+              onClick={() => {
+                setIsPopupOpen(false);
+                setShareResult(null);
+              }}
             >
               확인
             </button>
