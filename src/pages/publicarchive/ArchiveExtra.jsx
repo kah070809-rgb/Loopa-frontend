@@ -160,17 +160,13 @@ function ArchiveExtra() {
       <div className="archive-extra-card-list">
         {surveys.map((survey) => (
           <SurveyPreviewCard
-            key={survey.surveyId}
-            survey={survey}
-            isSelected={selectedSurveyId === survey.surveyId}
-            onClick={() => {
-              setSelectedSurveyId(survey.surveyId);
-              navigate("/surveypurchase", {
-                state: {
-                  surveyId: survey.surveyId,
-                },
-              });
-            }}
+           key={survey.id}
+           survey={survey}
+           isSelected={selectedSurveyId === survey.id}
+           onClick={() => {
+            setSelectedSurveyId(survey.id);
+            navigate(`/archive/surveys/${survey.id}`);
+           }}
           />
         ))}
       </div>

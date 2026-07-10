@@ -17,3 +17,9 @@ export const getArchiveSurveys = async ({
 
   return response.data.result;
 };
+
+export const getArchiveSurveyViewInfo = async (surveyId) => {
+  const response = await axiosInstance.get(`/archive/surveys/${surveyId}`);
+
+  return response.data.result;
+};
