@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppLayout from './styles/AppLayout';
 import SurveyCreatePage from './pages/SurveyCreate/SurvveyCreate';
 import MainPage from './pages/Mainpage';
 import Mypage from './pages/Mypage';
 import Surveys from './pages/SurveysList';
-import AppLayout from './styles/AppLayout'; 
-import Register from "./pages/Register";
-import Login from "./pages/Login";
+import AppLayout from './styles/AppLayout';
+import Register from './pages/Register';
+import Login from './pages/Login';
 import Landing from './pages/Landing';
 import PublicArchiveMain from './pages/publicarchive/PublicArchiveMain';
 import ArchiveExtra from './pages/publicarchive/ArchiveExtra';
@@ -22,7 +21,6 @@ import FindPassword from './pages/FindPassword';
 import PasswordChangeComplete from './pages/PasswordChangeComplete';
 import GuestSurveyJoinFinish from './pages/surveyjoin/GuestSurveyJoinFinish';
 import SurveyExpired from './pages/surveyjoin/SurveyExpired';
-// 💡 1. AppLayout 컴포넌트를 불러옵니다 (경로 확인 필수!)
 //import './App.css';
 
 function App() {
@@ -34,23 +32,30 @@ function App() {
           <Route path="/main" element={<MainPage />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/surveys" element={<Surveys />} />
-          {/* 💡 2. 기본 주소('/')로 접속했을 때 Home 컴포넌트를 보여주도록 설정합니다 */}
-          <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/landing" element={<Landing />} />
-          <Route path="/archivemain" element={<PublicArchiveMain />}/>
-          <Route path="/archiveextra" element={<ArchiveExtra />}/>
-          <Route path="/myarchive" element={<MyArchive />}/>
-          <Route path="/surveypurchase" element={<SurveyPurchase />}/>
-          <Route path="/surveydetail" element={<SurveyDetail />}/>
-          <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />}/>
-          <Route path="/survey/join/:surveyId/question" element={<SurveyJoinQuestion />} />
+          <Route path="/archivemain" element={<PublicArchiveMain />} />
+          <Route path="/archiveextra" element={<ArchiveExtra />} />
+          <Route path="/myarchive" element={<MyArchive />} />
+          <Route path="/surveypurchase" element={<SurveyPurchase />} />
+          <Route path="/surveydetail" element={<SurveyDetail />} />
+          <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />} />
+          <Route
+            path="/survey/join/:surveyId/question"
+            element={<SurveyJoinQuestion />}
+          />
           <Route path="/surveyjoinfinish" element={<SurveyJoinFinish />} />
           <Route path="/registercomplete" element={<RegisterComplete />} />
           <Route path="/findpassword" element={<FindPassword />} />
-          <Route path="/passwordchangecomplete" element={<PasswordChangeComplete />} />
-          <Route path="/guestsurveyjoinfinish" element={<GuestSurveyJoinFinish />} />
+          <Route
+            path="/passwordchangecomplete"
+            element={<PasswordChangeComplete />}
+          />
+          <Route
+            path="/guestsurveyjoinfinish"
+            element={<GuestSurveyJoinFinish />}
+          />
           <Route path="/surveyexpired" element={<SurveyExpired />} />
         </Routes>
       </AppLayout>
