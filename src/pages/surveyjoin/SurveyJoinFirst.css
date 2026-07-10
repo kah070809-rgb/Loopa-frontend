@@ -1,0 +1,121 @@
+.survey-join-first-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px 20px 40px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #6a0dad;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.survey-join-first-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.survey-join-first-back-button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #6a0dad;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.survey-join-first-page-title {
+  margin: 0;
+  color: #6a0dad;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.survey-join-first-content {
+  width: 100%;
+  flex: 1;
+}
+
+.survey-join-first-title-box {
+  width: 100%;
+  min-height: 92px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  border-radius: 28px;
+  background-color: #d9b3ff;
+
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 18px;
+}
+
+.survey-join-first-title-box h2 {
+  margin: 0;
+  color: #6a0dad;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.survey-join-first-info-box {
+  width: 100%;
+  padding: 26px 24px 34px;
+  box-sizing: border-box;
+  border: 2px solid #d9b3ff;
+  border-radius: 28px;
+  background-color: #ffffff;
+}
+
+.survey-join-first-section {
+  margin-bottom: 28px;
+}
+
+.survey-join-first-section:last-child {
+  margin-bottom: 0;
+}
+
+.survey-join-first-section h3 {
+  margin: 0 0 22px;
+  color: #6a0dad;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.survey-join-first-section p {
+  margin: 0;
+  color: #7d22b8;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.survey-join-first-guest-text {
+  margin: 22px 0 0 16px;
+  color: #7d22b8;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.survey-join-first-bottom-area {
+  width: 100%;
+  padding: 40px 0 0;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.survey-join-first-start-button {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 999px;
+  background-color: #ead7ff;
+  color: #6a0dad;
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+}

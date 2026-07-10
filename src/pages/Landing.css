@@ -1,0 +1,79 @@
+.landing-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.landing-header {
+  padding: 48px 24px 32px;
+}
+
+.landing-logo {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 400;
+  color: #111;
+}
+
+.landing-main {
+  padding: 0 24px;
+}
+
+.landing-subtitle {
+  margin: 0 0 32px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #222;
+  line-height: 1.5;
+}
+
+.landing-main-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #000;
+  line-height: 1.55;
+}
+
+.landing-description {
+  margin-top: 36px;
+}
+
+.landing-description p {
+  margin: 0 0 14px;
+  font-size: 10px;
+  font-weight: 400;
+  color: #222;
+  line-height: 1.5;
+}
+
+.landing-button-box {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.landing-login-button,
+.landing-guest-button {
+  width: 154px;
+  height: 44px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.landing-login-button {
+  border: none;
+  background-color: #e0e0e0;
+  color: #111;
+}
+
+.landing-guest-button {
+  border: 1px solid #111;
+  background-color: white;
+  color: #111;
+}

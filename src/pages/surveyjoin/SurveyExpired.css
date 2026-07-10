@@ -1,0 +1,78 @@
+.survey-expired-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0 24px 44px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.survey-expired-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding-top: 260px;
+}
+
+.survey-expired-icon-box {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background-color: #ead8ff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 72px;
+}
+
+.survey-expired-check {
+  color: #9b7cf6;
+  font-size: 92px;
+  font-weight: 700;
+  line-height: 1;
+
+  transform: rotate(-6deg);
+  text-shadow: 0 4px 8px rgba(106, 13, 173, 0.18);
+}
+
+.survey-expired-title {
+  margin: 0;
+  color: #6a0dad;
+  font-size: 31px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.survey-expired-description {
+  margin: 58px 0 0;
+  color: #7b1fc2;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.survey-expired-main-button {
+  width: 100%;
+  height: 64px;
+  border: none;
+  border-radius: 999px;
+  background-color: #ead8ff;
+
+  color: #6a0dad;
+  font-size: 21px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
