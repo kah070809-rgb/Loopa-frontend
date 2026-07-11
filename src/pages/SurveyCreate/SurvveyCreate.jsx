@@ -5,7 +5,7 @@ import Step3 from './Step3';
 import Step4 from './Step4';
 import Step5 from './Step5';
 import Step6 from './Step6';
-import Step7 from './Step7'; // ⭐️ Step7 컴포넌트 추가 임포트!
+import Step7 from './Step7';
 import Back from '../../assets/images/Back.svg';
 
 export default function SurveyCreatePage() {

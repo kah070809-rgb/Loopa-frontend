@@ -1,119 +1,44 @@
 import React from 'react';
+import * as S from './step1.style'; // 분리된 스타일 컴포넌트 임포트
 import Button from '../../components/common/Button';
 import Checklist from '../../assets/images/Group 41.svg';
 
 export default function Step1({ formData, updateFormData, onNext, onExit }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-      }}
-    >
-      <img
-        src={Checklist}
-        alt="설문 일러스트"
-        style={{ objectFit: 'contain' }}
-      />
+    <S.Container>
+      <S.Illustration src={Checklist} alt="설문 일러스트" />
 
       {/* 메인 타이틀 */}
-      <h2
-        style={{
-          fontFamily: 'Pretendard-Bold',
-          color: '#5D01C6',
-          lineHeight: '1.4',
-          marginBottom: '50px',
-          textAlign: 'center',
-          fontSize: '21px',
-        }}
-      >
+      <S.MainTitle>
         새로운 설문을 만들어
         <br />
         다양한 의견을 모아보세요!
-      </h2>
+      </S.MainTitle>
 
       {/* 특징 리스트 */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          textAlign: 'center',
-          marginBottom: '60px',
-        }}
-      >
-        <div>
-          <h4
-            style={{
-              margin: '0 0 8px 0',
-              fontFamily: 'Pretendard-SemiBold',
-              color: '#5D01C6',
-              fontSize: '14px',
-            }}
-          >
-            간편한 설문 제작
-          </h4>
-          <p
-            style={{
-              margin: 0,
-              color: '#5D01C6',
-              fontFamily: 'Pretendard-Regular',
-              fontSize: '11px',
-            }}
-          >
-            몇 번의 클릭으로 설문을 만들 수 있어요.
-          </p>
-        </div>
-        <div>
-          <h4
-            style={{
-              margin: '0 0 8px 0',
-              fontFamily: 'Pretendard-SemiBold',
-              color: '#5D01C6',
-              fontSize: '14px',
-            }}
-          >
-            데이터 수집
-          </h4>
-          <p
-            style={{
-              margin: 0,
-              color: '#5D01C6',
-              fontFamily: 'Pretendard-Regular',
-              fontSize: '11px',
-            }}
-          >
+      <S.FeatureList>
+        <S.FeatureItem>
+          <S.FeatureTitle>간편한 설문 제작</S.FeatureTitle>
+          <S.FeatureDesc>몇 번의 클릭으로 설문을 만들 수 있어요.</S.FeatureDesc>
+        </S.FeatureItem>
+
+        <S.FeatureItem>
+          <S.FeatureTitle>데이터 수집</S.FeatureTitle>
+          <S.FeatureDesc>
             다양한 문항으로 원하는 데이터를 모아보세요.
-          </p>
-        </div>
-        <div>
-          <h4
-            style={{
-              margin: '0 0 8px 0',
-              fontFamily: 'Pretendard-SemiBold',
-              color: '#5D01C6',
-              fontSize: '14px',
-            }}
-          >
-            빠른 결과 확인
-          </h4>
-          <p
-            style={{
-              margin: 0,
-              color: '#5D01C6',
-              fontFamily: 'Pretendard-Regular',
-              fontSize: '11px',
-            }}
-          >
+          </S.FeatureDesc>
+        </S.FeatureItem>
+
+        <S.FeatureItem>
+          <S.FeatureTitle>빠른 결과 확인</S.FeatureTitle>
+          <S.FeatureDesc>
             응답 결과를 실시간으로 확인할 수 있어요.
-          </p>
-        </div>
-      </div>
+          </S.FeatureDesc>
+        </S.FeatureItem>
+      </S.FeatureList>
 
       {/* 시작 버튼 */}
-      <div style={{ width: '78%', paddingBottom: '20px' }}>
+      <S.ButtonWrapper>
         <Button
           onClick={onNext}
           style={{
@@ -128,7 +53,7 @@ export default function Step1({ formData, updateFormData, onNext, onExit }) {
         >
           설문 만들기 시작
         </Button>
-      </div>
-    </div>
+      </S.ButtonWrapper>
+    </S.Container>
   );
 }
