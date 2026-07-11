@@ -51,19 +51,16 @@ api.interceptors.response.use(
   },
 );
 
-export default api;
-
-
 const axiosInstance = axios.create({
-  baseURL: "https://api.loopa.example",
+  baseURL: 'https://api.loopa.example',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -73,7 +70,7 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
