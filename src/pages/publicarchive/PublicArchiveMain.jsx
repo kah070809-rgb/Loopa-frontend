@@ -79,7 +79,7 @@ function PublicArchiveMain() {
           <button
             className="archive-back-button"
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/main")}
           >
             ←
           </button>

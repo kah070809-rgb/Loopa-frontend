@@ -43,7 +43,7 @@ function App() {
             path="/archive/surveys/:surveyId"
             element={<SurveyPurchase />}
           />
-          <Route path="/surveydetail" element={<SurveyDetail />} />
+          <Route path="/surveydetail/:surveyId" element={<SurveyDetail />} />
           <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />} />
           <Route
             path="/survey/join/:surveyId/question"
