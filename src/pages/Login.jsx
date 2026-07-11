@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 import { login } from "../api/authApi";
@@ -7,6 +7,9 @@ import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const redirectTo = location.state?.redirectTo || "/main";
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -59,7 +62,9 @@ function Login() {
 
       console.log("로그인 성공:", response);
 
-      navigate("/main");
+      navigate(redirectTo, {
+        replace: true,
+      });
     } catch (error) {
       console.error("로그인 요청 실패:", error);
 
