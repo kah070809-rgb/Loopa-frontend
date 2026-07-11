@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 import { login } from '../api/authApi';
+import './Login.css';
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const redirectTo = location.state?.redirectTo || '/main';
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -59,12 +62,21 @@ function Login() {
 
       console.log('로그인 성공:', response);
 
-      navigate('/main');
+      navigate(redirectTo, {
+        replace: true,
+      });
     } catch (error) {
       console.error('로그인 요청 실패:', error);
 
       const status = error.response?.status;
       const errorCode = error.response?.data?.code;
+
+      if (!error.response) {
+        setPasswordError(
+          '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.',
+        );
+        return;
+      }
 
       if (status === 401 || errorCode === 'AUTH_005') {
         setPasswordError('이메일 또는 비밀번호가 일치하지 않습니다.');
@@ -83,21 +95,9 @@ function Login() {
         return;
       }
 
-      if (!error.response) {
-        setPasswordError(
-          '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.',
-        );
-        return;
-      }
-      try {
-        //로그인 성공 후 메인화면 이동
-        navigate('/main');
-      } catch (error) {
-        console.error('로그인 요청 실패:', error);
-        setPasswordError('로그인 중 오류가 발생했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
+      setPasswordError('로그인 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
