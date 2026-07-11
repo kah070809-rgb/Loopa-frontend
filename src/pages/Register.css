@@ -369,3 +369,11 @@
   cursor: not-allowed;
   background-color: #f5f5f5;
 }
+
+.registererrormessage {
+  color: #e53935;
+}
+
+.registerpasswordinput.error {
+  border-color: #e53935;
+}

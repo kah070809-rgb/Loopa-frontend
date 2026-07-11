@@ -22,3 +22,30 @@ export const verifyVerificationCode = async (email, code) => {
 
   return response.data;
 };
+
+// 회원가입
+export const signup = async ({
+  email,
+  password,
+  gender,
+  age,
+  job,
+}) => {
+  const requestBody = {
+    email,
+    password,
+    gender,
+    age: Number(age),
+  };
+
+  if (job) {
+    requestBody.job = job;
+  }
+
+  const response = await axiosInstance.post(
+    "/auth/signup",
+    requestBody
+  );
+
+  return response.data;
+};

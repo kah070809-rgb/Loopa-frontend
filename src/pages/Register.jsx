@@ -6,6 +6,7 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
   sendVerificationCode,
   verifyVerificationCode,
+  signup,
 } from "../api/authApi";
 
 function Register() {
@@ -28,14 +29,21 @@ function Register() {
   const [ageError, setAgeError] = useState("");
   const [agreeError, setAgreeError] = useState("");
 
-  const [emailSuccessMessage, setEmailSuccessMessage] = useState("");
-  const [authCodeSuccessMessage, setAuthCodeSuccessMessage] = useState("");
+  const [emailSuccessMessage, setEmailSuccessMessage] =
+    useState("");
+  const [authCodeSuccessMessage, setAuthCodeSuccessMessage] =
+    useState("");
 
-  const [isAuthCodeVerified, setIsAuthCodeVerified] = useState(false);
+  const [isAuthCodeVerified, setIsAuthCodeVerified] =
+    useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
-  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] =
+    useState(false);
 
-  const ages = Array.from({ length: 100 }, (_, index) => index + 1);
+  const ages = Array.from(
+    { length: 100 },
+    (_, index) => index + 1
+  );
 
   const getApiError = (error) => {
     return {
@@ -72,12 +80,12 @@ function Register() {
     try {
       setIsSendingCode(true);
 
-      const data = await sendVerificationCode(trimmedEmail);
+      const data =
+        await sendVerificationCode(trimmedEmail);
 
       console.log("인증번호 발송 성공:", data);
 
       setEmailSuccessMessage(successMessage);
-
       setAuthCode("");
       setIsAuthCodeVerified(false);
     } catch (error) {
@@ -99,7 +107,8 @@ function Register() {
 
       if (code === "COMMON_400") {
         setEmailError(
-          message || "올바른 이메일 형식을 입력해주세요."
+          message ||
+            "올바른 이메일 형식을 입력해주세요."
         );
         return;
       }
@@ -120,11 +129,15 @@ function Register() {
   };
 
   const handleSendAuthCode = async () => {
-    await requestAuthCode("인증번호가 발송되었습니다.");
+    await requestAuthCode(
+      "인증번호가 발송되었습니다."
+    );
   };
 
   const handleResendAuthCode = async () => {
-    await requestAuthCode("인증번호가 재발송되었습니다.");
+    await requestAuthCode(
+      "인증번호가 재발송되었습니다."
+    );
   };
 
   const handleCheckAuthCode = async (value) => {
@@ -142,7 +155,9 @@ function Register() {
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail) {
-      setAuthCodeError("먼저 이메일을 입력해주세요.");
+      setAuthCodeError(
+        "먼저 이메일을 입력해주세요."
+      );
       return;
     }
 
@@ -153,30 +168,39 @@ function Register() {
     try {
       setIsVerifyingCode(true);
 
-      const data = await verifyVerificationCode(
-        trimmedEmail,
-        numericValue
-      );
+      const data =
+        await verifyVerificationCode(
+          trimmedEmail,
+          numericValue
+        );
 
       console.log("인증번호 검증 성공:", data);
 
       if (data.result?.verified === true) {
         setAuthCodeSuccessMessage(
-          data.message || "인증번호가 일치합니다."
+          data.message ||
+            "인증번호가 일치합니다."
         );
         setIsAuthCodeVerified(true);
         return;
       }
 
-      setAuthCodeError("인증번호 검증에 실패했습니다.");
+      setAuthCodeError(
+        "인증번호 검증에 실패했습니다."
+      );
       setIsAuthCodeVerified(false);
     } catch (error) {
-      console.error("인증번호 확인 실패:", error);
+      console.error(
+        "인증번호 확인 실패:",
+        error
+      );
 
       const { code, message } = getApiError(error);
 
       if (code === "AUTH_002") {
-        setAuthCodeError("인증번호가 일치하지 않습니다.");
+        setAuthCodeError(
+          "인증번호가 일치하지 않습니다."
+        );
       } else if (code === "AUTH_003") {
         setAuthCodeError(
           "인증번호가 만료되었습니다. 다시 발송해주세요."
@@ -187,7 +211,8 @@ function Register() {
         );
       } else if (code === "COMMON_400") {
         setAuthCodeError(
-          message || "이메일과 인증번호를 다시 확인해주세요."
+          message ||
+            "이메일과 인증번호를 다시 확인해주세요."
         );
       } else if (code === "COMMON_500") {
         setAuthCodeError(
@@ -195,7 +220,8 @@ function Register() {
         );
       } else {
         setAuthCodeError(
-          message || "인증번호 확인에 실패했습니다."
+          message ||
+            "인증번호 확인에 실패했습니다."
         );
       }
 
@@ -205,9 +231,32 @@ function Register() {
     }
   };
 
-  const handleSelectGender = (selectedGender) => {
+  const handleSelectGender = (
+    selectedGender
+  ) => {
     setGender(selectedGender);
     setGenderError("");
+  };
+
+  // 비밀번호 입력 시 길이 검사
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+
+    setPassword(value);
+
+    if (value.length === 0) {
+      setPasswordError("");
+    } else if (value.length < 8) {
+      setPasswordError(
+        "비밀번호는 8자 이상 입력해주세요."
+      );
+    } else if (value.length > 100) {
+      setPasswordError(
+        "비밀번호는 100자 이하로 입력해주세요."
+      );
+    } else {
+      setPasswordError("");
+    }
   };
 
   const handleSubmitRegister = async () => {
@@ -225,18 +274,37 @@ function Register() {
       hasError = true;
     }
 
-    if (!authCode.trim() || !isAuthCodeVerified) {
-      setAuthCodeError("이메일 인증을 완료해주세요.");
+    if (
+      !authCode.trim() ||
+      !isAuthCodeVerified
+    ) {
+      setAuthCodeError(
+        "이메일 인증을 완료해주세요."
+      );
       hasError = true;
     }
 
     if (!password.trim()) {
-      setPasswordError("비밀번호를 입력해주세요.");
+      setPasswordError(
+        "비밀번호를 입력해주세요."
+      );
+      hasError = true;
+    } else if (password.length < 8) {
+      setPasswordError(
+        "비밀번호는 8자 이상 입력해주세요."
+      );
+      hasError = true;
+    } else if (password.length > 100) {
+      setPasswordError(
+        "비밀번호는 100자 이하로 입력해주세요."
+      );
       hasError = true;
     }
 
     if (!gender) {
-      setGenderError("성별을 선택해주세요.");
+      setGenderError(
+        "성별을 선택해주세요."
+      );
       hasError = true;
     }
 
@@ -261,17 +329,64 @@ function Register() {
       password,
       gender,
       age: Number(age),
-      job: job || null,
+      ...(job && { job }),
     };
 
-    console.log("백엔드로 보낼 회원가입 데이터:", registerData);
+    console.log(
+      "백엔드로 보낼 회원가입 데이터:",
+      registerData
+    );
 
     try {
-      // 회원가입 API 연결 전 임시 이동
+      const data =
+        await signup(registerData);
+
+      console.log("회원가입 성공:", data);
+
       navigate("/RegisterComplete");
     } catch (error) {
-      console.error("회원가입 실패:", error);
-      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+      console.error(
+        "회원가입 실패:",
+        error.response?.data || error
+      );
+
+      const { code, message } =
+        getApiError(error);
+
+      if (code === "AUTH_004") {
+        setAuthCodeError(
+          "이메일 인증을 먼저 완료해주세요."
+        );
+        setIsAuthCodeVerified(false);
+        return;
+      }
+
+      if (code === "AUTH_001") {
+        setEmailError(
+          "이미 가입된 이메일입니다."
+        );
+        return;
+      }
+
+      if (code === "COMMON_400") {
+        alert(
+          message ||
+            "입력한 회원가입 정보를 다시 확인해주세요."
+        );
+        return;
+      }
+
+      if (code === "COMMON_500") {
+        alert(
+          "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        );
+        return;
+      }
+
+      alert(
+        message ||
+          "회원가입에 실패했습니다."
+      );
     }
   };
 
@@ -285,7 +400,9 @@ function Register() {
         ←
       </button>
 
-      <h1 className="registertitle">회원가입</h1>
+      <h1 className="registertitle">
+        회원가입
+      </h1>
 
       <div className="registerinputbox">
         <label
@@ -315,14 +432,20 @@ function Register() {
             }}
             placeholder="이메일을 입력해주세요."
             autoComplete="email"
-            disabled={isSendingCode || isVerifyingCode}
+            disabled={
+              isSendingCode ||
+              isVerifyingCode
+            }
           />
 
           <button
             className="registercodebutton"
             type="button"
             onClick={handleSendAuthCode}
-            disabled={isSendingCode || isVerifyingCode}
+            disabled={
+              isSendingCode ||
+              isVerifyingCode
+            }
           >
             {isSendingCode
               ? "발송 중..."
@@ -360,7 +483,9 @@ function Register() {
           inputMode="numeric"
           value={authCode}
           onChange={(e) =>
-            handleCheckAuthCode(e.target.value)
+            handleCheckAuthCode(
+              e.target.value
+            )
           }
           placeholder="인증번호를 입력해주세요."
           maxLength={6}
@@ -388,7 +513,10 @@ function Register() {
             className="registerresendbutton"
             type="button"
             onClick={handleResendAuthCode}
-            disabled={isSendingCode || isVerifyingCode}
+            disabled={
+              isSendingCode ||
+              isVerifyingCode
+            }
           >
             {isSendingCode
               ? "발송 중..."
@@ -413,13 +541,14 @@ function Register() {
             className={`registerpasswordinput ${
               passwordError ? "error" : ""
             }`}
-            type={showPassword ? "text" : "password"}
+            type={
+              showPassword
+                ? "text"
+                : "password"
+            }
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setPasswordError("");
-            }}
-            placeholder="비밀번호를 입력하세요."
+            onChange={handlePasswordChange}
+            placeholder="영어/숫자 조합 최소 8글자 이상입니다."
             autoComplete="new-password"
           />
 
@@ -427,7 +556,9 @@ function Register() {
             className="registereyebutton"
             type="button"
             onClick={() =>
-              setShowPassword((previous) => !previous)
+              setShowPassword(
+                (previous) => !previous
+              )
             }
             aria-label={
               showPassword
@@ -435,7 +566,11 @@ function Register() {
                 : "비밀번호 보기"
             }
           >
-            {showPassword ? <FiEye /> : <FiEyeOff />}
+            {showPassword ? (
+              <FiEye />
+            ) : (
+              <FiEyeOff />
+            )}
           </button>
         </div>
 
@@ -450,20 +585,32 @@ function Register() {
         <div className="registergenderbuttons">
           <button
             className={`registergenderbutton ${
-              gender === "MALE" ? "selected" : ""
-            } ${genderError ? "error" : ""}`}
+              gender === "MALE"
+                ? "selected"
+                : ""
+            } ${
+              genderError ? "error" : ""
+            }`}
             type="button"
-            onClick={() => handleSelectGender("MALE")}
+            onClick={() =>
+              handleSelectGender("MALE")
+            }
           >
             남성
           </button>
 
           <button
             className={`registergenderbutton ${
-              gender === "FEMALE" ? "selected" : ""
-            } ${genderError ? "error" : ""}`}
+              gender === "FEMALE"
+                ? "selected"
+                : ""
+            } ${
+              genderError ? "error" : ""
+            }`}
             type="button"
-            onClick={() => handleSelectGender("FEMALE")}
+            onClick={() =>
+              handleSelectGender("FEMALE")
+            }
           >
             여성
           </button>
@@ -491,7 +638,10 @@ function Register() {
             <option value="">-</option>
 
             {ages.map((ageItem) => (
-              <option key={ageItem} value={ageItem}>
+              <option
+                key={ageItem}
+                value={ageItem}
+              >
                 {ageItem}
               </option>
             ))}
@@ -525,20 +675,46 @@ function Register() {
             job ? "selected" : ""
           }`}
           value={job}
-          onChange={(e) => setJob(e.target.value)}
+          onChange={(e) =>
+            setJob(e.target.value)
+          }
         >
-          <option value="">직업을 선택해주세요.</option>
-          <option value="STUDENT">학생</option>
-          <option value="UNIVERSITY_STUDENT">대학생</option>
-          <option value="GRADUATE_STUDENT">대학원생</option>
-          <option value="WORKER">직장인</option>
-          <option value="TEACHER">교사</option>
-          <option value="PROFESSOR">교수</option>
-          <option value="FREELANCER">프리랜서</option>
-          <option value="SELF_EMPLOYED">자영업자</option>
-          <option value="PUBLIC_OFFICIAL">공무원</option>
-          <option value="UNEMPLOYED">무직</option>
-          <option value="ETC">기타</option>
+          <option value="">
+            직업을 선택해주세요.
+          </option>
+          <option value="STUDENT">
+            학생
+          </option>
+          <option value="UNIVERSITY_STUDENT">
+            대학생
+          </option>
+          <option value="GRAD_STUDENT">
+            대학원생
+          </option>
+          <option value="EMPLOYEE">
+            직장인
+          </option>
+          <option value="TEACHER">
+            교사
+          </option>
+          <option value="PROFESSOR">
+            교수
+          </option>
+          <option value="FREELANCER">
+            프리랜서
+          </option>
+          <option value="SELF_EMPLOYED">
+            자영업자
+          </option>
+          <option value="PUBLIC_OFFICIAL">
+            공무원
+          </option>
+          <option value="UNEMPLOYED">
+            무직
+          </option>
+          <option value="ETC">
+            기타
+          </option>
         </select>
       </div>
 
@@ -556,13 +732,18 @@ function Register() {
             type="checkbox"
             checked={agreeTerms}
             onChange={(e) => {
-              setAgreeTerms(e.target.checked);
+              setAgreeTerms(
+                e.target.checked
+              );
               setAgreeError("");
             }}
           />
 
           <p className="registeragreetext">
-            Loopa의 <button type="button">이용약관</button>{" "}
+            Loopa의{" "}
+            <button type="button">
+              이용약관
+            </button>{" "}
             및{" "}
             <button type="button">
               개인정보처리방침
@@ -576,7 +757,10 @@ function Register() {
         className="registersubmitbutton"
         type="button"
         onClick={handleSubmitRegister}
-        disabled={isSendingCode || isVerifyingCode}
+        disabled={
+          isSendingCode ||
+          isVerifyingCode
+        }
       >
         회원가입 완료
       </button>
