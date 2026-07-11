@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 import { login } from "../api/authApi";
+import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -66,10 +66,15 @@ function Login() {
       const status = error.response?.status;
       const errorCode = error.response?.data?.code;
 
-      if (status === 401 || errorCode === "AUTH_005") {
+      if (!error.response) {
         setPasswordError(
-          "이메일 또는 비밀번호가 일치하지 않습니다."
+          "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요."
         );
+        return;
+      }
+
+      if (status === 401 || errorCode === "AUTH_005") {
+        setPasswordError("이메일 또는 비밀번호가 일치하지 않습니다.");
         return;
       }
 
@@ -85,17 +90,6 @@ function Login() {
         return;
       }
 
-      if (!error.response) {
-        setPasswordError(
-          "서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요."
-        );
-        return;
-      }
-
-      // 로그인 성공 후 메인화면 이동
-      navigate("/main");
-    } catch (error) {
-      console.error("로그인 요청 실패:", error);
       setPasswordError("로그인 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
