@@ -39,6 +39,7 @@ function PublicArchiveMain() {
         size: 3,
       });
 
+      console.log("데이터:", data);
       setSurveyList(data.items);
     } catch (error) {
       console.error("아카이브 목록 조회 실패:", error);
