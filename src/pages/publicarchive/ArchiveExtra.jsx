@@ -1,100 +1,190 @@
 import { FiSearch } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SurveyPreviewCard from "./archivecomponents/SurveyPreviewCard";
-import "./ArchiveExtra.css"
+import { getArchiveSurveys } from "../../api/archiveApi";
+import "./ArchiveExtra.css";
 
 function ArchiveExtra() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [selectedSurveyId, setSelectedSurveyId] = useState(null);
+  const [surveys, setSurveys] = useState([]);
+  const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
-    const surveys = [
-  {
-    id: 1,
-    title: "AI 사용 실태 조사",
-    target: "대학생",
-    responseCount: 120,
-    category: "기술",
-    updatedAt: "2026.07.07",
-  },
-  {
-    id: 2,
-    title: "카페 이용 행태 조사",
-    target: "20대",
-    responseCount: 85,
-    category: "생활",
-    updatedAt: "2026.07.06",
-  },
-  {
-    id: 3,
-    title: "대학교 팀플 만족도 조사",
-    target: "대학생",
-    responseCount: 210,
-    category: "교육",
-    updatedAt: "2026.07.05",
-  },
-];
+  const [keyword, setKeyword] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-    return(
-         <section className="archive-extra-page">
-             <header className="archive-extra-header">
-                 <button 
-                  className="archive-extra-back-button" 
-                  type="button"
-                  onClick={() => navigate("/archivemain")}>
-                     ←
-                 </button>
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasNext, setHasNext] = useState(false);
 
-                 <h1 className="archive-extra-title">최근 업데이트</h1>
-             </header>
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-             <div className="archive-extra-search-box">
-                 <input
-                  className="archive-extra-search-input"
-                  type="text"
-                  placeholder="설문 제목 검색"
-                 />
+  const categories = [
+    { label: "전체", value: "" },
+    { label: "IT·AI", value: "IT_AI" },
+    { label: "교육", value: "EDUCATION" },
+    { label: "문화", value: "CULTURE" },
+    { label: "생활", value: "LIFE" },
+  ];
 
-                 <button className="archive-extra-search-button" type="button">
-                     <FiSearch />
-                 </button>
-             </div>
+  const fetchArchiveSurveys = async ({
+    keywordValue = keyword,
+    categoryValue = selectedCategory,
+    cursorValue = null,
+    isLoadMore = false,
+  } = {}) => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
 
-             <div className="archive-extra-filter-row">
-                 <button className="archive-extra-filter-button selected" type="button">
-                  전체
-                 </button>
+      const data = await getArchiveSurveys({
+        keyword: keywordValue,
+        category: categoryValue,
+        cursor: cursorValue,
+        size: 20,
+      });
 
-                 <button className="archive-extra-filter-button" type="button">
-                  전체
-                 </button>
+      if (isLoadMore) {
+        setSurveys((prev) => [...prev, ...data.items]);
+      } else {
+        setSurveys(data.items);
+      }
 
-                 <button className="archive-extra-filter-button" type="button">
-                  전체
-                 </button>
+      setNextCursor(data.nextCursor);
+      setHasNext(data.hasNext);
+    } catch (error) {
+      console.error("아카이브 더보기 목록 조회 실패:", error);
+      setErrorMessage("아카이브 목록을 불러오지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                 <button className="archive-extra-filter-button" type="button">
-                  전체
-                 </button>
+  useEffect(() => {
+    fetchArchiveSurveys({
+      keywordValue: "",
+      categoryValue: "",
+      cursorValue: null,
+      isLoadMore: false,
+    });
+  }, []);
 
-                 <button className="archive-extra-filter-button" type="button">
-                  전체
-                 </button>
-             </div>
+  const handleSearch = () => {
+    fetchArchiveSurveys({
+      keywordValue: keyword,
+      categoryValue: selectedCategory,
+      cursorValue: null,
+      isLoadMore: false,
+    });
+  };
 
-             <div className="archive-extra-card-list">
-                 {surveys.map((survey) => (
-                 <SurveyPreviewCard
-                  key={survey.id}
-                  survey={survey}
-                  isSelected={selectedSurveyId === survey.id}
-                  onClick={() => setSelectedSurveyId(survey.id)}
-                 />
-                 ))}
-             </div>
-         </section>
-    )
+  const handleCategoryClick = (categoryValue) => {
+    setSelectedCategory(categoryValue);
+
+    fetchArchiveSurveys({
+      keywordValue: keyword,
+      categoryValue,
+      cursorValue: null,
+      isLoadMore: false,
+    });
+  };
+
+  const handleLoadMore = () => {
+    if (!hasNext || loading) return;
+
+    fetchArchiveSurveys({
+      keywordValue: keyword,
+      categoryValue: selectedCategory,
+      cursorValue: nextCursor,
+      isLoadMore: true,
+    });
+  };
+
+  return (
+    <section className="archive-extra-page">
+      <header className="archive-extra-header">
+        <button
+          className="archive-extra-back-button"
+          type="button"
+          onClick={() => navigate("/archivemain")}
+        >
+          ←
+        </button>
+
+        <h1 className="archive-extra-title">최근 업데이트</h1>
+      </header>
+
+      <div className="archive-extra-search-box">
+        <input
+          id="archive-extra-search"
+          name="keyword"
+          className="archive-extra-search-input"
+          type="text"
+          placeholder="설문 제목 검색"
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleSearch();
+            }
+          }}
+        />
+
+        <button
+          className="archive-extra-search-button"
+          type="button"
+          onClick={handleSearch}
+        >
+          <FiSearch />
+        </button>
+      </div>
+
+      <div className="archive-extra-filter-row">
+        {categories.map((category) => (
+          <button
+            key={category.value || "all"}
+            className={`archive-extra-filter-button ${
+              selectedCategory === category.value ? "selected" : ""
+            }`}
+            type="button"
+            onClick={() => handleCategoryClick(category.value)}
+          >
+            {category.label}
+          </button>
+        ))}
+      </div>
+
+      {errorMessage && <p>{errorMessage}</p>}
+
+      <div className="archive-extra-card-list">
+        {surveys.map((survey) => (
+          <SurveyPreviewCard
+           key={survey.id}
+           survey={survey}
+           isSelected={selectedSurveyId === survey.id}
+           onClick={() => {
+            setSelectedSurveyId(survey.id);
+            navigate(`/archive/surveys/${survey.id}`);
+           }}
+          />
+        ))}
+      </div>
+
+      {loading && <p>불러오는 중...</p>}
+
+      {hasNext && (
+        <button
+          className="archive-extra-load-more-button"
+          type="button"
+          onClick={handleLoadMore}
+          disabled={loading}
+        >
+          더 불러오기
+        </button>
+      )}
+    </section>
+  );
 }
 
 export default ArchiveExtra;

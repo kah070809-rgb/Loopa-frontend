@@ -277,3 +277,47 @@
 
   cursor: pointer;
 }
+
+.myarchive-message {
+  margin: 50px 0;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #5d01c6;
+  word-break: keep-all;
+}
+
+.myarchive-card:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.myarchive-card:disabled .myarchive-card-title,
+.myarchive-card:disabled .myarchive-card-info,
+.myarchive-card:disabled .myarchive-status,
+.myarchive-card:disabled .myarchive-date,
+.myarchive-card:disabled .myarchive-category,
+.myarchive-card:disabled .myarchive-detail-text {
+  color: #5d01c6;
+}
+
+.myarchive-card:disabled .myarchive-check-box {
+  width: auto;
+  min-width: 38px;
+  padding: 0 5px;
+
+  border: none;
+  background-color: #a251ff;
+  color: #ffffff;
+
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.myarchive-date {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

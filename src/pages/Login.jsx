@@ -60,7 +60,7 @@ function Login() {
       }
 
       // 로그인 성공 후 메인화면 이동
-      navigate("//surveyjoinfirst");
+      navigate("/main");
     } catch (error) {
       console.error("로그인 요청 실패:", error);
       setPasswordError("로그인 중 오류가 발생했습니다.");

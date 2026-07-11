@@ -1,48 +1,135 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getArchiveSurveyViewInfo } from "../../api/archiveapi";
 import "./SurveyPurchase.css";
 
 function SurveyPurchase() {
   const navigate = useNavigate();
+  const { surveyId } = useParams();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [surveyData, setSurveyData] = useState(null);
   const [isPurchased, setIsPurchased] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTokenShortModalOpen, setIsTokenShortModalOpen] = useState(false);
- 
-  const PURCHASE_TOKEN = 15;
 
-  const userToken = 42;
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const surveyData = {
-    title: '대학생 AI 활용 실태 조사',
-    description:
-      '대학생들의 AI 활용 경험과 인식을 파악하기 위한 설문입니다. 응답하신 내용은 통계 분석 목적으로만 사용됩니다.',
-    startDate: '2026.07.01',
-    endDate: '2026.07.13',
-    objectiveQuestionCount: 7,
-    subjectiveQuestionCount: 2,
-    respondentCount: 52,
+  useEffect(() => {
+    const fetchSurveyViewInfo = async () => {
+      if (!surveyId) {
+        setErrorMessage("설문 ID가 없습니다.");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setErrorMessage("");
+
+        const data = await getArchiveSurveyViewInfo(surveyId);
+
+        setSurveyData(data);
+        setIsPurchased(data.alreadyViewed);
+      } catch (error) {
+        const status = error.response?.status;
+
+        if (status === 401) {
+          setErrorMessage("로그인이 필요합니다. 다시 로그인해주세요.");
+        } else if (status === 404) {
+          setErrorMessage("존재하지 않는 설문입니다.");
+        } else {
+          setErrorMessage("설문 열람 정보를 불러오지 못했습니다.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSurveyViewInfo();
+  }, [surveyId]);
+
+  const formatDate = (dateText) => {
+    if (!dateText) return "";
+    return dateText.replaceAll("-", ".");
   };
 
   const handlePurchaseConfirm = () => {
-  if (userToken < PURCHASE_TOKEN) {
+    if (!surveyData) return;
+
+    if (surveyData.tokenBalance < surveyData.viewCost) {
+      setIsModalOpen(false);
+      setIsTokenShortModalOpen(true);
+      return;
+    }
+
     setIsModalOpen(false);
-    setIsTokenShortModalOpen(true);
-    return;
+
+    // 지금은 구매 API가 아직 연결되지 않았기 때문에
+    // 프론트에서만 구매 완료 상태로 바꾸는 임시 처리입니다.
+    setIsPurchased(true);
+  };
+
+  if (isLoading) {
+    return (
+      <section className="survey-purchase-page">
+        <button
+          className="survey-purchase-back-button"
+          type="button"
+          onClick={() => navigate("/archivemain")}
+        >
+          ←
+        </button>
+
+        <p className="survey-purchase-state-message">
+          설문 열람 정보를 불러오는 중입니다.
+        </p>
+      </section>
+    );
   }
 
-  setIsModalOpen(false);
-  setIsPurchased(true);
-};
+  if (errorMessage) {
+    return (
+      <section className="survey-purchase-page">
+        <button
+          className="survey-purchase-back-button"
+          type="button"
+          onClick={() => navigate("/archivemain")}
+        >
+          ←
+        </button>
+
+        <p className="survey-purchase-state-message">{errorMessage}</p>
+      </section>
+    );
+  }
+
+  if (!surveyData) {
+    return (
+      <section className="survey-purchase-page">
+        <button
+          className="survey-purchase-back-button"
+          type="button"
+          onClick={() => navigate("/archivemain")}
+        >
+          ←
+        </button>
+
+        <p className="survey-purchase-state-message">
+          설문 정보를 찾을 수 없습니다.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="survey-purchase-page">
-      <button 
-       className="survey-purchase-back-button" 
-       type="button"
-       onClick={() => navigate("/archivemain")}>
+      <button
+        className="survey-purchase-back-button"
+        type="button"
+        onClick={() => navigate("/archivemain")}
+      >
         ←
       </button>
 
@@ -50,7 +137,7 @@ function SurveyPurchase() {
         <h1 className="survey-purchase-title">{surveyData.title}</h1>
 
         <span className="survey-purchase-token">
-          열람 · {PURCHASE_TOKEN}토큰
+          열람 · {surveyData.viewCost}토큰
         </span>
       </div>
 
@@ -63,14 +150,14 @@ function SurveyPurchase() {
         <div className="survey-purchase-info-section">
           <h2>설문 기간</h2>
           <p>
-            {surveyData.startDate} ~ {surveyData.endDate}
+            {formatDate(surveyData.startDate)} ~ {formatDate(surveyData.endDate)}
           </p>
         </div>
 
         <div className="survey-purchase-info-section">
           <h2>문항 수</h2>
-          <p>객관식 {surveyData.objectiveQuestionCount}문항</p>
-          <p>주관식 {surveyData.subjectiveQuestionCount}문항</p>
+          <p>객관식 {surveyData.questionCount?.multipleChoice ?? 0}문항</p>
+          <p>주관식 {surveyData.questionCount?.subjective ?? 0}문항</p>
         </div>
 
         <div className="survey-purchase-info-section">
@@ -85,65 +172,69 @@ function SurveyPurchase() {
       </p>
 
       <button
-       className="survey-purchase-button"
-       type="button"
-       onClick={() => {
-       if (isPurchased) {
-       navigate("/SurveyDetail");
-       return;
-       }
+        className="survey-purchase-button"
+        type="button"
+        onClick={() => {
+          if (isPurchased) {
+            navigate("/SurveyDetail");
+            return;
+          }
 
-       setIsModalOpen(true);
-       }}
+          setIsModalOpen(true);
+        }}
       >
-         {isPurchased ? "열람하기" : `${PURCHASE_TOKEN}토큰 소모하고 열람하기`}
+        {isPurchased
+          ? "열람하기"
+          : `${surveyData.viewCost}토큰 소모하고 열람하기`}
       </button>
 
       {isModalOpen && (
-         <div className="survey-purchase-modal-overlay">
-             <div className="survey-purchase-modal">
-                 <h2>토큰을 소모하여 열람하시겠습니까?</h2>
+        <div className="survey-purchase-modal-overlay">
+          <div className="survey-purchase-modal">
+            <h2>토큰을 소모하여 열람하시겠습니까?</h2>
 
-                 <p>
-                     이 설문 결과를 열람하면 15 토큰이 차감됩니다.
-                 </p>
+            <p>
+              현재 보유 토큰은 {surveyData.tokenBalance}토큰입니다.
+              <br />
+              이 설문 결과를 열람하면 {surveyData.viewCost}토큰이 차감됩니다.
+            </p>
 
-                 <div className="survey-purchase-modal-buttons">
-                     <button
-                      className="survey-purchase-modal-cancel"
-                      type="button"
-                      onClick={() => setIsModalOpen(false)}
-                     >
-                         취소
-                     </button>
+            <div className="survey-purchase-modal-buttons">
+              <button
+                className="survey-purchase-modal-cancel"
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+              >
+                취소
+              </button>
 
-                     <button
-                      className="survey-purchase-modal-confirm"
-                      type="button"
-                      onClick={handlePurchaseConfirm}
-                     >
-                         열람하기
-                     </button>
-                 </div>
-             </div>
-         </div>
-       )}
+              <button
+                className="survey-purchase-modal-confirm"
+                type="button"
+                onClick={handlePurchaseConfirm}
+              >
+                열람하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-       {isTokenShortModalOpen && (
-          <div className="survey-purchase-modal-overlay">
-             <div className="survey-token-short-modal">
-                 <h2>토큰이 부족합니다.</h2>
+      {isTokenShortModalOpen && (
+        <div className="survey-purchase-modal-overlay">
+          <div className="survey-token-short-modal">
+            <h2>토큰이 부족합니다.</h2>
 
-                 <button
-                  className="survey-token-short-button"
-                  type="button"
-                  onClick={() => setIsTokenShortModalOpen(false)}
-                 >
-                      확인
-                 </button>
-             </div>
-         </div>
-       )}
+            <button
+              className="survey-token-short-button"
+              type="button"
+              onClick={() => setIsTokenShortModalOpen(false)}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

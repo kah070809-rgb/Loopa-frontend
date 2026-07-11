@@ -206,3 +206,12 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+.survey-purchase-state-message {
+  margin-top: 80px;
+  color: #6a0dad;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.6;
+}

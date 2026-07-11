@@ -12,14 +12,16 @@ function SurveyPreviewCard({ survey, isSelected, onClick }) {
           <h3 className="archive-card-title">{survey.title}</h3>
 
           <p className="archive-card-info">
-            {survey.target} · 응답자 수 : {survey.responseCount}
+            {survey.target} · 응답자 수 : {survey.respondentCount}
           </p>
 
           <span className="archive-card-category">{survey.category}</span>
         </div>
 
         <div className="archive-card-right">
-          <span className="archive-card-date">{survey.updatedAt}</span>
+          <span className="archive-card-date">
+            {survey.createdAt?.slice(0, 10)}
+          </span>
 
           <span className="archive-card-detail">자세히 보기 &gt;</span>
         </div>

@@ -39,6 +39,7 @@ function App() {
           <Route path="/archiveextra" element={<ArchiveExtra />} />
           <Route path="/myarchive" element={<MyArchive />} />
           <Route path="/surveypurchase" element={<SurveyPurchase />} />
+          <Route path="/archive/surveys/:surveyId" element={<SurveyPurchase />} />
           <Route path="/surveydetail" element={<SurveyDetail />} />
           <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />} />
           <Route
