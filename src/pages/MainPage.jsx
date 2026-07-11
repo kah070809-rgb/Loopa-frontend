@@ -122,7 +122,7 @@ const MainPage = () => {
           <img
             src={Go}
             alt="go"
-            style={{ width: '14px', height: '14px', objectFit: 'contain' }}
+            // style={{ width: '14px', height: '14px', objectFit: 'contain' }}
           />
         </S.CircleIconBox>
       </S.BannerCard>
@@ -133,18 +133,16 @@ const MainPage = () => {
           <S.SectionTitle>참여 가능한 설문</S.SectionTitle>
           <S.MoreBtn
             onClick={() => alert('참여 가능한 설문 더보기 화면으로 이동')}
-          >
-            더보기
-            <img
-              src={Plus}
-              alt="plus"
-              style={{
-                height: '10px',
-                marginLeft: '2px',
-                objectFit: 'contain',
-              }}
-            />
-          </S.MoreBtn>
+          />
+          <img
+            src={Plus}
+            alt="plus"
+            style={{
+              height: '17px',
+              marginLeft: '2px',
+              objectFit: 'contain',
+            }}
+          />
         </S.SectionHeader>
 
         {/* 카테고리 칩 영역 */}

@@ -191,6 +191,7 @@ export const SectionTitle = styled.h2`
   font-size: 17px;
   color: #5d01c6;
   font-weight: bold;
+  font-family: 'Pretendard-Bold';
 `;
 
 export const MoreBtn = styled.div`

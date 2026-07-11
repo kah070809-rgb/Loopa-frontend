@@ -116,7 +116,9 @@ export default function Step4({
               <S.RadioDot $isSelected={qType === 'subjective'} />
             </S.RadioCircle>
             <S.TabLabel
-              style={{ color: qType === 'subjective' ? '#5D01C6' : '#9E77EB' }}
+              style={{
+                color: qType === 'subjective' ? '#5D01C6' : '#9E77EB',
+              }}
             >
               주관식
             </S.TabLabel>

@@ -54,6 +54,10 @@ export const StepLabel = styled.span`
   margin-top: 8px;
 `;
 
+export const Box = styled.div`
+  margin: 0 30px 0 30px;
+`;
+
 // --- 문항 타입 선택 탭 바 ---
 export const TabBar = styled.div`
   display: flex;
