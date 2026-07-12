@@ -1,38 +1,24 @@
 .survey-join-first-page {
   width: 100%;
   min-height: 100vh;
-  padding: 24px 20px 40px;
+  padding: 30px 30px 40px;
   box-sizing: border-box;
   background-color: #ffffff;
-  color: #6a0dad;
-
   display: flex;
   flex-direction: column;
 }
 
+/* --- [1] 헤더 영역 (이미지 통일) --- */
 .survey-join-first-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
-.survey-join-first-back-button {
-  border: none;
-  background: none;
-  padding: 0;
-  color: #6a0dad;
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1;
+.survey-join-first-back-img {
+  height: 20px;
+  object-fit: contain;
   cursor: pointer;
-}
-
-.survey-join-first-page-title {
-  margin: 0;
-  color: #6a0dad;
-  font-size: 22px;
-  font-weight: 800;
 }
 
 .survey-join-first-content {
@@ -40,175 +26,197 @@
   flex: 1;
 }
 
+/* --- [2] 상단 연보라 배너 박스 (surveylist 카드 스타일 이식) --- */
 .survey-join-first-title-box {
   width: 100%;
-  min-height: 92px;
-  padding: 0 24px;
+  padding: 20px 24px;
   box-sizing: border-box;
-  border-radius: 28px;
-  background-color: #d9b3ff;
-
-  display: flex;
-  align-items: center;
-
-  margin-bottom: 18px;
+  border-radius: 24px;
+  background-color: #e8d5ff;
+  margin-bottom: 24px;
+  text-align: left;
 }
 
-.survey-join-first-title-box h2 {
-  margin: 0;
-  color: #6a0dad;
-  font-size: 20px;
-  font-weight: 800;
+.survey-join-first-main-title {
+  margin: 0 0 6px 0;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold';
+  font-size: 18px;
   line-height: 1.4;
 }
 
+.survey-join-first-sub-info {
+  margin: 0 0 12px 0;
+  color: #5d01c6;
+  font-family: 'Pretendard-Medium';
+  font-size: 13px;
+}
+
+.survey-join-first-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.survey-join-first-badge {
+  background-color: #ffffff;
+  color: #5d01c6;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'Pretendard-SemiBold';
+  font-size: 11px;
+}
+
+.survey-join-first-duration {
+  color: #5d01c6;
+  font-family: 'Pretendard-Medium';
+  font-size: 12px;
+}
+
+/* --- [3] 중앙 메인 보라색 테두리 박스 설정 --- */
 .survey-join-first-info-box {
   width: 100%;
-  padding: 26px 24px 34px;
+  padding: 24px 24px;
   box-sizing: border-box;
-  border: 2px solid #d9b3ff;
-  border-radius: 28px;
+  border: 2px solid #e8d5ff;
+  border-radius: 24px;
   background-color: #ffffff;
 }
 
 .survey-join-first-section {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
+  text-align: left;
 }
 
 .survey-join-first-section:last-child {
   margin-bottom: 0;
 }
 
+/* 💡 보라테두리 네모안 보라글자는 세미볼드에 5D01C6 이거 16px */
 .survey-join-first-section h3 {
-  margin: 0 0 22px;
-  color: #6a0dad;
-  font-size: 22px;
-  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #5d01c6;
+  font-family: 'Pretendard-SemiBold';
+  font-size: 16px;
 }
 
+/* 💡 검정글자는 레귤러에 12px 000000 */
 .survey-join-first-section p {
   margin: 0;
-  color: #7d22b8;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.8;
+  color: #000000;
+  font-family: 'Pretendard-Regular';
+  font-size: 12px;
+  line-height: 1.6;
 }
 
+/* 💡 네모 밖에는 검정글자랑 조건은 같고 색만 보라 (12px, 5D01C6, 레귤러) */
 .survey-join-first-guest-text {
-  margin: 22px 0 0 16px;
-  color: #7d22b8;
-  font-size: 15px;
-  font-weight: 600;
+  margin: 16px 0 0 4px;
+  text-align: left;
+  color: #5d01c6;
+  font-family: 'Pretendard-Regular';
+  font-size: 12px;
 }
 
+/* --- [4] 하단 고정 버튼 세팅 --- */
 .survey-join-first-bottom-area {
   width: 100%;
-  padding: 40px 0 0;
+  padding-top: 30px;
   box-sizing: border-box;
-  background-color: #ffffff;
 }
 
+/* 💡 설문참여하기 버튼은 세미볼드 */
 .survey-join-first-start-button {
   width: 100%;
-  height: 56px;
+  height: 54px;
   border: none;
-  border-radius: 999px;
-  background-color: #ead7ff;
-  color: #6a0dad;
-  font-size: 19px;
-  font-weight: 800;
+  border-radius: 30px;
+  background-color: #ecdbff;
+  color: #5d01c6;
+  font-size: 15px;
+  font-family: 'Pretendard-SemiBold';
   cursor: pointer;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
 }
 
+.survey-join-first-start-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* --- [5] 모달 팝업 레이어 디자인 생략 방지 복구 --- */
 .survey-join-first-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 20px;
   box-sizing: border-box;
-
   background-color: rgba(0, 0, 0, 0.35);
 }
 
 .survey-join-first-modal {
   width: 100%;
-  max-width: 340px;
-  padding: 34px 24px 24px;
+  max-width: 320px;
+  padding: 30px 24px 24px;
   box-sizing: border-box;
-
-  border-radius: 28px;
+  border-radius: 24px;
   background-color: #ffffff;
-
   text-align: center;
 }
 
 .survey-join-first-modal-title {
-  margin: 0;
-  color: #6a0dad;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.4;
+  margin: 0 0 10px 0;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold';
+  font-size: 18px;
 }
 
 .survey-join-first-modal-description {
-  margin: 10px 0 28px;
-  color: #7d22b8;
-  font-size: 15px;
-  font-weight: 600;
+  margin: 0 0 24px 0;
+  color: #5d01c6;
+  font-family: 'Pretendard-Medium';
+  font-size: 14px;
 }
 
 .survey-join-first-modal-button-area {
   display: flex;
-  flex-direction: column;
   gap: 12px;
 }
 
 .survey-join-first-modal-login-button,
 .survey-join-first-modal-guest-button {
-  width: 100%;
-  height: 52px;
-
-  border-radius: 999px;
-
-  font-size: 17px;
-  font-weight: 800;
-
+  flex: 1;
+  height: 48px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-family: 'Pretendard-Bold';
   cursor: pointer;
 }
 
 .survey-join-first-modal-login-button {
   border: none;
-  background-color: #6a0dad;
-  color: #ffffff;
+  background-color: #ecdbff;
+  color: #5d01c6;
 }
 
 .survey-join-first-modal-guest-button {
-  border: 2px solid #d9b3ff;
+  border: 2px solid #ecdbff;
   background-color: #ffffff;
-  color: #6a0dad;
+  color: #5d01c6;
 }
 
-/* 설문 설명에 줄바꿈이 있으면 그대로 표시 */
 .survey-join-first-description {
   white-space: pre-line;
 }
 
-/* API 로딩 및 오류 메시지 */
 .survey-join-first-status-message {
   margin: auto;
-  color: #7d22b8;
-  font-size: 16px;
-  font-weight: 700;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold';
+  font-size: 15px;
   text-align: center;
-}
-
-/* 종료된 설문의 비활성화 버튼 */
-.survey-join-first-start-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
 }
