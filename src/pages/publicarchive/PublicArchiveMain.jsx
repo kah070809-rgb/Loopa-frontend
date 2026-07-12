@@ -166,16 +166,16 @@ function PublicArchiveMain() {
         {!loading && !errorMessage && (
           <div className="archive-card-list">
             {surveyList.map((survey) => (
-              <SurveyPreviewCard
-                key={survey.id}
+               <SurveyPreviewCard
+                key={survey.surveyId}
                 survey={survey}
-                isSelected={selectedSurveyId === survey.id}
+                isSelected={selectedSurveyId === survey.surveyId}
                 onClick={() => {
-                  setSelectedSurveyId(survey.id);
-                  navigate(`/archive/surveys/${survey.id}`);
-                }}
-              />
-            ))}
+                 setSelectedSurveyId(survey.surveyId);
+                 navigate(`/archive/surveys/${survey.surveyId}`);
+                 }}
+               />
+             ))}
           </div>
         )}
 
