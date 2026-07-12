@@ -45,3 +45,12 @@ export const shareArchiveSurveys = async (surveyIds) => {
 
   return response.data.result;
 };
+
+export const purchaseArchiveSurveyView = async (surveyId) => {
+  const response = await axiosInstance.post(
+    `/archive/surveys/${surveyId}/views`,
+    {},
+  );
+
+  return response.data.result;
+};
