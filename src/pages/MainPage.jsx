@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './Mainpage.style'; // 분리된 스타일 컴포넌트 임포트
+import { useNavigate } from 'react-router-dom';
+import * as S from './Mainpage.style';
 import Loopa from '../assets/images/Loopa.svg';
 import Go from '../assets/images/Go.svg';
 import Plus from '../assets/images/plus.svg';
 import File from '../assets/images/File.svg';
 
+// API 세트 메뉴 임포트
+import { logout } from '../api/auth';
+import { getMyInfo } from '../api/user';
+import { getAvailableSurveys } from '../api/survey';
+
 const MainPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const navigate = useNavigate(); // 라우터 이동용 훅 선언
+
+  // 로그인 상태 판단 (로컬 스토리지 토큰 유무 기준)
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('accessToken'),
+  );
+
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('전체');
-  const [selectedSurveyId, setSelectedSurveyId] = useState(1);
+  const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
-  // API 연동을 위한 상태 (더미 데이터 제거 후 빈 배열로 초기화)
+  // API 연동 데이터 상태창 (초기값은 디자인 잔상이 안 남도록 빈 값 세팅)
   const [surveys, setSurveys] = useState([]);
-
-  // 백엔드 연동을 위한 유저 정보 상태 (API 응답 데이터용)
   const [userInfo, setUserInfo] = useState({
-    email: 'likelion@gmail.com',
-    tokenBalance: 124,
+    email: '',
+    tokenBalance: 0,
   });
 
   const categoryList = [
@@ -33,24 +43,88 @@ const MainPage = () => {
     '기타',
   ];
 
-  /*
-   * TODO: API 연동 시 useEffect 내에서 서버 데이터를 fetch하여 setSurveys에 담아줍니다.
-   * useEffect(() => {
-   *   fetchSurveys().then(data => setSurveys(data));
-   * }, []);
-   */
+  // 1️⃣ [유저 정보 가져오기] 로그인 상태일 때만 내 정보를 서버에서 불러옵니다.
+  useEffect(() => {
+    if (!isLoggedIn) return;
 
-  // 카테고리 필터링
-  const filteredSurveys =
-    selectedCategory === '전체'
-      ? surveys
-      : surveys.filter((survey) => survey.category === selectedCategory);
+    const fetchUserInfo = async () => {
+      try {
+        const responseData = await getMyInfo();
+        if (responseData.isSuccess) {
+          setUserInfo({
+            email: responseData.result.email,
+            tokenBalance: responseData.result.tokenBalance,
+          });
+        }
+      } catch (error) {
+        console.error('유저 정보 조회 실패:', error);
+      }
+    };
 
-  const handleProtectedAction = (actionName) => {
+    fetchUserInfo();
+  }, [isLoggedIn]);
+
+  // 2️⃣ [참여 가능한 설문 목록 가져오기] 카테고리가 바뀔 때마다 백엔드 서버에 새로 조회합니다.
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const apiCategory =
+          selectedCategory === '전체' ? null : selectedCategory;
+
+        const responseData = await getAvailableSurveys({
+          category: apiCategory,
+          size: 20,
+        });
+
+        if (responseData.isSuccess) {
+          setSurveys(responseData.result.items);
+          if (responseData.result.items.length > 0) {
+            setSelectedSurveyId(responseData.result.items[0].surveyId);
+          } else {
+            setSelectedSurveyId(null);
+          }
+        }
+      } catch (error) {
+        console.error('설문 목록 조회 실패:', error);
+      }
+    };
+
+    fetchSurveys();
+  }, [selectedCategory]);
+
+  // 3️⃣ [로그인/로그아웃 버튼 핸들러] 토큰을 지우고 실시간으로 게스트 카드로 스위칭합니다.
+  const handleAuthAction = async () => {
+    if (isLoggedIn) {
+      if (window.confirm('로그아웃 하시겠습니까?')) {
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          await logout(refreshToken);
+        } catch (error) {
+          console.error('서버 로그아웃 처리 실패:', error);
+        } finally {
+          // 로컬 스토리지 비우기 및 상태 리셋으로 게스트 카드 즉시 렌더링
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          setIsLoggedIn(false);
+          setUserInfo({ email: '', tokenBalance: 0 });
+          alert('로그아웃되었습니다. 게스트 모드로 전환합니다.');
+        }
+      }
+    } else {
+      // 로그인 창 화면으로 이동
+      alert('로그인 화면으로 이동합니다.');
+      navigate('/login');
+    }
+  };
+
+  // 권한이 필요한 액션 처리 (이동 경로 매핑 추가)
+  const handleProtectedAction = (actionName, targetPath) => {
     if (!isLoggedIn) {
       setShowLoginPopup(true);
     } else {
-      alert(`[확인] 로그인 상태 - ${actionName} 화면 이동`);
+      if (targetPath) {
+        navigate(targetPath);
+      }
     }
   };
 
@@ -59,7 +133,7 @@ const MainPage = () => {
       {/* --- [1] 헤더 영역 --- */}
       <S.Header>
         <S.Logo src={Loopa} alt="Loopa" />
-        <S.AuthBtn onClick={() => setIsLoggedIn(!isLoggedIn)}>
+        <S.AuthBtn onClick={handleAuthAction}>
           {isLoggedIn ? '로그아웃' : '로그인'}
         </S.AuthBtn>
       </S.Header>
@@ -83,7 +157,7 @@ const MainPage = () => {
           </S.UserInfoWrapper>
 
           <S.MySurveyBtnWrapper>
-            <S.MySurveyBtn onClick={() => alert('마이페이지 화면으로 이동')}>
+            <S.MySurveyBtn onClick={() => navigate('/mypage')}>
               내 설문 보기
             </S.MySurveyBtn>
           </S.MySurveyBtnWrapper>
@@ -110,8 +184,10 @@ const MainPage = () => {
         </S.CardContainer>
       )}
 
-      {/* --- [3] 설문 만들기 배너 --- */}
-      <S.BannerCard onClick={() => handleProtectedAction('설문 만들기')}>
+      {/* --- [3] 설문 만들기 배너 (로그인 시 /create 이동) --- */}
+      <S.BannerCard
+        onClick={() => handleProtectedAction('설문 만들기', '/create')}
+      >
         <S.FlexGroup style={{ gap: '10px' }}>
           <S.BannerTitle>설문 만들기</S.BannerTitle>
           <S.BannerDesc>
@@ -119,11 +195,7 @@ const MainPage = () => {
           </S.BannerDesc>
         </S.FlexGroup>
         <S.CircleIconBox>
-          <img
-            src={Go}
-            alt="go"
-            // style={{ width: '14px', height: '14px', objectFit: 'contain' }}
-          />
+          <img src={Go} alt="go" />
         </S.CircleIconBox>
       </S.BannerCard>
 
@@ -131,16 +203,16 @@ const MainPage = () => {
       <div style={{ marginBottom: '32px' }}>
         <S.SectionHeader>
           <S.SectionTitle>참여 가능한 설문</S.SectionTitle>
-          <S.MoreBtn
-            onClick={() => alert('참여 가능한 설문 더보기 화면으로 이동')}
-          />
+          <S.MoreBtn onClick={() => navigate('/surveys')} />
           <img
             src={Plus}
             alt="plus"
+            onClick={() => navigate('/surveys')}
             style={{
               height: '17px',
               marginLeft: '2px',
               objectFit: 'contain',
+              cursor: 'pointer',
             }}
           />
         </S.SectionHeader>
@@ -160,8 +232,8 @@ const MainPage = () => {
 
         {/* 설문 리스트 그리드 영역 */}
         <S.SurveyGrid>
-          {filteredSurveys.length > 0 ? (
-            filteredSurveys.map((survey) => {
+          {surveys.length > 0 ? (
+            surveys.map((survey) => {
               const isSelected = survey.surveyId === selectedSurveyId;
 
               return (
@@ -175,10 +247,10 @@ const MainPage = () => {
 
                     <S.SurveyInfoGroup>
                       <S.SurveyInfoText>
-                        {survey.target} • {survey.token}토큰
+                        {survey.target} • {survey.maxToken}토큰
                       </S.SurveyInfoText>
                       <S.SurveyInfoText $nowrap>
-                        시간: {survey.duration}
+                        시간: {survey.estimatedMinutes}분
                       </S.SurveyInfoText>
                     </S.SurveyInfoGroup>
                   </div>
@@ -187,7 +259,8 @@ const MainPage = () => {
                     <S.ParticipateBtn
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert(`${survey.title} 설문 참여하기 화면 이동`);
+                        // 💡 설문 참여하기 버튼 클릭 시 /create로 이동합니다.
+                        navigate('/create');
                       }}
                     >
                       참여하기
@@ -202,8 +275,10 @@ const MainPage = () => {
         </S.SurveyGrid>
       </div>
 
-      {/* --- [5] 하단 공공 아카이브 --- */}
-      <S.ArchiveCard onClick={() => handleProtectedAction('공공 아카이브')}>
+      {/* --- [5] 하단 공공 아카이브 (로그인 시 /archivemain 이동) --- */}
+      <S.ArchiveCard
+        onClick={() => handleProtectedAction('공공 아카이브', '/archivemain')}
+      >
         <S.FlexGroup style={{ gap: '16px' }}>
           <img
             src={File}
@@ -242,7 +317,7 @@ const MainPage = () => {
               <S.PopupLoginBtn
                 onClick={() => {
                   setShowLoginPopup(false);
-                  alert('로그인 화면으로 이동');
+                  navigate('/login');
                 }}
               >
                 로그인하기

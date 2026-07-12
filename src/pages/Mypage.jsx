@@ -5,6 +5,11 @@ import Backmy from '../assets/images/Backmy.svg';
 import Download from '../assets/images/Download.svg';
 import Del from '../assets/images/Del.svg';
 
+// 💡 분리해둔 API 함수 세트 메뉴 임포트
+import { logout } from '../api/auth';
+import { getMyInfo, getMySurveys, getViewedSurveys } from '../api/user';
+import { deleteSurvey } from '../api/survey';
+
 const MyPage = () => {
   // 탭 상태 관리 ('registered' = 내가 등록한 설문, 'viewed' = 열람한 설문)
   const [activeTab, setActiveTab] = useState('registered');
@@ -13,58 +18,108 @@ const MyPage = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedForDelete, setSelectedForDelete] = useState(null);
 
-  // 백엔드 API 연동을 위한 빈 배열 상태 (더미 데이터 제거)
+  // 백엔드 API 연동을 위한 데이터 상태 관리 (초기값 비우기)
   const [registeredSurveys, setRegisteredSurveys] = useState([]);
   const [viewedSurveys, setViewedSurveys] = useState([]);
-
-  // 백엔드 연동을 위한 유저 정보 상태
   const [userInfo, setUserInfo] = useState({
-    email: 'likelion@gmail.com',
-    tokenBalance: 124,
+    email: '',
+    tokenBalance: 0,
   });
 
-  /*
-   * TODO: 컴포넌트 마운트 시 API 호출 로직 예시
-   * useEffect(() => {
-   *   fetchMySurveys().then(res => setRegisteredSurveys(res.data));
-   *   fetchViewedSurveys().then(res => setViewedSurveys(res.data));
-   * }, []);
-   */
+  // 1️⃣ [유저 정보 및 설문 데이터 fetch] 화면이 켜지자마자 유저 정보와 등록/열람 리스트를 전부 긁어옵니다.
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        // 내 정보 조회
+        const infoRes = await getMyInfo();
+        if (infoRes.isSuccess) {
+          setUserInfo({
+            email: infoRes.result.email,
+            tokenBalance: infoRes.result.tokenBalance,
+          });
+        }
+
+        // 내가 등록한 설문 목록 조회
+        const mySurveysRes = await getMySurveys({ size: 20 });
+        if (mySurveysRes.isSuccess) {
+          setRegisteredSurveys(mySurveysRes.result.items);
+        }
+
+        // 열람한 설문 목록 조회
+        const viewedSurveysRes = await getViewedSurveys({ size: 20 });
+        if (viewedSurveysRes.isSuccess) {
+          setViewedSurveys(viewedSurveysRes.result.items);
+        }
+      } catch (error) {
+        console.error('마이페이지 데이터 조회 실패:', error);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+  // 2️⃣ [로그아웃 핸들러] 버튼 클릭 시 토큰 비우고 상태 리셋
+  const handleLogout = async () => {
+    if (window.confirm('로그아웃 하시겠습니까?')) {
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        await logout(refreshToken);
+      } catch (error) {
+        console.error('서버 로그아웃 실패:', error);
+      } finally {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        alert('로그아웃 되었습니다.');
+        // 보통 여기서 메인이나 로그인 화면으로 튕겨줍니다.
+        window.location.href = '/';
+      }
+    }
+  };
 
   // 공유 버튼 클릭 핸들러
   const handleShareClick = (surveyId) => {
     // TODO: surveyId를 활용한 링크 생성 로직 추가
-    alert('설문지 링크가 클립보드에 복사되었습니다.');
+    alert(`[확인] 설문 ID ${surveyId}번 링크가 클립보드에 복사되었습니다.`);
   };
 
   // 휴지통 클릭 핸들러
-  const handleDeleteClick = (id) => {
-    setSelectedForDelete(id);
+  const handleDeleteClick = (surveyId) => {
+    setSelectedForDelete(surveyId);
     setShowDeletePopup(true);
   };
 
-  // 최종 삭제 실행 핸들러
-  const confirmDelete = () => {
-    // TODO: 백엔드 삭제 API 연동 (DELETE /api/surveys/{selectedForDelete})
-    setShowDeletePopup(false);
-    alert(`ID ${selectedForDelete}번 설문이 삭제되었습니다.`);
+  // 3️⃣ [최종 삭제 실행 핸들러] 백엔드 DELETE API 호출 후 화면 갱신
+  const confirmDelete = async () => {
+    try {
+      const response = await deleteSurvey(selectedForDelete);
+
+      if (response.isSuccess) {
+        alert('설문이 정상적으로 삭제되었습니다.');
+        // 삭제 성공 후 내가 등록한 설문 목록 상태에서 방금 지운 걸 걸러내어 화면을 새로고침 없이 바로 업데이트합니다.
+        setRegisteredSurveys((prev) =>
+          prev.filter((s) => s.surveyId !== selectedForDelete),
+        );
+      }
+    } catch (error) {
+      console.error('설문 삭제 실패:', error);
+    } finally {
+      setShowDeletePopup(false);
+      setSelectedForDelete(null);
+    }
   };
 
   return (
     <S.Container>
       {/* --- [1] 헤더 영역 --- */}
       <S.Header>
-        <S.BackWrapper onClick={() => alert('메인 화면으로 이동')}>
+        <S.BackWrapper onClick={() => window.history.back()}>
           <img
             src={Backmy}
             alt="뒤로가기"
             style={{ height: '18px', objectFit: 'contain' }}
           />
-          <S.Title>마이페이지</S.Title>
         </S.BackWrapper>
-        <S.LogoutBtn onClick={() => alert('로그아웃 되었습니다.')}>
-          로그아웃
-        </S.LogoutBtn>
+        <S.LogoutBtn onClick={handleLogout}>로그아웃</S.LogoutBtn>
       </S.Header>
 
       {/* --- [2] 상단 유저 정보 카드 --- */}
@@ -72,7 +127,9 @@ const MyPage = () => {
         <S.ProfileAvatar />
         <div>
           <S.ProfileGreeting>안녕하세요,</S.ProfileGreeting>
-          <S.ProfileEmail>{userInfo.email}님!</S.ProfileEmail>
+          <S.ProfileEmail>
+            {userInfo.email || '불러오는 중...'}님!
+          </S.ProfileEmail>
         </div>
         <S.TokenWrapper>
           <S.TokenLabel>보유 토큰</S.TokenLabel>
@@ -101,12 +158,13 @@ const MyPage = () => {
         {/* === 내가 등록한 설문 탭 === */}
         {activeTab === 'registered' && registeredSurveys.length > 0 ? (
           registeredSurveys.map((survey) => (
-            <S.RegisteredCard key={survey.id}>
+            <S.RegisteredCard key={survey.surveyId}>
               <S.CardHeader>
                 <S.CardTitleWrapper>
                   <S.CardTitle>{survey.title}</S.CardTitle>
+                  {/* 진행상태 양식 매핑 (IN_PROGRESS 등) */}
                   <S.StatusBadge $status={survey.status}>
-                    {survey.status}
+                    {survey.status === 'IN_PROGRESS' ? '진행중' : '종료'}
                   </S.StatusBadge>
                 </S.CardTitleWrapper>
 
@@ -114,7 +172,7 @@ const MyPage = () => {
                   <img
                     src={Download}
                     alt="공유"
-                    onClick={() => handleShareClick(survey.id)}
+                    onClick={() => handleShareClick(survey.surveyId)}
                     style={{
                       width: '18px',
                       height: '18px',
@@ -125,7 +183,7 @@ const MyPage = () => {
                   <img
                     src={Del}
                     alt="삭제"
-                    onClick={() => handleDeleteClick(survey.id)}
+                    onClick={() => handleDeleteClick(survey.surveyId)}
                     style={{
                       width: '18px',
                       height: '18px',
@@ -136,11 +194,12 @@ const MyPage = () => {
                 </S.IconGroup>
               </S.CardHeader>
 
-              <S.CardDate>{survey.date}</S.CardDate>
+              {/* 가짜 survey.date를 진짜 필드인 survey.createdAt으로 변경 */}
+              <S.CardDate>게시일: {survey.createdAt}</S.CardDate>
 
               <S.CardFooter>
                 <S.CardInfoText>
-                  {survey.target} · 응답자 수 : {survey.respondents}
+                  {survey.target} · 응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
                 <S.DetailLink onClick={() => alert('설문 열람(상세) 이동')}>
                   자세히 보기 &gt;
@@ -149,7 +208,6 @@ const MyPage = () => {
             </S.RegisteredCard>
           ))
         ) : activeTab === 'registered' ? (
-          // 데이터가 없을 때 보여줄 UI (선택사항)
           <div
             style={{
               textAlign: 'center',
@@ -165,16 +223,16 @@ const MyPage = () => {
         {/* === 열람한 설문 탭 === */}
         {activeTab === 'viewed' && viewedSurveys.length > 0 ? (
           viewedSurveys.map((survey, index) => (
-            // isFirst prop을 인덱스를 통해 판별하여 배경색 동적 부여
-            <S.ViewedCard key={survey.id} $isFirst={index === 0}>
+            <S.ViewedCard key={survey.surveyId} $isFirst={index === 0}>
               <S.CardTitle style={{ marginBottom: '8px' }}>
                 {survey.title}
               </S.CardTitle>
-              <S.CardDate>{survey.date}</S.CardDate>
+              {/* 진짜 필드인 survey.createdAt으로 날짜 매핑 */}
+              <S.CardDate>게시일: {survey.createdAt}</S.CardDate>
 
               <S.CardFooter>
                 <S.CardInfoText>
-                  응답자 수 : {survey.respondents}
+                  응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
                 <S.DetailLink onClick={() => alert('설문 열람(상세) 이동')}>
                   자세히 보기 &gt;

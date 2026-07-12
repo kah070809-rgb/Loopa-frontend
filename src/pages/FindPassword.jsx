@@ -3,6 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import "./FindPassword.css";
 
+import {
+  sendVerificationCode,
+  verifyVerificationCode,
+  resetPassword,
+  VERIFICATION_PURPOSE,
+} from "../api/authApi";
+
 function FindPassword() {
   const navigate = useNavigate();
 
@@ -14,6 +21,11 @@ function FindPassword() {
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] =
+    useState(false);
+
   const [emailMessage, setEmailMessage] = useState("");
   const [codeMessage, setCodeMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
@@ -21,115 +33,191 @@ function FindPassword() {
   const [emailMessageType, setEmailMessageType] = useState("");
   const [codeMessageType, setCodeMessageType] = useState("");
 
-  // 임시 인증번호
-  // 나중에 백엔드 연동하면 이 비교는 백엔드 응답으로 바뀜
-  const mockCode = "123456";
-
   const handleGoLogin = () => {
     navigate("/login");
   };
 
+  const getErrorMessage = (error, defaultMessage) => {
+    return (
+      error.response?.data?.message ||
+      error.response?.data?.error?.message ||
+      defaultMessage
+    );
+  };
+
+  // 인증번호 발송
   const handleSendCode = async () => {
+    const trimmedEmail = email.trim();
+
     setEmailMessage("");
     setCodeMessage("");
     setPasswordMessage("");
 
-    if (!email.trim()) {
+    if (!trimmedEmail) {
       setEmailMessage("이메일을 입력하세요.");
       setEmailMessageType("error");
       return;
     }
 
-    // 나중에 여기서 백엔드에 인증번호 발송 요청
-    // await fetch("http://localhost:8080/api/auth/password/code", ...)
+    try {
+      setIsSendingCode(true);
 
-    setIsCodeSent(true);
-    setEmailMessage("인증번호가 발송되었습니다.");
-    setEmailMessageType("success");
+      await sendVerificationCode(
+        trimmedEmail,
+        VERIFICATION_PURPOSE.PASSWORD_RESET
+      );
+
+      setIsCodeSent(true);
+      setIsCodeVerified(false);
+      setCode("");
+
+      setEmailMessage("인증번호가 발송되었습니다.");
+      setEmailMessageType("success");
+    } catch (error) {
+      console.error("인증번호 발송 실패:", error);
+
+      setIsCodeSent(false);
+      setIsCodeVerified(false);
+
+      setEmailMessage(
+        getErrorMessage(
+          error,
+          "인증번호 발송에 실패했습니다. 다시 시도해주세요."
+        )
+      );
+      setEmailMessageType("error");
+    } finally {
+      setIsSendingCode(false);
+    }
   };
 
-  const handleVerifyCode = () => {
-    setCodeMessage("");
+  // 인증번호 검증
+  const handleVerifyCode = async () => {
+    const trimmedEmail = email.trim();
+    const trimmedCode = code.trim();
 
-    if (!code.trim()) {
+    setCodeMessage("");
+    setPasswordMessage("");
+
+    if (!trimmedEmail) {
+      setEmailMessage("이메일을 입력하세요.");
+      setEmailMessageType("error");
+      return;
+    }
+
+    if (!isCodeSent) {
+      setCodeMessage("먼저 인증번호를 발송해주세요.");
+      setCodeMessageType("error");
+      return;
+    }
+
+    if (!trimmedCode) {
       setCodeMessage("인증번호를 입력하세요.");
       setCodeMessageType("error");
-      return false;
+      return;
     }
 
-    if (code !== mockCode) {
+    try {
+      setIsVerifyingCode(true);
+
+      await verifyVerificationCode(
+        trimmedEmail,
+        trimmedCode,
+        VERIFICATION_PURPOSE.PASSWORD_RESET
+      );
+
+      setIsCodeVerified(true);
+      setCodeMessage("인증번호가 확인되었습니다.");
+      setCodeMessageType("success");
+    } catch (error) {
+      console.error("인증번호 검증 실패:", error);
+
       setIsCodeVerified(false);
-      setCodeMessage("인증번호가 일치하지 않습니다.");
+      setCodeMessage(
+        getErrorMessage(
+          error,
+          "인증번호가 일치하지 않거나 만료되었습니다."
+        )
+      );
       setCodeMessageType("error");
-      return false;
+    } finally {
+      setIsVerifyingCode(false);
+    }
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+
+    // 인증번호를 받은 뒤 이메일을 바꾸면 다시 인증해야 함
+    if (isCodeSent || isCodeVerified) {
+      setIsCodeSent(false);
+      setIsCodeVerified(false);
+      setCode("");
+      setCodeMessage("");
     }
 
-    setIsCodeVerified(true);
-    setCodeMessage("인증번호가 일치합니다.");
-    setCodeMessageType("success");
-    return true;
+    setEmailMessage("");
   };
 
   const handleCodeChange = (event) => {
-  const value = event.target.value;
+    setCode(event.target.value);
+    setCodeMessage("");
 
-  setCode(value);
-  setCodeMessage("");
+    // 이미 인증된 인증번호를 수정하면 인증 상태 해제
+    if (isCodeVerified) {
+      setIsCodeVerified(false);
+    }
+  };
 
-  if (!value.trim()) {
-    setIsCodeVerified(false);
-    return;
-  }
+  const handlePasswordChange = (event) => {
+    setNewPassword(event.target.value);
+    setPasswordMessage("");
+  };
 
-  if (value === mockCode) {
-    setIsCodeVerified(true);
-    setCodeMessage("인증번호가 일치합니다.");
-    setCodeMessageType("success");
-  } else {
-    setIsCodeVerified(false);
-    setCodeMessage("인증번호가 일치하지 않습니다.");
-    setCodeMessageType("error");
-  }
-};
-
+  // 비밀번호 재설정
   const handleChangePassword = async () => {
-    let hasError = false;
+    const trimmedEmail = email.trim();
+    const trimmedPassword = newPassword.trim();
 
     setEmailMessage("");
     setCodeMessage("");
     setPasswordMessage("");
 
-    if (!email.trim()) {
+    if (!trimmedEmail) {
       setEmailMessage("이메일을 입력하세요.");
       setEmailMessageType("error");
-      hasError = true;
+      return;
     }
 
-    if (!code.trim()) {
-      setCodeMessage("인증번호를 입력하세요.");
+    if (!isCodeVerified) {
+      setCodeMessage("인증번호 확인을 완료해주세요.");
       setCodeMessageType("error");
-      hasError = true;
-    } else if (code !== mockCode) {
-      setCodeMessage("인증번호가 일치하지 않습니다.");
-      setCodeMessageType("error");
-      hasError = true;
-    } else {
-      setIsCodeVerified(true);
-      setCodeMessage("인증번호가 일치합니다.");
-      setCodeMessageType("success");
+      return;
     }
 
-    if (!newPassword.trim()) {
+    if (!trimmedPassword) {
       setPasswordMessage("새 비밀번호를 입력하세요.");
-      hasError = true;
+      return;
     }
 
-    if (hasError) return;
+    try {
+      setIsResettingPassword(true);
 
-    // 나중에 여기서 백엔드에 비밀번호 변경 요청
-    // await fetch("http://localhost:8080/api/auth/password/change", ...)
+      await resetPassword(trimmedEmail, trimmedPassword);
 
-    navigate("/passwordchangecomplete");
+      navigate("/passwordchangecomplete");
+    } catch (error) {
+      console.error("비밀번호 재설정 실패:", error);
+
+      setPasswordMessage(
+        getErrorMessage(
+          error,
+          "비밀번호 변경에 실패했습니다. 다시 시도해주세요."
+        )
+      );
+    } finally {
+      setIsResettingPassword(false);
+    }
   };
 
   return (
@@ -138,6 +226,7 @@ function FindPassword() {
         className="find-password-back-button"
         type="button"
         onClick={handleGoLogin}
+        aria-label="로그인 페이지로 돌아가기"
       >
         ←
       </button>
@@ -146,51 +235,99 @@ function FindPassword() {
 
       <div className="find-password-form">
         <div className="find-password-input-box">
-          <label className="find-password-label">이메일</label>
+          <label
+            className="find-password-label"
+            htmlFor="find-password-email"
+          >
+            이메일
+          </label>
 
           <div className="find-password-email-row">
             <input
+              id="find-password-email"
               className={`find-password-input ${
-                emailMessageType === "error" ? "find-password-input-error" : ""
+                emailMessageType === "error"
+                  ? "find-password-input-error"
+                  : ""
               }`}
               type="email"
               placeholder="이메일을 입력해주세요."
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={handleEmailChange}
+              disabled={isSendingCode}
             />
 
             <button
               className="find-password-code-button"
               type="button"
               onClick={handleSendCode}
+              disabled={isSendingCode}
             >
-              인증번호 받기
+              {isSendingCode
+                ? "발송 중..."
+                : isCodeSent
+                  ? "다시 받기"
+                  : "인증번호 받기"}
             </button>
           </div>
 
           {emailMessage && (
-            <p className={`find-password-message ${emailMessageType}`}>
+            <p
+              className={`find-password-message ${emailMessageType}`}
+            >
               {emailMessage}
             </p>
           )}
         </div>
 
         <div className="find-password-input-box">
-          <label className="find-password-label">인증번호</label>
+          <label
+            className="find-password-label"
+            htmlFor="find-password-code"
+          >
+            인증번호
+          </label>
 
-          <input
-           className={`find-password-input ${
-           codeMessageType === "error" ? "find-password-input-error" : ""
-           }`}
-           type="text"
-           placeholder="인증번호를 입력해주세요."
-           value={code}
-           onChange={handleCodeChange}
-         />
+          <div className="find-password-code-input-row">
+            <input
+              id="find-password-code"
+              className={`find-password-input ${
+                codeMessageType === "error"
+                  ? "find-password-input-error"
+                  : ""
+              }`}
+              type="text"
+              inputMode="numeric"
+              placeholder="인증번호를 입력해주세요."
+              value={code}
+              onChange={handleCodeChange}
+              disabled={!isCodeSent || isVerifyingCode}
+            />
+
+            <button
+              className="find-password-verify-button"
+              type="button"
+              onClick={handleVerifyCode}
+              disabled={
+                !isCodeSent ||
+                !code.trim() ||
+                isVerifyingCode ||
+                isCodeVerified
+              }
+            >
+              {isVerifyingCode
+                ? "확인 중..."
+                : isCodeVerified
+                  ? "확인 완료"
+                  : "인증 확인"}
+            </button>
+          </div>
 
           <div className="find-password-code-message-row">
             {codeMessage && (
-              <p className={`find-password-message ${codeMessageType}`}>
+              <p
+                className={`find-password-message ${codeMessageType}`}
+              >
                 {codeMessage}
               </p>
             )}
@@ -200,6 +337,7 @@ function FindPassword() {
                 className="find-password-resend-button"
                 type="button"
                 onClick={handleSendCode}
+                disabled={isSendingCode}
               >
                 인증번호 재발송
               </button>
@@ -212,23 +350,39 @@ function FindPassword() {
             <div className="find-password-line" />
 
             <div className="find-password-input-box">
-              <label className="find-password-label">새 비밀번호</label>
+              <label
+                className="find-password-label"
+                htmlFor="find-password-new-password"
+              >
+                새 비밀번호
+              </label>
 
               <div className="find-password-password-row">
                 <input
+                  id="find-password-new-password"
                   className={`find-password-input find-password-password-input ${
-                    passwordMessage ? "find-password-input-error" : ""
+                    passwordMessage
+                      ? "find-password-input-error"
+                      : ""
                   }`}
                   type={showPassword ? "text" : "password"}
                   placeholder="새 비밀번호를 입력하세요."
                   value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
+                  onChange={handlePasswordChange}
+                  disabled={isResettingPassword}
                 />
 
                 <button
                   className="find-password-eye-button"
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword((previous) => !previous)
+                  }
+                  aria-label={
+                    showPassword
+                      ? "비밀번호 숨기기"
+                      : "비밀번호 보기"
+                  }
                 >
                   {showPassword ? <FiEye /> : <FiEyeOff />}
                 </button>
@@ -248,8 +402,11 @@ function FindPassword() {
         className="find-password-submit-button"
         type="button"
         onClick={handleChangePassword}
+        disabled={!isCodeVerified || isResettingPassword}
       >
-        비밀번호 변경하기
+        {isResettingPassword
+          ? "변경 중..."
+          : "비밀번호 변경하기"}
       </button>
     </section>
   );
