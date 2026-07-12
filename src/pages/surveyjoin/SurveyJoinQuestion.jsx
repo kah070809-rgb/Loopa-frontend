@@ -219,7 +219,7 @@ function SurveyJoinQuestion() {
   };
 
   const handleGoSurveyJoinFirst = () => {
-    navigate(`/surveyjoinfirst/${surveyId}`);
+    navigate(`/main`);
   };
 
   const handleCloseSubmitModal = () => {
