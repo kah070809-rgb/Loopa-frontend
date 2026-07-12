@@ -118,7 +118,6 @@ const MyPage = () => {
             alt="뒤로가기"
             style={{ height: '18px', objectFit: 'contain' }}
           />
-          <S.Title>마이페이지</S.Title>
         </S.BackWrapper>
         <S.LogoutBtn onClick={handleLogout}>로그아웃</S.LogoutBtn>
       </S.Header>

@@ -1,20 +1,48 @@
-import React, { useState } from 'react';
-import * as S from './step4.style'; // 분리된 스타일 컴포넌트 임포트
+import React, { useState, useEffect } from 'react';
+import * as S from './step4.style';
 import TextBox from '../../components/common/TextBox';
 import Button from '../../components/common/Button';
 
+// 피그마 사진 파일(Dot.svg) 임포트
+import Dot from '../../assets/images/Dot.svg';
+
 export default function Step4({
-  formData,
-  updateFormData,
+  questions = [],
+  editingQuestionId = null,
   onNext,
   onPrev,
-  currentQNum = 1,
 }) {
+  const isEditMode = editingQuestionId !== null;
+  const currentQNum = isEditMode ? editingQuestionId + 1 : questions.length + 1;
+
   const [qType, setQType] = useState('objective');
   const [qTitle, setQTitle] = useState('');
   const [options, setOptions] = useState(['', '']);
   const [isMultiple, setIsMultiple] = useState(false);
   const [isRequired, setIsRequired] = useState(false);
+
+  // ✨ 예외 처리를 분리하여 개별 상태로 관리 ✨
+  const [titleError, setTitleError] = useState('');
+  const [optionError, setOptionError] = useState('');
+
+  useEffect(() => {
+    if (isEditMode && questions[editingQuestionId]) {
+      const targetQ = questions[editingQuestionId];
+      setQType(targetQ.type);
+      setQTitle(targetQ.title);
+      setOptions(targetQ.options.length > 0 ? targetQ.options : ['', '']);
+      setIsMultiple(targetQ.isMultiple);
+      setIsRequired(targetQ.isRequired);
+    } else {
+      setQType('objective');
+      setQTitle('');
+      setOptions(['', '']);
+      setIsMultiple(false);
+      setIsRequired(false);
+    }
+    setTitleError('');
+    setOptionError('');
+  }, [editingQuestionId, isEditMode, questions]);
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -37,10 +65,28 @@ export default function Step4({
   };
 
   const handleAddQuestion = () => {
+    let hasError = false;
+
+    // 1. 질문 예외 처리
     if (!qTitle.trim()) {
-      alert('질문을 입력해주세요.');
-      return;
+      setTitleError('질문을 입력해주세요.');
+      hasError = true;
+    } else {
+      setTitleError('');
     }
+
+    // 2. 객관식일 때 보기 빈 칸 예외 처리 분리
+    if (qType === 'objective') {
+      const hasEmptyOption = options.some((opt) => !opt.trim());
+      if (hasEmptyOption) {
+        setOptionError('내용을 입력해주세요.');
+        hasError = true;
+      } else {
+        setOptionError('');
+      }
+    }
+
+    if (hasError) return;
 
     const questionData = {
       type: qType,
@@ -53,7 +99,6 @@ export default function Step4({
     onNext(questionData);
   };
 
-  // 내부 모듈식 토글 스위치 컴포넌트
   const ToggleSwitch = ({ label, isOn, onToggle }) => (
     <S.ToggleRow>
       <S.ToggleLabel>{label}</S.ToggleLabel>
@@ -71,33 +116,27 @@ export default function Step4({
           <S.InactiveCircle />
           <S.StepLabel>기본정보</S.StepLabel>
         </S.StepWrapper>
-
         <S.StepLine />
-
         <S.StepWrapper>
           <S.ActiveCircle />
           <S.StepLabel>문항 구성</S.StepLabel>
         </S.StepWrapper>
-
         <S.StepLine />
-
         <S.StepWrapper>
           <S.InactiveCircle />
           <S.StepLabel>완료</S.StepLabel>
         </S.StepWrapper>
       </S.IndicatorContainer>
 
-      {/* ── [문항 타입 선택 탭] ── */}
+      {/* ── [문항 타입 선택 탭 바] ── */}
       <S.TabBar>
         <S.QNumText>Q{currentQNum}</S.QNumText>
         <S.TabGroup>
-          {/* 객관식 탭 */}
           <S.TabItem
             $isSelected={qType === 'objective'}
             onClick={() => setQType('objective')}
           >
-            {/* $isSelected를 넘겨서 선택되었을 때만 내부 점이 보이도록 조절합니다 */}
-            <S.RadioCircle>
+            <S.RadioCircle $isSelected={qType === 'objective'}>
               <S.RadioDot $isSelected={qType === 'objective'} />
             </S.RadioCircle>
             <S.TabLabel
@@ -107,18 +146,15 @@ export default function Step4({
             </S.TabLabel>
           </S.TabItem>
 
-          {/* 주관식 탭 */}
           <S.TabItem
             $isSelected={qType === 'subjective'}
             onClick={() => setQType('subjective')}
           >
-            <S.RadioCircle>
+            <S.RadioCircle $isSelected={qType === 'subjective'}>
               <S.RadioDot $isSelected={qType === 'subjective'} />
             </S.RadioCircle>
             <S.TabLabel
-              style={{
-                color: qType === 'subjective' ? '#5D01C6' : '#9E77EB',
-              }}
+              style={{ color: qType === 'subjective' ? '#5D01C6' : '#9E77EB' }}
             >
               주관식
             </S.TabLabel>
@@ -130,11 +166,15 @@ export default function Step4({
       <TextBox
         guide="질문"
         required={true}
+        error={titleError}
         limit={200}
         currentLength={qTitle.length}
         placeholder="질문을 입력해주세요."
         value={qTitle}
-        onChange={(e) => setQTitle(e.target.value)}
+        onChange={(e) => {
+          setQTitle(e.target.value);
+          if (titleError) setTitleError('');
+        }}
         style={{ marginBottom: '30px' }}
       />
 
@@ -143,15 +183,33 @@ export default function Step4({
       {/* ── [조건부 렌더링: 객관식] ── */}
       {qType === 'objective' && (
         <S.FormSection>
-          <S.FormLabel>보기 (선택지)</S.FormLabel>
+          {/* ✨ 보기 라벨과 에러 메시지를 가로 정렬하기 위한 구조 변경 ✨ */}
+          <S.LabelRow>
+            <S.FormLabel style={{ marginBottom: 0 }}>보기 (선택지)</S.FormLabel>
+            {optionError && (
+              <S.SideErrorMessage>{optionError}</S.SideErrorMessage>
+            )}
+          </S.LabelRow>
+
           {options.map((opt, idx) => (
             <S.OptionRow key={idx}>
-              <S.DragIcon>⋮⋮</S.DragIcon>
+              <S.DragIconWrapper>
+                <img
+                  src={Dot}
+                  alt="선택지 드래그 도트"
+                  style={{ objectFit: 'contain' }}
+                />
+              </S.DragIconWrapper>
+
               <S.OptionInput
                 type="text"
                 value={opt}
-                onChange={(e) => handleOptionChange(idx, e.target.value)}
+                onChange={(e) => {
+                  handleOptionChange(idx, e.target.value);
+                  if (optionError) setOptionError('');
+                }}
                 placeholder={`보기 ${idx + 1}`}
+                $hasError={!!optionError && !opt.trim()}
               />
               {idx >= 2 ? (
                 <S.DeleteTextBtn onClick={() => removeOption(idx)}>
@@ -198,16 +256,16 @@ export default function Step4({
         </S.FormSection>
       )}
 
-      {/* ── [하단 취소 / 추가하기 고정 버튼] ── */}
+      {/* ── [하단 버튼 바] ── */}
       <S.BottomFixedBar>
         <Button
           onClick={() => {
             const isConfirmed = window.confirm(
-              '정말 삭제하시겠습니까?\n삭제한 설문은 복구할 수 없습니다.',
+              isEditMode
+                ? '문항 수정을 취소하시겠습니까?'
+                : '문항 추가를 취소하시겠습니까?',
             );
-            if (isConfirmed) {
-              onPrev();
-            }
+            if (isConfirmed) onPrev();
           }}
           style={{
             flex: 1,
@@ -235,7 +293,7 @@ export default function Step4({
             borderRadius: '30px',
           }}
         >
-          추가하기
+          {isEditMode ? '수정완료' : '추가하기'}
         </Button>
       </S.BottomFixedBar>
     </S.Container>

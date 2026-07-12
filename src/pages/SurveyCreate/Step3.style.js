@@ -7,7 +7,7 @@ export const Container = styled.div`
   width: 100%;
   padding: 0 30px;
   position: relative;
-  padding-bottom: 50px;
+  padding-bottom: 160px;
   box-sizing: border-box;
 `;
 
@@ -70,7 +70,7 @@ export const StepLabel = styled.span`
   margin-top: 8px;
 `;
 
-// --- 문항 없음 안내 본문 영역 ---
+// --- 문항 없음 안내 본문 영역 (상황 A) ---
 export const EmptyBody = styled.div`
   flex: 1;
   display: flex;
@@ -96,10 +96,112 @@ export const EmptyText = styled.div`
   text-align: center;
 `;
 
-// --- 하단 버튼 컨테이너 ---
 export const ButtonContainer = styled.div`
   width: 100%;
-  padding-bottom: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
+`;
+
+// ── ✨ [여기서부터 에러 해결을 위해 구 Step5에서 긁어와 병합한 스타일들] ──
+export const HeaderTitleBox = styled.div`
+  text-align: left;
+  margin-bottom: 24px;
+`;
+
+export const MainTitle = styled.h2`
+  font-family: 'Pretendard-Bold';
+  font-size: 20px;
+  color: #5d01c6;
+  margin: 0 0 8px 0;
+`;
+
+export const SubDescription = styled.p`
+  font-family: 'Pretendard-Medium';
+  font-size: 13px;
+  color: #5d01c6;
+  margin: 0;
+`;
+
+export const ListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const RowContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const DragIcon = styled.div`
+  color: #ddbfff;
+  font-size: 20px;
+  letter-spacing: -2px;
+  display: flex;
+  flex-direction: column;
+  line-height: 0.6;
+  user-select: none;
+`;
+
+export const SurveyCard = styled.div`
+  flex: 1;
+  background-color: #f0e5ff;
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const CardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  padding-right: 12px;
+`;
+
+export const CardTitle = styled.span`
+  font-family: 'Pretendard-Bold';
+  font-size: 14px;
+  color: #5d01c6;
+  line-height: 1.4;
+`;
+
+export const CardType = styled.span`
+  font-family: 'Pretendard-Medium';
+  font-size: 12px;
+  color: #5d01c6;
+`;
+
+export const EditBtn = styled.button`
+  background-color: #fff;
+  color: #5d01c6;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-family: 'Pretendard-SemiBold';
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+`;
+
+export const BottomFixedBar = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 30px;
+  box-sizing: border-box;
+`;
+
+export const BottomFlexGroup = styled.div`
+  display: flex;
+  gap: 16px;
+  width: 100%;
 `;
