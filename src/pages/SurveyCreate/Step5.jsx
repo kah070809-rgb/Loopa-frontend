@@ -71,10 +71,10 @@ export default function Step5({ formData, updateFormData, onSubmit, onPrev }) {
     CAREER: '학업 진로',
     IT_AI: 'IT·AI',
     SERVICE_APP: '서비스·앱',
-    MARKETING: '소비·마케팅',
+    CONSUMER_MARKETING: '소비·마케팅',
     GAME: '게임',
     SCHOOL_LIFE: '학교생활',
-    LIFE: '일상',
+    DAILY: '일상',
     PSYCHOLOGY: '심리',
     ETC: '기타',
   };

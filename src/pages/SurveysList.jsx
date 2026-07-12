@@ -17,18 +17,17 @@ const SurveyListPage = () => {
 
   // 카테고리 목록
   const categoryList = [
-    '전체',
-    '라이프스타일',
-    '학업, 진로',
-    '심리',
-    'IT·AI',
-    '서비스·앱',
-    '소비·마케팅',
-    '게임',
-    '학교생활',
-    '기타',
+    { label: '전체', value: 'ALL' },
+    { label: '진로/취업', value: 'CAREER' },
+    { label: 'IT·AI', value: 'IT_AI' },
+    { label: '서비스·앱', value: 'SERVICE_APP' },
+    { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
+    { label: '게임', value: 'GAME' },
+    { label: '학교생활', value: 'SCHOOL_LIFE' },
+    { label: '일상', value: 'DAILY' },
+    { label: '심리', value: 'PSYCHOLOGY' },
+    { label: '기타', value: 'ETC' },
   ];
-
   // 💡 [백엔드 연동 핵심] 카테고리 칩을 누르거나, 검색 버튼을 누를 때마다 서버에 새로 API를 호출합니다.
   useEffect(() => {
     const fetchSurveyList = async () => {

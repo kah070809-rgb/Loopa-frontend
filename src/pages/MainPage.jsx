@@ -20,7 +20,9 @@ const MainPage = () => {
   );
 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+
+  // 💡 초기 선택 상태를 영어 코드 규격에 맞춰 'ALL'로 세팅
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
   // API 연동 데이터 상태창 (초기값은 디자인 잔상이 안 남도록 빈 값 세팅)
@@ -30,17 +32,18 @@ const MainPage = () => {
     tokenBalance: 0,
   });
 
+  // 💡 전달해주신 영어 규격 스펙을 화면 레이블과 완벽 매핑 연동
   const categoryList = [
-    '전체',
-    '라이프스타일',
-    '학업, 진로',
-    '심리',
-    'IT·AI',
-    '서비스·앱',
-    '소비·마케팅',
-    '게임',
-    '학교생활',
-    '기타',
+    { label: '전체', value: 'ALL' },
+    { label: '진로·취업', value: 'CAREER' },
+    { label: 'IT·AI', value: 'IT_AI' },
+    { label: '서비스·앱', value: 'SERVICE_APP' },
+    { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
+    { label: '게임', value: 'GAME' },
+    { label: '학교생활', value: 'SCHOOL_LIFE' },
+    { label: '일상', value: 'DAILY' },
+    { label: '심리', value: 'PSYCHOLOGY' },
+    { label: '기타', value: 'ETC' },
   ];
 
   // 1️⃣ [유저 정보 가져오기] 로그인 상태일 때만 내 정보를 서버에서 불러옵니다.
@@ -68,8 +71,9 @@ const MainPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
+        // 💡 'ALL'일 때는 백엔드 약속에 따라 null 처리, 아닐 때는 영어 코드 직접 빌드전송
         const apiCategory =
-          selectedCategory === '전체' ? null : selectedCategory;
+          selectedCategory === 'ALL' ? null : selectedCategory;
 
         const responseData = await getAvailableSurveys({
           category: apiCategory,
@@ -221,11 +225,11 @@ const MainPage = () => {
         <S.CategoryScrollBox>
           {categoryList.map((cat) => (
             <S.CategoryButton
-              key={cat}
-              $isSelected={selectedCategory === cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.value}
+              $isSelected={selectedCategory === cat.value}
+              onClick={() => setSelectedCategory(cat.value)}
             >
-              {cat}
+              {cat.label}
             </S.CategoryButton>
           ))}
         </S.CategoryScrollBox>
@@ -259,8 +263,12 @@ const MainPage = () => {
                     <S.ParticipateBtn
                       onClick={(e) => {
                         e.stopPropagation();
-                        // 💡 설문 참여하기 버튼 클릭 시 /create로 이동합니다.
-                        navigate('/create');
+
+                        // 💡 기존의 '/create'를 지우고, 해당 설문의 ID를 담아 진짜 참여 경로로 이동시킵니다!
+                        navigate(`/survey/join/${survey.surveyId}/question`);
+
+                        // 만약 참여 전 안내 페이지(/surveyjoinfirst)를 먼저 거쳐야 하는 스펙이라면 아래 주석을 해제하세요.
+                        // navigate('/surveyjoinfirst', { state: { surveyId: survey.surveyId } });
                       }}
                     >
                       참여하기
@@ -309,7 +317,7 @@ const MainPage = () => {
       {showLoginPopup && (
         <S.PopupOverlay>
           <S.PopupBox>
-            <S.PopupTitle>로그인이 필요한 서비스예요</S.PopupTitle>
+            <S.PopupTitle>로그인이 필요한 service예요</S.PopupTitle>
             <S.PopupBtnGroup>
               <S.PopupCancelBtn onClick={() => setShowLoginPopup(false)}>
                 취소
