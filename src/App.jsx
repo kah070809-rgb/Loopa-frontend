@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SurveyCreatePage from './pages/SurveyCreate/SurvveyCreate';
-import Main from './pages/Mainpage';
+import Main from './pages/MainPage';
 import Mypage from './pages/Mypage';
 import Surveys from './pages/SurveysList';
 import AppLayout from './styles/AppLayout';
@@ -11,6 +11,7 @@ import Landing from './pages/Landing';
 import PublicArchiveMain from './pages/publicarchive/PublicArchiveMain';
 import ArchiveExtra from './pages/publicarchive/ArchiveExtra';
 import MyArchive from './pages/publicarchive/MyArchive';
+
 import SurveyPurchase from './pages/publicarchive/SurveyPurchase';
 import SurveyDetail from './pages/publicarchive/SurveyDetail';
 import SurveyJoinFirst from './pages/surveyjoin/SurveyJoinFirst';
