@@ -157,7 +157,7 @@ function PublicArchiveMain() {
           </button>
         </div>
 
-        {/* ── [6] 리스트 데이터 렌더링 ── */}
+        {/* ── [6] 리스트 데이터 렌더링 (💡 surveyId 연동 패치 완료) ── */}
         <div className="archive-card-list">
           {loading && <p className="archive-loading-text">불러오는 중...</p>}
           {errorMessage && <p className="archive-error-text">{errorMessage}</p>}
@@ -165,19 +165,21 @@ function PublicArchiveMain() {
           {!loading && !errorMessage && (
             <>
               {surveyList.length > 0 ? (
-                surveyList.map((survey) => (
-                  <SurveyPreviewCard
-                    key={survey.id}
-                    survey={survey}
-                    // 💡 순서 상관없이 내가 누른 ID와 일치할 때만 true를 반환합니다.
-                    isSelected={selectedSurveyId === survey.id}
-                    onClick={() => {
-                      setSelectedSurveyId(survey.id);
-                      // 선택된 후 아카이브 상세 화면으로 부드럽게 넘어가도록 유지
-                      navigate(`/archive/surveys/${survey.id}`);
-                    }}
-                  />
-                ))
+                surveyList.map((survey) => {
+                  const currentSurveyId = survey.surveyId || survey.id;
+
+                  return (
+                    <SurveyPreviewCard
+                      key={currentSurveyId}
+                      survey={survey}
+                      isSelected={selectedSurveyId === currentSurveyId}
+                      onClick={() => {
+                        setSelectedSurveyId(currentSurveyId);
+                        navigate(`/archive/surveys/${currentSurveyId}`);
+                      }}
+                    />
+                  );
+                })
               ) : (
                 <p className="archive-empty-message">
                   조건에 맞는 아카이브 설문이 없습니다.
