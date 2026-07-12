@@ -195,7 +195,7 @@ function Login() {
             type="button"
             onClick={() => navigate('/register')}
           >
-            회원가입
+            계정이 있으신가요? 회원가입
           </button>
         </div>
       </form>
