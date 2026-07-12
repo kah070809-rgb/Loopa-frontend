@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SurveyCreatePage from './pages/SurveyCreate/SurvveyCreate';
-import MainPage from './pages/MainPage';
+import Main from './pages/Maintap';
 import Mypage from './pages/Mypage';
 import Surveys from './pages/SurveysList';
 import AppLayout from './styles/AppLayout';
@@ -29,7 +29,7 @@ function App() {
       <AppLayout>
         <Routes>
           <Route path="/create" element={<SurveyCreatePage />} />
-          <Route path="/main" element={<MainPage />} />
+          <Route path="/main" element={<Main />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/surveys" element={<Surveys />} />
           <Route path="/register" element={<Register />} />
