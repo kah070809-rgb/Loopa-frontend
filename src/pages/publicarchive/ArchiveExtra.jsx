@@ -146,7 +146,7 @@ function ArchiveExtra() {
       </div>
 
       <div className="archive-extra-filter-row">
-        {categories.map((category) => (
+        {categoryList.map((category) => (
           <button
             key={category.value || 'all'}
             className={`archive-extra-filter-button ${
@@ -163,17 +163,17 @@ function ArchiveExtra() {
       {errorMessage && <p>{errorMessage}</p>}
 
       <div className="archive-extra-card-list">
-        {surveys.map((survey) => (
-          <SurveyPreviewCard
-            key={survey.id}
-            survey={survey}
-            isSelected={selectedSurveyId === survey.id}
-            onClick={() => {
-              setSelectedSurveyId(survey.id);
-              navigate(`/archive/surveys/${survey.id}`);
-            }}
-          />
-        ))}
+          {surveys.map((survey) => (
+             <SurveyPreviewCard
+              key={survey.surveyId}
+              survey={survey}
+              isSelected={selectedSurveyId === survey.surveyId}
+              onClick={() => {
+               setSelectedSurveyId(survey.surveyId);
+               navigate(`/archive/surveys/${survey.surveyId}`);
+              }}
+             />
+           ))}
       </div>
 
       {loading && <p>불러오는 중...</p>}

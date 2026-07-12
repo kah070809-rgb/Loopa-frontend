@@ -1,4 +1,5 @@
 import axiosInstance from './axiosInstance';
+import api from './axios';
 
 export const getArchiveSurveys = async ({
   category,
