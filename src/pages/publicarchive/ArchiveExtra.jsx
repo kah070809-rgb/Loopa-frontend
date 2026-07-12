@@ -1,9 +1,9 @@
-import { FiSearch } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import SurveyPreviewCard from "./archivecomponents/SurveyPreviewCard";
-import { getArchiveSurveys } from "../../api/archiveApi";
-import "./ArchiveExtra.css";
+import { FiSearch } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import SurveyPreviewCard from './archivecomponents/SurveyPreviewCard';
+import { getArchiveSurveys } from '../../api/archiveApi';
+import './ArchiveExtra.css';
 
 function ArchiveExtra() {
   const navigate = useNavigate();
@@ -11,21 +11,26 @@ function ArchiveExtra() {
   const [surveys, setSurveys] = useState([]);
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
-  const [keyword, setKeyword] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [keyword, setKeyword] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const [nextCursor, setNextCursor] = useState(null);
   const [hasNext, setHasNext] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const categories = [
-    { label: "전체", value: "" },
-    { label: "IT·AI", value: "IT_AI" },
-    { label: "교육", value: "EDUCATION" },
-    { label: "문화", value: "CULTURE" },
-    { label: "생활", value: "LIFE" },
+  const categoryList = [
+    { label: '전체', value: 'ALL' },
+    { label: '진로/취업', value: 'CAREER' },
+    { label: 'IT·AI', value: 'IT_AI' },
+    { label: '서비스·앱', value: 'SERVICE_APP' },
+    { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
+    { label: '게임', value: 'GAME' },
+    { label: '학교생활', value: 'SCHOOL_LIFE' },
+    { label: '일상', value: 'DAILY' },
+    { label: '심리', value: 'PSYCHOLOGY' },
+    { label: '기타', value: 'ETC' },
   ];
 
   const fetchArchiveSurveys = async ({
@@ -36,7 +41,7 @@ function ArchiveExtra() {
   } = {}) => {
     try {
       setLoading(true);
-      setErrorMessage("");
+      setErrorMessage('');
 
       const data = await getArchiveSurveys({
         keyword: keywordValue,
@@ -54,8 +59,8 @@ function ArchiveExtra() {
       setNextCursor(data.nextCursor);
       setHasNext(data.hasNext);
     } catch (error) {
-      console.error("아카이브 더보기 목록 조회 실패:", error);
-      setErrorMessage("아카이브 목록을 불러오지 못했습니다.");
+      console.error('아카이브 더보기 목록 조회 실패:', error);
+      setErrorMessage('아카이브 목록을 불러오지 못했습니다.');
     } finally {
       setLoading(false);
     }
@@ -63,8 +68,8 @@ function ArchiveExtra() {
 
   useEffect(() => {
     fetchArchiveSurveys({
-      keywordValue: "",
-      categoryValue: "",
+      keywordValue: '',
+      categoryValue: '',
       cursorValue: null,
       isLoadMore: false,
     });
@@ -107,7 +112,7 @@ function ArchiveExtra() {
         <button
           className="archive-extra-back-button"
           type="button"
-          onClick={() => navigate("/archivemain")}
+          onClick={() => navigate('/archivemain')}
         >
           ←
         </button>
@@ -125,7 +130,7 @@ function ArchiveExtra() {
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
           onKeyDown={(event) => {
-            if (event.key === "Enter") {
+            if (event.key === 'Enter') {
               handleSearch();
             }
           }}
@@ -143,9 +148,9 @@ function ArchiveExtra() {
       <div className="archive-extra-filter-row">
         {categories.map((category) => (
           <button
-            key={category.value || "all"}
+            key={category.value || 'all'}
             className={`archive-extra-filter-button ${
-              selectedCategory === category.value ? "selected" : ""
+              selectedCategory === category.value ? 'selected' : ''
             }`}
             type="button"
             onClick={() => handleCategoryClick(category.value)}
@@ -160,13 +165,13 @@ function ArchiveExtra() {
       <div className="archive-extra-card-list">
         {surveys.map((survey) => (
           <SurveyPreviewCard
-           key={survey.id}
-           survey={survey}
-           isSelected={selectedSurveyId === survey.id}
-           onClick={() => {
-            setSelectedSurveyId(survey.id);
-            navigate(`/archive/surveys/${survey.id}`);
-           }}
+            key={survey.id}
+            survey={survey}
+            isSelected={selectedSurveyId === survey.id}
+            onClick={() => {
+              setSelectedSurveyId(survey.id);
+              navigate(`/archive/surveys/${survey.id}`);
+            }}
           />
         ))}
       </div>

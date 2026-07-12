@@ -19,20 +19,18 @@ function PublicArchiveMain() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 💡 가져오라고 하신 총 10개의 카테고리 목록 리스트로 완벽 변경
   const categoryList = [
-    '전체',
-    '라이프스타일',
-    '학업, 진로',
-    '심리',
-    'IT·AI',
-    '서비스·앱',
-    '소비·마케팅',
-    '게임',
-    '학교생활',
-    '기타',
+    { label: '전체', value: 'ALL' },
+    { label: '진로/취업', value: 'CAREER' },
+    { label: 'IT·AI', value: 'IT_AI' },
+    { label: '서비스·앱', value: 'SERVICE_APP' },
+    { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
+    { label: '게임', value: 'GAME' },
+    { label: '학교생활', value: 'SCHOOL_LIFE' },
+    { label: '일상', value: 'DAILY' },
+    { label: '심리', value: 'PSYCHOLOGY' },
+    { label: '기타', value: 'ETC' },
   ];
-
   // 기존 백엔드 연동 로직 (건드리지 않고 그대로 유지)
   const fetchArchiveSurveys = async ({
     keywordValue = keyword,
@@ -91,7 +89,7 @@ function PublicArchiveMain() {
           <button
             className="archive-back-button"
             type="button"
-            onClick={() => navigate("/main")}
+            onClick={() => navigate('/main')}
           >
             <img src={BackP} alt="뒤로가기" className="archive-back-icon-img" />
           </button>

@@ -157,10 +157,10 @@ export default function Step2({ formData, updateFormData, onNext }) {
           <option value="CAREER">학업·진로</option>
           <option value="IT_AI">IT·AI</option>
           <option value="SERVICE_APP">서비스·앱</option>
-          <option value="MARKETING">소비·마케팅</option>
+          <option value="CONSUMER_MARKETING">소비·마케팅</option>
           <option value="GAME">게임</option>
           <option value="SCHOOL_LIFE">학교생활</option>
-          <option value="LIFE">일상</option>
+          <option value="DAILY">일상</option>
           <option value="PSYCHOLOGY">심리</option>
           <option value="ETC">기타</option>
         </S.Select>

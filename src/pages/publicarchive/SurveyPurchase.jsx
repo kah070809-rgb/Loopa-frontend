@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getArchiveSurveyViewInfo } from '../../api/archiveApi';
-import { getMyInfo } from '../../api/user'; // 💡 진짜 내 정보 조회 API 임포트
+import {
+  getArchiveSurveyViewInfo,
+  purchaseArchiveSurvey,
+} from '../../api/archiveApi';
+import { getMyInfo } from '../../api/user';
 import './SurveyPurchase.css';
 
 function SurveyPurchase() {
@@ -9,9 +12,10 @@ function SurveyPurchase() {
   const { surveyId } = useParams();
 
   const [surveyData, setSurveyData] = useState(null);
-  const [userTokenBalance, setUserTokenBalance] = useState(0); // 💡 실시간 진짜 유저 코인 상태
+  const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [isPurchased, setIsPurchased] = useState(false);
 
+  // 모달 제어 상태창
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTokenShortModalOpen, setIsTokenShortModalOpen] = useState(false);
 
@@ -30,10 +34,10 @@ function SurveyPurchase() {
         setIsLoading(true);
         setErrorMessage('');
 
-        // 1️⃣ 설문 정보 가져오기 호출
+        // 1. 설문 정보 가져오기 호출
         const data = await getArchiveSurveyViewInfo(surveyId);
 
-        // 2️⃣ 💡 진짜 로그인한 사용자의 토큰 정보 실시간 호출
+        // 2. 로그인 유저 토큰 잔액 실시간 연동
         try {
           const userRes = await getMyInfo();
           if (userRes && userRes.isSuccess && userRes.result) {
@@ -59,17 +63,7 @@ function SurveyPurchase() {
         } else if (status === 404) {
           setErrorMessage('존재하지 않는 설문입니다.');
         } else {
-          // 백엔드 통신 오류 시 명세서 기반 구조로 대기
-          setSurveyData({
-            title: '대학생 AI 활용 실태 조사',
-            description:
-              '대학생들의 AI 활용 경험과 인식을 파악하기 위한 설문입니다. 응답하신 내용은 통계 분석 목적으로만 사용됩니다.',
-            startDate: '2026-07-01',
-            endDate: '2026-07-13',
-            questionCount: { multipleChoice: 7, subjective: 2 },
-            respondentCount: 52,
-            viewCost: 15,
-          });
+          setErrorMessage('설문 정보를 불러오지 못했습니다.');
         }
       } finally {
         setIsLoading(false);
@@ -84,24 +78,56 @@ function SurveyPurchase() {
     return dateText.replaceAll('-', '.');
   };
 
-  // 💡 [1번/2번 작업] 토큰 소모 열람 및 예외 처리 프로세스 완료
-  const handlePurchaseConfirm = () => {
+  // ── 💡 새 명세서 규격을 완벽히 반영한 구매 승인 핸들러 ──
+  const handlePurchaseConfirm = async () => {
     if (!surveyData) return;
 
-    // 💡 진짜 유저 코인 정보(`userTokenBalance`)를 기반으로 15토큰 부족 예외 차단 팝업 처리
+    // 프론트엔드 1차 예외 선행 차단
     if (userTokenBalance < surveyData.viewCost) {
       setIsModalOpen(false);
       setIsTokenShortModalOpen(true);
       return;
     }
 
-    // 💡 [추후 구매 완료 처리 API 연동 포인트]
-    // 구매 성공 API가 추가되면 여기에 삽입합니다. 현재는 모달 제어 및 다음 화면 연결을 완료했습니다.
-    setIsModalOpen(false);
-    setIsPurchased(true);
+    try {
+      setIsModalOpen(false);
+      setIsLoading(true);
 
-    // 열람 조건 충족 확인 시 즉시 ID를 파라미터에 실어 결과 디테일 화면으로 라우팅 이동
-    navigate(`/surveydetail/${surveyId}`);
+      // 명세서 규격 POST /archive/surveys/{surveyId}/views API 전송 호출
+      const response = await purchaseArchiveSurvey(surveyId);
+
+      // 백엔드 성공 규격 (3-1. Success Response) 바인딩 및 파싱 방어 구축
+      let resResult = null;
+      if (response && response.isSuccess && response.result) {
+        resResult = response.result;
+      } else if (response && response.data && response.data.result) {
+        resResult = response.data.result;
+      }
+
+      if (resResult) {
+        // 서버에서 차감 완료된 후의 잔액을 프론트 상태창에 즉시 업데이트 동기화
+        setUserTokenBalance(Number(resResult.tokenBalanceAfter));
+      }
+
+      setIsPurchased(true);
+
+      // 성공 후 명세서 요구 지침에 맞춰 곧바로 상세 결과 페이지로 연동 이동
+      navigate(`/surveydetail/${surveyId}`);
+    } catch (payError) {
+      console.error('아카이브 열람 구매 실패 에러 로그:', payError);
+
+      const errorData = payError.response?.data;
+      const errorCode = errorData?.code;
+
+      // 3-2. Error Response 명세서 Scenario (TOKEN_001) 예외 매핑 처리 분기
+      if (errorCode === 'TOKEN_001' || payError.response?.status === 400) {
+        setIsTokenShortModalOpen(true);
+      } else {
+        alert(errorData?.message || '열람권 획득 중 서버 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -114,9 +140,22 @@ function SurveyPurchase() {
         >
           ←
         </button>
-        <p className="survey-purchase-state-message">
-          설문 열람 정보를 불러오는 중입니다.
-        </p>
+        <p className="survey-purchase-state-message">처리 중입니다...</p>
+      </section>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <section className="survey-purchase-page">
+        <button
+          className="survey-purchase-back-button"
+          type="button"
+          onClick={() => navigate('/archivemain')}
+        >
+          ←
+        </button>
+        <p className="survey-purchase-state-message">{errorMessage}</p>
       </section>
     );
   }
@@ -175,7 +214,6 @@ function SurveyPurchase() {
       <button
         className="survey-purchase-button"
         type="button"
-        disabled={isPurchasing}
         onClick={() => {
           if (isPurchased) {
             navigate(`/surveydetail/${surveyId}`);
@@ -189,6 +227,7 @@ function SurveyPurchase() {
           : `${surveyData.viewCost}토큰 소모하고 열람하기`}
       </button>
 
+      {/* 토큰 소모 최종 확인 모달창 */}
       {isModalOpen && (
         <div className="survey-purchase-modal-overlay">
           <div className="survey-purchase-modal">
@@ -202,7 +241,6 @@ function SurveyPurchase() {
               <button
                 className="survey-purchase-modal-cancel"
                 type="button"
-                disabled={isPurchasing}
                 onClick={() => setIsModalOpen(false)}
               >
                 취소
@@ -210,16 +248,16 @@ function SurveyPurchase() {
               <button
                 className="survey-purchase-modal-confirm"
                 type="button"
-                disabled={isPurchasing}
                 onClick={handlePurchaseConfirm}
               >
-                {isPurchasing ? "처리 중..." : "열람하기"}
+                열람하기
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* TOKEN_001 규격 토큰 부족 안내 모달창 */}
       {isTokenShortModalOpen && (
         <div className="survey-purchase-modal-overlay">
           <div className="survey-token-short-modal">

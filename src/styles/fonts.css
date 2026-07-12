@@ -2,7 +2,7 @@
 @font-face {
   font-family: 'Pretendard-Bold';
   src: url('../fonts/Pretendard-Bold.otf') format('opentype');
-  font-weight: normal; /* 이름을 따로 줬으므로 여기선 normal로 둬도 됩니다 */
+  font-weight: normal;
   font-style: normal;
 }
 
@@ -35,5 +35,12 @@
   font-family: 'Pretendard-ExtraBold';
   src: url('../fonts/Pretendard-ExtraBold.otf') format('opentype');
   font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Medium';
+  src: url('../fonts/Pretendard-Medium.otf') format('opentype');
+  font-weight: 500;
   font-style: normal;
 }
