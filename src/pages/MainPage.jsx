@@ -208,17 +208,7 @@ const MainPage = () => {
         <S.SectionHeader>
           <S.SectionTitle>참여 가능한 설문</S.SectionTitle>
           <S.MoreBtn onClick={() => navigate('/surveys')} />
-          <img
-            src={Plus}
-            alt="plus"
-            onClick={() => navigate('/surveys')}
-            style={{
-              height: '17px',
-              marginLeft: '2px',
-              objectFit: 'contain',
-              cursor: 'pointer',
-            }}
-          />
+          <img src={Plus} alt="plus" onClick={() => navigate('/surveys')} />
         </S.SectionHeader>
 
         {/* 카테고리 칩 영역 */}
@@ -229,7 +219,8 @@ const MainPage = () => {
               $isSelected={selectedCategory === cat.value}
               onClick={() => setSelectedCategory(cat.value)}
             >
-              {cat.label}
+              {cat.label}{' '}
+              {/* ✅ 객체 내부의 예쁜 한글 이름(.label)만 쏙 뽑아서 그려줍니다! */}
             </S.CategoryButton>
           ))}
         </S.CategoryScrollBox>
