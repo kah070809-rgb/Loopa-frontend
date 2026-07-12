@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // 스타일 파일 임포트 (모든 스타일은 S 객체 안에 담깁니다)
 import * as S from './Mypage.style';
 import Backmy from '../assets/images/Backmy.svg';
@@ -11,6 +12,7 @@ import { getMyInfo, getMySurveys, getViewedSurveys } from '../api/user';
 import { deleteSurvey } from '../api/survey';
 
 const MyPage = () => {
+  const navigate = useNavigate();
   // 탭 상태 관리 ('registered' = 내가 등록한 설문, 'viewed' = 열람한 설문)
   const [activeTab, setActiveTab] = useState('registered');
 
@@ -201,7 +203,7 @@ const MyPage = () => {
                 <S.CardInfoText>
                   {survey.target} · 응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
-                <S.DetailLink onClick={() => alert('설문 열람(상세) 이동')}>
+                <S.DetailLink onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}>
                   자세히 보기 &gt;
                 </S.DetailLink>
               </S.CardFooter>
@@ -234,7 +236,7 @@ const MyPage = () => {
                 <S.CardInfoText>
                   응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
-                <S.DetailLink onClick={() => alert('설문 열람(상세) 이동')}>
+                <S.DetailLink onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}>
                   자세히 보기 &gt;
                 </S.DetailLink>
               </S.CardFooter>

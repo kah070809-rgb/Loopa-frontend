@@ -161,7 +161,7 @@ function PublicArchiveMain() {
           </button>
         </div>
 
-        {/* ── [6] 리스트 데이터 렌더링 ── */}
+        {/* ── [6] 리스트 데이터 렌더링 (💡 surveyId 연동 패치 완료) ── */}
         <div className="archive-card-list">
           {loading && <p className="archive-loading-text">불러오는 중...</p>}
           {errorMessage && <p className="archive-error-text">{errorMessage}</p>}
