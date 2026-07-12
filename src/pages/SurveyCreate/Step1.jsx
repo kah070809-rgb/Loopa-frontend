@@ -1,5 +1,5 @@
 import React from 'react';
-import * as S from './step1.style'; // 분리된 스타일 컴포넌트 임포트
+import * as S from './Step1.style'; // 분리된 스타일 컴포넌트 임포트
 import Button from '../../components/common/Button';
 import Checklist from '../../assets/images/Group 41.svg';
 

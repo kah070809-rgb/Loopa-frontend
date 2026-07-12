@@ -5,18 +5,14 @@ import Loopa from '../assets/images/Loopa.svg';
 import Go from '../assets/images/Go.svg';
 import Plus from '../assets/images/Plus.svg';
 import File from '../assets/images/File.svg';
-
-// API 세트 메뉴 임포트
+import Loopa from '../assets/images/Loopa.svg';
 import { logout } from '../api/auth';
 import { getAvailableSurveys } from '../api/survey';
-// 💡 올려주신 user API 파일에서 getMyInfo와 getMySurveys를 정확하게 임포트합니다.
 import { getMyInfo, getMySurveys } from '../api/user';
 
 const MainPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 로그인 상태 판단
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem('accessToken'),
   );
@@ -26,9 +22,7 @@ const MainPage = () => {
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
   const [surveys, setSurveys] = useState([]);
-  // 💡 유저가 이미 완료/등록한 설문의 ID들만 격리 보관할 상태창
   const [participatedIds, setParticipatedIds] = useState([]);
-
   const [userInfo, setUserInfo] = useState({
     email: '',
     tokenBalance: 0,
@@ -64,7 +58,7 @@ const MainPage = () => {
           });
         }
 
-        // 2. 💡 내가 응답/등록 완료한 설문 목록을 리사이징해서 가져옵니다.
+        // 2. 내가 응답/등록 완료한 설문 목록을 리사이징해서 가져옵니다.
         const mySurveysData = await getMySurveys({ size: 50 });
         if (mySurveysData.isSuccess && mySurveysData.result?.items) {
           // 가져온 내역 목록에서 surveyId 추출하여 배열 생성 (백엔드 필드 규격에 맞춰 매핑)
@@ -92,8 +86,6 @@ const MainPage = () => {
         });
 
         if (responseData.isSuccess && responseData.result?.items) {
-          // 💡 [프론트엔드 자체 스크리닝 필터링]
-          // 전체 목록 중에서, 내 기참여 리스트(participatedIds)에 겹치는 ID가 없는 것만 통과시킵니다.
           const pureAvailableItems = responseData.result.items.filter(
             (survey) => !participatedIds.includes(survey.surveyId),
           );
@@ -112,7 +104,7 @@ const MainPage = () => {
     };
 
     fetchSurveys();
-  }, [selectedCategory, participatedIds]); // 💡 내 기참여 이력 배열이 채워지면 실시간으로 재필터링
+  }, [selectedCategory, participatedIds]);
 
   // 3️⃣ 로그인/로그아웃 버튼 핸들러
   const handleAuthAction = async () => {
@@ -128,7 +120,7 @@ const MainPage = () => {
           localStorage.removeItem('refreshToken');
           setIsLoggedIn(false);
           setUserInfo({ email: '', tokenBalance: 0 });
-          setParticipatedIds([]); // 로그아웃 시 이력 목록 청소
+          setParticipatedIds([]);
           alert('로그아웃되었습니다. 게스트 모드로 전환합니다.');
         }
       }
@@ -267,8 +259,6 @@ const MainPage = () => {
                     <S.ParticipateBtn
                       onClick={(e) => {
                         e.stopPropagation();
-
-                        // 💡 [2중 자체 방어 가드] 혹시나 예외적으로 노출되었어도 라우팅 진입을 가로막아 중복참여 차단
                         if (participatedIds.includes(survey.surveyId)) {
                           alert('이미 참여를 완료하신 설문조사입니다.');
                           return;

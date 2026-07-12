@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './step4.style';
+import * as S from './Step4.style';
 import TextBox from '../../components/common/TextBox';
 import Button from '../../components/common/Button';
 
