@@ -264,11 +264,7 @@ const MainPage = () => {
                       onClick={(e) => {
                         e.stopPropagation();
 
-                        // 💡 기존의 '/create'를 지우고, 해당 설문의 ID를 담아 진짜 참여 경로로 이동시킵니다!
-                        navigate(`/survey/join/${survey.surveyId}/question`);
-
-                        // 만약 참여 전 안내 페이지(/surveyjoinfirst)를 먼저 거쳐야 하는 스펙이라면 아래 주석을 해제하세요.
-                        // navigate('/surveyjoinfirst', { state: { surveyId: survey.surveyId } });
+                        navigate(`/surveyjoinfirst/${survey.surveyId}`);
                       }}
                     >
                       참여하기
