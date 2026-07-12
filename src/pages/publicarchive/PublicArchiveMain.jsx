@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch } from 'react-icons/fi';
 import SurveyPreviewCard from './archivecomponents/SurveyPreviewCard';
 import { getArchiveSurveys } from '../../api/archiveApi';
 import './PublicArchiveMain.css';
 import BackP from '../../assets/images/BackP.svg';
 import File from '../../assets/images/File.svg';
+import Search from '../../assets/images/Search.svg';
 
 function PublicArchiveMain() {
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ function PublicArchiveMain() {
           />
         </div>
 
-        {/* ── [3] 검색 바 영역 ── */}
+        {/* ── [3] 검색 바 영역 (수정: Search.svg 이미지 태그 매핑) ── */}
         <div className="archive-search-box">
           <input
             className="archive-search-input"
@@ -124,9 +124,13 @@ function PublicArchiveMain() {
               }
             }}
           />
-          <div className="archive-search-icon-wrapper" onClick={handleSearch}>
-            <FiSearch className="archive-search-fi-icon" />
-          </div>
+          {/* 💡 기존의 라이브러리 아이콘을 걷어내고 진짜 Search.svg 이미지로 연동했습니다. */}
+          <img
+            src={Search}
+            alt="검색"
+            className="archive-search-icon-img"
+            onClick={handleSearch}
+          />
         </div>
 
         {/* ── [4] 카테고리 칩 영역 ── */}
@@ -165,19 +169,21 @@ function PublicArchiveMain() {
           {!loading && !errorMessage && (
             <>
               {surveyList.length > 0 ? (
-                surveyList.map((survey) => (
-                  <SurveyPreviewCard
-                    key={survey.id}
-                    survey={survey}
-                    // 💡 순서 상관없이 내가 누른 ID와 일치할 때만 true를 반환합니다.
-                    isSelected={selectedSurveyId === survey.id}
-                    onClick={() => {
-                      setSelectedSurveyId(survey.id);
-                      // 선택된 후 아카이브 상세 화면으로 부드럽게 넘어가도록 유지
-                      navigate(`/archive/surveys/${survey.id}`);
-                    }}
-                  />
-                ))
+                surveyList.map((survey) => {
+                  const currentSurveyId = survey.surveyId || survey.id;
+
+                  return (
+                    <SurveyPreviewCard
+                      key={currentSurveyId}
+                      survey={survey}
+                      isSelected={selectedSurveyId === currentSurveyId}
+                      onClick={() => {
+                        setSelectedSurveyId(currentSurveyId);
+                        navigate(`/archive/surveys/${currentSurveyId}`);
+                      }}
+                    />
+                  );
+                })
               ) : (
                 <p className="archive-empty-message">
                   조건에 맞는 아카이브 설문이 없습니다.
