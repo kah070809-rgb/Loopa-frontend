@@ -37,7 +37,11 @@ function Landing() {
             로그인 하기
           </button>
 
-          <button className="landing-guest-button" type="button">
+          <button
+            className="landing-guest-button"
+            type="button"
+            onClick={() => navigate('/main')}
+          >
             게스트로 참여
           </button>
         </div>

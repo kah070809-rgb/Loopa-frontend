@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import SurveyPreviewCard from './archivecomponents/SurveyPreviewCard';
@@ -14,14 +14,14 @@ function PublicArchiveMain() {
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
   const [keyword, setKeyword] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const categoryList = [
     { label: '전체', value: 'ALL' },
-    { label: '진로/취업', value: 'CAREER' },
+    { label: '진로·취업', value: 'CAREER' },
     { label: 'IT·AI', value: 'IT_AI' },
     { label: '서비스·앱', value: 'SERVICE_APP' },
     { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
@@ -31,7 +31,7 @@ function PublicArchiveMain() {
     { label: '심리', value: 'PSYCHOLOGY' },
     { label: '기타', value: 'ETC' },
   ];
-  // 기존 백엔드 연동 로직 (건드리지 않고 그대로 유지)
+
   const fetchArchiveSurveys = async ({
     keywordValue = keyword,
     categoryValue = selectedCategory,
@@ -40,8 +40,7 @@ function PublicArchiveMain() {
       setLoading(true);
       setErrorMessage('');
 
-      // API에 전달할 때는 '전체'일 경우 null 처리
-      const apiCategory = categoryValue === '전체' ? '' : categoryValue;
+      const apiCategory = categoryValue === 'ALL' ? '' : categoryValue;
 
       const data = await getArchiveSurveys({
         keyword: keywordValue,
@@ -49,7 +48,6 @@ function PublicArchiveMain() {
         size: 3,
       });
 
-      console.log('데이터:', data);
       setSurveyList(data?.items || []);
     } catch (error) {
       console.error('아카이브 목록 조회 실패:', error);
@@ -62,7 +60,7 @@ function PublicArchiveMain() {
   useEffect(() => {
     fetchArchiveSurveys({
       keywordValue: '',
-      categoryValue: '전체',
+      categoryValue: 'ALL',
     });
   }, []);
 
@@ -95,12 +93,12 @@ function PublicArchiveMain() {
           </button>
         </header>
 
-        {/* ── [2] 상단 카드 레이아웃 수정 (file.svg 반영 및 피그마 비율화) ── */}
+        {/* ── [2] 상단 배너 카드 디자인 ── */}
         <div className="archive-intro-card">
           <div className="archive-intro-content">
             <h2 className="archive-intro-title">공공 아카이브</h2>
             <p className="archive-intro-text">
-              공유된 설문 데이터를 검색하고 올리고
+              공유된 설문 데이터를 검색하고
               <br />
               과제, 연구에 다시 활용해보세요.
             </p>
@@ -112,7 +110,7 @@ function PublicArchiveMain() {
           />
         </div>
 
-        {/* ── [3] 내꺼에서 그대로 가져온 검색 바 디자인 영역 ── */}
+        {/* ── [3] 검색 바 영역 ── */}
         <div className="archive-search-box">
           <input
             className="archive-search-input"
@@ -131,7 +129,7 @@ function PublicArchiveMain() {
           </div>
         </div>
 
-        {/* ── [4] 내꺼에서 그대로 가져온 10개 카테고리 칩 가로 스크롤 영역 ── */}
+        {/* ── [4] 카테고리 칩 영역 ── */}
         <div className="archive-filter-list">
           {categoryList.map((cat) => (
             <button
@@ -142,7 +140,7 @@ function PublicArchiveMain() {
               type="button"
               onClick={() => handleCategoryClick(cat.value)}
             >
-              {cat.value}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -160,24 +158,34 @@ function PublicArchiveMain() {
         </div>
 
         {/* ── [6] 리스트 데이터 렌더링 ── */}
-        {loading && <p className="archive-loading-text">불러오는 중...</p>}
-        {errorMessage && <p className="archive-error-text">{errorMessage}</p>}
+        <div className="archive-card-list">
+          {loading && <p className="archive-loading-text">불러오는 중...</p>}
+          {errorMessage && <p className="archive-error-text">{errorMessage}</p>}
 
-        {!loading && !errorMessage && (
-          <div className="archive-card-list">
-            {surveyList.map((survey) => (
-              <SurveyPreviewCard
-                key={survey.id}
-                survey={survey}
-                isSelected={selectedSurveyId === survey.id}
-                onClick={() => {
-                  setSelectedSurveyId(survey.id);
-                  navigate(`/archive/surveys/${survey.id}`);
-                }}
-              />
-            ))}
-          </div>
-        )}
+          {!loading && !errorMessage && (
+            <>
+              {surveyList.length > 0 ? (
+                surveyList.map((survey) => (
+                  <SurveyPreviewCard
+                    key={survey.id}
+                    survey={survey}
+                    // 💡 순서 상관없이 내가 누른 ID와 일치할 때만 true를 반환합니다.
+                    isSelected={selectedSurveyId === survey.id}
+                    onClick={() => {
+                      setSelectedSurveyId(survey.id);
+                      // 선택된 후 아카이브 상세 화면으로 부드럽게 넘어가도록 유지
+                      navigate(`/archive/surveys/${survey.id}`);
+                    }}
+                  />
+                ))
+              ) : (
+                <p className="archive-empty-message">
+                  조건에 맞는 아카이브 설문이 없습니다.
+                </p>
+              )}
+            </>
+          )}
+        </div>
 
         {/* ── [7] 하단 와이드 액션 버튼 ── */}
         <div className="archive-bottom-container">
