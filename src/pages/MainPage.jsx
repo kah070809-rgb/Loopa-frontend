@@ -260,7 +260,7 @@ const MainPage = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         // 💡 설문 참여하기 버튼 클릭 시 /create로 이동합니다.
-                        navigate('/create');
+                        navigate("/surveyjoinfirst/:surveyId");
                       }}
                     >
                       참여하기

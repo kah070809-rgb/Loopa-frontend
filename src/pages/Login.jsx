@@ -111,7 +111,7 @@ function Login() {
       <button
         className="login-back-button"
         type="button"
-        onClick={() => navigate('/landing')}
+        onClick={() => navigate('/')}
       >
         ←
       </button>
