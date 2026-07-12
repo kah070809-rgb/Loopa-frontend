@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as S from './step2.style'; // 분리된 스타일 컴포넌트 임포트
-import TextBox from '../../components/common/TextBox';
+import * as S from './Step2.style'; // 분리된 스타일 컴포넌트 임포트
+import TextBox from '../../components/common/Textbox';
 import Button from '../../components/common/Button';
 
 export default function Step2({ formData, updateFormData, onNext }) {
