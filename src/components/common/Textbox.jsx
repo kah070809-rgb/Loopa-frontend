@@ -6,7 +6,7 @@ import {
   getContainerStyle,
   footerStyle,
   placeholderScript,
-} from './TextBox.style.js';
+} from './Textbox.style.js';
 
 export default function TextBox({
   guide,
