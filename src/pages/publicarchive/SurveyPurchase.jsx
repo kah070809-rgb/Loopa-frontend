@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getArchiveSurveyViewInfo } from "../../api/archiveapi";
+import {
+  getArchiveSurveyViewInfo,
+  purchaseArchiveSurveyView,
+} from "../../api/archiveApi";
 import "./SurveyPurchase.css";
 
 function SurveyPurchase() {
@@ -14,6 +17,7 @@ function SurveyPurchase() {
   const [isTokenShortModalOpen, setIsTokenShortModalOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isPurchasing, setIsPurchasing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -31,7 +35,7 @@ function SurveyPurchase() {
         const data = await getArchiveSurveyViewInfo(surveyId);
 
         setSurveyData(data);
-        setIsPurchased(data.alreadyViewed);
+        setIsPurchased(Boolean(data.alreadyViewed));
       } catch (error) {
         const status = error.response?.status;
 
@@ -52,11 +56,16 @@ function SurveyPurchase() {
 
   const formatDate = (dateText) => {
     if (!dateText) return "";
+
     return dateText.replaceAll("-", ".");
   };
 
-  const handlePurchaseConfirm = () => {
-    if (!surveyData) return;
+  const moveToSurveyDetail = () => {
+    navigate(`/surveydetail/${surveyId}`);
+  };
+
+  const handlePurchaseConfirm = async () => {
+    if (!surveyData || !surveyId || isPurchasing) return;
 
     if (surveyData.tokenBalance < surveyData.viewCost) {
       setIsModalOpen(false);
@@ -64,11 +73,45 @@ function SurveyPurchase() {
       return;
     }
 
-    setIsModalOpen(false);
+    try {
+      setIsPurchasing(true);
+      setErrorMessage("");
 
-    // 지금은 구매 API가 아직 연결되지 않았기 때문에
-    // 프론트에서만 구매 완료 상태로 바꾸는 임시 처리입니다.
-    setIsPurchased(true);
+      const purchaseResult = await purchaseArchiveSurveyView(surveyId);
+
+      setIsPurchased(true);
+      setIsModalOpen(false);
+
+      setSurveyData((previousData) => ({
+        ...previousData,
+        alreadyViewed: true,
+        tokenBalance:
+          purchaseResult?.tokenBalanceAfter ?? previousData.tokenBalance,
+      }));
+
+      moveToSurveyDetail();
+    } catch (error) {
+      const status = error.response?.status;
+      const code = error.response?.data?.code;
+
+      if (code === "TOKEN_001") {
+        setIsModalOpen(false);
+        setIsTokenShortModalOpen(true);
+      } else if (status === 401) {
+        setIsModalOpen(false);
+        setErrorMessage("로그인이 필요합니다. 다시 로그인해주세요.");
+      } else if (status === 404) {
+        setIsModalOpen(false);
+        setErrorMessage("존재하지 않는 설문입니다.");
+      } else {
+        setIsModalOpen(false);
+        setErrorMessage(
+          "설문 결과를 구매하지 못했습니다. 다시 시도해주세요.",
+        );
+      }
+    } finally {
+      setIsPurchasing(false);
+    }
   };
 
   if (isLoading) {
@@ -150,7 +193,8 @@ function SurveyPurchase() {
         <div className="survey-purchase-info-section">
           <h2>설문 기간</h2>
           <p>
-            {formatDate(surveyData.startDate)} ~ {formatDate(surveyData.endDate)}
+            {formatDate(surveyData.startDate)} ~{" "}
+            {formatDate(surveyData.endDate)}
           </p>
         </div>
 
@@ -174,9 +218,10 @@ function SurveyPurchase() {
       <button
         className="survey-purchase-button"
         type="button"
+        disabled={isPurchasing}
         onClick={() => {
           if (isPurchased) {
-            navigate("/SurveyDetail");
+            moveToSurveyDetail();
             return;
           }
 
@@ -203,6 +248,7 @@ function SurveyPurchase() {
               <button
                 className="survey-purchase-modal-cancel"
                 type="button"
+                disabled={isPurchasing}
                 onClick={() => setIsModalOpen(false)}
               >
                 취소
@@ -211,9 +257,10 @@ function SurveyPurchase() {
               <button
                 className="survey-purchase-modal-confirm"
                 type="button"
+                disabled={isPurchasing}
                 onClick={handlePurchaseConfirm}
               >
-                열람하기
+                {isPurchasing ? "처리 중..." : "열람하기"}
               </button>
             </div>
           </div>
