@@ -44,7 +44,10 @@ function App() {
             element={<SurveyPurchase />}
           />
           <Route path="/surveydetail/:surveyId" element={<SurveyDetail />} />
-          <Route path="/surveyjoinfirst" element={<SurveyJoinFirst />} />
+          <Route
+           path="/surveyjoinfirst/:surveyId"
+           element={<SurveyJoinFirst />}
+          />
           <Route
             path="/survey/join/:surveyId/question"
             element={<SurveyJoinQuestion />}

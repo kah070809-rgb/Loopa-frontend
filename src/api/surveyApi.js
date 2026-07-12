@@ -13,3 +13,8 @@ export const getSurveyQuestions = async (surveyId) => {
 
   return response.data.result.questions;
 };
+
+export const getSurveyDetail = async (surveyId) => {
+  const response = await api.get(`/surveys/${surveyId}`);
+  return response.data.result;
+};

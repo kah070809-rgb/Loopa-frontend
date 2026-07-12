@@ -1,38 +1,65 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getSurveyDetail } from "../../api/surveyApi";
 import "./SurveyJoinFirst.css";
 
 function SurveyJoinFirst() {
   const navigate = useNavigate();
+  const { surveyId } = useParams();
 
+  const [surveyData, setSurveyData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
 
-  // 백엔드 로그인 연동 전 임시 로그인 상태
-  // false: 게스트 팝업 표시
-  // true: 팝업 없이 바로 설문 문항 페이지로 이동
-  const isLoggedIn = false;
+  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
-  // 현재 초기 페이지 라우터에 surveyId가 없으므로 임시로 1 사용
-  const currentSurveyId = 1;
+  useEffect(() => {
+    const fetchSurveyDetail = async () => {
+      if (!surveyId) {
+        setErrorMessage("설문 ID가 없습니다.");
+        setIsLoading(false);
+        return;
+      }
 
-  const surveyData = {
-    title: "대학생 AI 활용 실태 조사",
-    introduction:
-      "대학생들의 AI 활용 경험과 인식을 파악하기 위한 설문입니다. 응답하신 내용은 통계 분석 목적으로만 사용됩니다.",
-    objectiveCount: 7,
-    subjectiveCount: 2,
-    startDate: "2026.07.01",
-    endDate: "2026.07.13",
+      try {
+        setIsLoading(true);
+        setErrorMessage("");
+
+        const data = await getSurveyDetail(surveyId);
+        setSurveyData(data);
+      } catch (error) {
+        console.error("설문 상세 조회 실패:", error);
+
+        setErrorMessage(
+          error.response?.data?.message ||
+            "설문 정보를 불러오지 못했습니다.",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSurveyDetail();
+  }, [surveyId]);
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+
+    return date.replaceAll("-", ".");
   };
 
-  const earnedToken =
-    surveyData.objectiveCount * 1 + surveyData.subjectiveCount * 2;
+  const isSurveyClosed =
+    surveyData?.status === "CLOSED" ||
+    surveyData?.status === "ENDED";
 
-  // 설문 참여하기 버튼
   const handleStartSurvey = () => {
-    // 로그인 사용자는 팝업 없이 문항 페이지로 이동
+    if (!surveyData || isSurveyClosed) {
+      return;
+    }
+
     if (isLoggedIn) {
-      navigate(`/survey/join/${currentSurveyId}/question`, {
+      navigate(`/survey/join/${surveyId}/question`, {
         state: {
           isGuest: false,
         },
@@ -41,35 +68,65 @@ function SurveyJoinFirst() {
       return;
     }
 
-    // 게스트 사용자는 팝업 열기
     setIsGuestModalOpen(true);
   };
 
-  // 팝업의 로그인 버튼
   const handleGoLogin = () => {
-    navigate("/login", {
-      state: {
-        // 로그인 성공 후 다시 돌아올 주소
-        redirectTo: "/surveyjoinfirst",
-      },
-    });
-  };
+  navigate("/login", {
+    state: {
+      redirectTo: `/surveyjoinfirst/${surveyId}`,
+    },
+  });
+};
 
-  // 팝업의 게스트로 계속 버튼
   const handleContinueAsGuest = () => {
     setIsGuestModalOpen(false);
 
-    navigate(`/survey/join/${currentSurveyId}/question`, {
+    navigate(`/survey/join/${surveyId}/question`, {
       state: {
         isGuest: true,
       },
     });
   };
 
-  // 팝업 바깥 영역 클릭 시 닫기
   const handleCloseGuestModal = () => {
     setIsGuestModalOpen(false);
   };
+
+  if (isLoading) {
+    return (
+      <section className="survey-join-first-page">
+        <p className="survey-join-first-status-message">
+          설문 정보를 불러오는 중입니다.
+        </p>
+      </section>
+    );
+  }
+
+  if (errorMessage || !surveyData) {
+    return (
+      <section className="survey-join-first-page">
+        <header className="survey-join-first-header">
+          <button
+            className="survey-join-first-back-button"
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="뒤로 가기"
+          >
+            ←
+          </button>
+
+          <h1 className="survey-join-first-page-title">
+            설문 참여
+          </h1>
+        </header>
+
+        <p className="survey-join-first-status-message">
+          {errorMessage || "설문 정보를 찾을 수 없습니다."}
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="survey-join-first-page">
@@ -78,11 +135,14 @@ function SurveyJoinFirst() {
           className="survey-join-first-back-button"
           type="button"
           onClick={() => navigate(-1)}
+          aria-label="뒤로 가기"
         >
           ←
         </button>
 
-        <h1 className="survey-join-first-page-title">설문 참여</h1>
+        <h1 className="survey-join-first-page-title">
+          설문 참여
+        </h1>
       </header>
 
       <main className="survey-join-first-content">
@@ -94,13 +154,8 @@ function SurveyJoinFirst() {
           <div className="survey-join-first-section">
             <h3>설문 소개</h3>
 
-            <p>
-              {surveyData.introduction.split("\n").map((line, index) => (
-                <span key={index}>
-                  {line}
-                  <br />
-                </span>
-              ))}
+            <p className="survey-join-first-description">
+              {surveyData.description}
             </p>
           </div>
 
@@ -108,9 +163,13 @@ function SurveyJoinFirst() {
             <h3>문항 수</h3>
 
             <p>
-              객관식 {surveyData.objectiveCount}문항
+              객관식{" "}
+              {surveyData.questionCount?.multipleChoice ?? 0}
+              문항
               <br />
-              주관식 {surveyData.subjectiveCount}문항
+              주관식{" "}
+              {surveyData.questionCount?.subjective ?? 0}
+              문항
             </p>
           </div>
 
@@ -118,20 +177,25 @@ function SurveyJoinFirst() {
             <h3>설문 기간</h3>
 
             <p>
-              {surveyData.startDate} ~ {surveyData.endDate}
+              {formatDate(surveyData.startDate)} ~{" "}
+              {formatDate(surveyData.endDate)}
             </p>
           </div>
 
           <div className="survey-join-first-section">
             <h3>획득 토큰</h3>
 
-            <p>최대 + {earnedToken} 토큰</p>
+            <p>
+              최대 + {surveyData.maxToken ?? 0} 토큰
+            </p>
           </div>
         </div>
 
-        <p className="survey-join-first-guest-text">
-          게스트 계정은 토큰 획득이 불가합니다.
-        </p>
+        {!isLoggedIn && (
+          <p className="survey-join-first-guest-text">
+            게스트 계정은 토큰 획득이 불가합니다.
+          </p>
+        )}
       </main>
 
       <div className="survey-join-first-bottom-area">
@@ -139,8 +203,11 @@ function SurveyJoinFirst() {
           className="survey-join-first-start-button"
           type="button"
           onClick={handleStartSurvey}
+          disabled={isSurveyClosed}
         >
-          설문 참여하기
+          {isSurveyClosed
+            ? "종료된 설문입니다"
+            : "설문 참여하기"}
         </button>
       </div>
 
