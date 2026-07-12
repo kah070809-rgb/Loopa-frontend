@@ -192,3 +192,23 @@
   background-color: #ffffff;
   color: #6a0dad;
 }
+
+/* 설문 설명에 줄바꿈이 있으면 그대로 표시 */
+.survey-join-first-description {
+  white-space: pre-line;
+}
+
+/* API 로딩 및 오류 메시지 */
+.survey-join-first-status-message {
+  margin: auto;
+  color: #7d22b8;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* 종료된 설문의 비활성화 버튼 */
+.survey-join-first-start-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

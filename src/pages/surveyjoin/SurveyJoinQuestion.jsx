@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSurveyQuestions } from "../../api/surveyApi";
+import {
+  getSurveyQuestions,
+  submitSurveyResponse,
+} from "../../api/surveyApi";
 import "./SurveyJoinQuestion.css";
 
 function SurveyJoinQuestion() {
@@ -13,6 +16,7 @@ function SurveyJoinQuestion() {
   const [errorMessage, setErrorMessage] = useState("");
   const [fetchError, setFetchError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
@@ -46,7 +50,7 @@ function SurveyJoinQuestion() {
     loadSurveyQuestions();
   }, [surveyId]);
 
-  // API에서 order 순서대로 내려오지만, 프론트에서도 한 번 더 정렬합니다.
+  // API에서 order 순서대로 내려오지만 프론트에서도 한 번 더 정렬합니다.
   const orderedQuestions = useMemo(() => {
     return [...questions].sort((a, b) => a.order - b.order);
   }, [questions]);
@@ -67,13 +71,15 @@ function SurveyJoinQuestion() {
     if (question.type !== "SUBJECTIVE") return false;
 
     const answer = answers[question.questionId];
-    return !answer || answer.trim() === "";
+
+    return typeof answer !== "string" || answer.trim() === "";
   }).length;
 
   const answeredMultipleCount = orderedQuestions.filter((question) => {
     if (question.type !== "MULTIPLE_CHOICE") return false;
 
     const answer = answers[question.questionId];
+
     return Array.isArray(answer) ? answer.length > 0 : Boolean(answer);
   }).length;
 
@@ -81,14 +87,18 @@ function SurveyJoinQuestion() {
     if (question.type !== "SUBJECTIVE") return false;
 
     const answer = answers[question.questionId];
+
     return typeof answer === "string" && answer.trim() !== "";
   }).length;
 
-  const maxRewardToken = multipleQuestionCount + subjectiveQuestionCount * 2;
+  const maxRewardToken =
+    multipleQuestionCount + subjectiveQuestionCount * 2;
+
   const totalRewardToken =
     answeredMultipleCount + answeredSubjectiveCount * 2;
 
   const currentQuestionNumber = currentIndex + 1;
+
   const progressPercent = totalQuestionCount
     ? (currentQuestionNumber / totalQuestionCount) * 100
     : 0;
@@ -104,7 +114,7 @@ function SurveyJoinQuestion() {
       const questionId = currentQuestion.questionId;
       const currentAnswer = prev[questionId];
 
-      // 복수 선택 문항: optionId 배열로 저장
+      // 복수 선택 문항
       if (currentQuestion.allowMultiple) {
         const selectedOptionIds = Array.isArray(currentAnswer)
           ? currentAnswer
@@ -126,7 +136,7 @@ function SurveyJoinQuestion() {
         };
       }
 
-      // 단일 선택 문항: optionId 하나만 저장
+      // 단일 선택 문항
       if (currentAnswer === optionId) {
         const nextAnswers = { ...prev };
         delete nextAnswers[questionId];
@@ -159,7 +169,9 @@ function SurveyJoinQuestion() {
     const answer = answers[currentQuestion.questionId];
 
     if (currentQuestion.type === "MULTIPLE_CHOICE") {
-      return Array.isArray(answer) ? answer.length > 0 : Boolean(answer);
+      return Array.isArray(answer)
+        ? answer.length > 0
+        : Boolean(answer);
     }
 
     if (currentQuestion.type === "SUBJECTIVE") {
@@ -195,68 +207,201 @@ function SurveyJoinQuestion() {
   };
 
   const handleOpenExitModal = () => {
+    if (isSubmitting) return;
+
     setIsExitModalOpen(true);
   };
 
   const handleCloseExitModal = () => {
+    if (isSubmitting) return;
+
     setIsExitModalOpen(false);
   };
 
   const handleGoSurveyJoinFirst = () => {
-    navigate("/surveyjoinfirst");
+    navigate(`/surveyjoinfirst/${surveyId}`);
   };
 
   const handleCloseSubmitModal = () => {
+    if (isSubmitting) return;
+
     setIsSubmitModalOpen(false);
   };
 
-  // 제출 API가 연결되기 전 임시 데이터입니다.
-  const createSubmitData = () => ({
-    surveyId: Number(surveyId),
-    answers: orderedQuestions.map((question) => {
-      const answer = answers[question.questionId];
+  /**
+   * 게스트 식별 키를 가져오거나 새로 생성합니다.
+   */
+  const getOrCreateGuestKey = () => {
+    const storageKey = "surveyGuestKey";
+    const savedGuestKey = localStorage.getItem(storageKey);
 
-      if (question.type === "MULTIPLE_CHOICE") {
-        return {
-          questionId: question.questionId,
-          selectedOptionIds: Array.isArray(answer)
+    if (savedGuestKey) {
+      return savedGuestKey;
+    }
+
+    const newGuestKey = crypto.randomUUID();
+    localStorage.setItem(storageKey, newGuestKey);
+
+    return newGuestKey;
+  };
+
+  /**
+   * answers state를 제출 API 요청 형식으로 변환합니다.
+   *
+   * 객관식:
+   * {
+   *   questionId,
+   *   selectedOptionIds
+   * }
+   *
+   * 주관식:
+   * {
+   *   questionId,
+   *   answerText
+   * }
+   *
+   * 응답하지 않은 선택 문항은 요청 배열에서 제외합니다.
+   */
+  const createSubmitData = () => {
+    const submittedAnswers = orderedQuestions
+      .map((question) => {
+        const answer = answers[question.questionId];
+
+        if (question.type === "MULTIPLE_CHOICE") {
+          const selectedOptionIds = Array.isArray(answer)
             ? answer
             : answer
               ? [answer]
-              : [],
-        };
-      }
+              : [];
 
-      return {
-        questionId: question.questionId,
-        subjectiveAnswer: answer || "",
-      };
-    }),
-  });
+          if (selectedOptionIds.length === 0) {
+            return null;
+          }
 
-  const handleSubmitMemberSurvey = () => {
-    const submitData = createSubmitData();
-    console.log("로그인 회원 제출 데이터:", submitData);
+          return {
+            questionId: question.questionId,
+            selectedOptionIds,
+          };
+        }
 
-    setIsSubmitModalOpen(false);
-    navigate("/surveyjoinfinish", {
-      state: {
-        rewardToken: totalRewardToken,
-        userToken: 140 + totalRewardToken,
-      },
-    });
+        if (question.type === "SUBJECTIVE") {
+          const answerText =
+            typeof answer === "string" ? answer.trim() : "";
+
+          if (!answerText) {
+            return null;
+          }
+
+          return {
+            questionId: question.questionId,
+            answerText,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    return {
+      answers: submittedAnswers,
+    };
   };
 
-  const handleSubmitGuestSurvey = () => {
-    const submitData = {
-      ...createSubmitData(),
-      isGuest: true,
-    };
+  const handleSubmitMemberSurvey = async () => {
+  if (isSubmitting) return;
 
-    console.log("게스트 제출 데이터:", submitData);
+  try {
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    const requestBody = createSubmitData();
+
+    if (requestBody.answers.length === 0) {
+      setErrorMessage("최소 한 개 이상의 문항에 응답해주세요.");
+      setIsSubmitModalOpen(false);
+      return;
+    }
+
+    const result = await submitSurveyResponse(
+      surveyId,
+      requestBody,
+    );
 
     setIsSubmitModalOpen(false);
-    navigate("/guestsurveyjoinfinish");
+
+    navigate("/surveyjoinfinish", {
+      state: {
+        rewardToken:
+          result?.tokenReward?.earnedToken ?? totalRewardToken,
+        userToken: result?.tokenBalanceAfter ?? 0,
+      },
+    });
+  } catch (error) {
+    console.error("회원 설문 제출 실패:", error);
+
+    const errorCode = error.response?.data?.code;
+    const serverMessage = error.response?.data?.message;
+
+    if (errorCode === "RESPONSE_002") {
+      setErrorMessage("이미 참여한 설문입니다.");
+    } else {
+      setErrorMessage(serverMessage || "설문 제출에 실패했습니다.");
+    }
+
+    setIsSubmitModalOpen(false);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+  const handleSubmitGuestSurvey = async () => {
+    if (isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      setErrorMessage("");
+
+      const submitData = createSubmitData();
+
+      if (submitData.answers.length === 0) {
+        setErrorMessage("최소 한 개 이상의 문항에 응답해주세요.");
+        setIsSubmitModalOpen(false);
+        return;
+      }
+
+      const requestBody = {
+        guestKey: getOrCreateGuestKey(),
+        ...submitData,
+      };
+
+      const result = await submitSurveyResponse(
+        surveyId,
+        requestBody,
+      );
+
+      setIsSubmitModalOpen(false);
+
+      navigate("/guestsurveyjoinfinish", {
+        state: {
+          responseId: result?.responseId,
+        },
+      });
+    } catch (error) {
+      console.error("게스트 설문 제출 실패:", error);
+
+      const errorCode = error.response?.data?.code;
+      const serverMessage = error.response?.data?.message;
+
+      if (errorCode === "RESPONSE_002") {
+        setErrorMessage("이미 참여한 설문입니다.");
+      } else {
+        setErrorMessage(serverMessage || "설문 제출에 실패했습니다.");
+      }
+
+      setIsSubmitModalOpen(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -271,6 +416,7 @@ function SurveyJoinQuestion() {
     return (
       <section className="survey-question-page">
         <p className="survey-question-error">{fetchError}</p>
+
         <button type="button" onClick={() => navigate(-1)}>
           돌아가기
         </button>
@@ -293,6 +439,7 @@ function SurveyJoinQuestion() {
           className="survey-question-back-button"
           type="button"
           onClick={handleOpenExitModal}
+          disabled={isSubmitting}
         >
           ←
         </button>
@@ -321,7 +468,7 @@ function SurveyJoinQuestion() {
 
         {currentQuestion.type === "MULTIPLE_CHOICE" && (
           <div className="survey-question-option-list">
-            {[...currentQuestion.options]
+            {[...(currentQuestion.options || [])]
               .sort((a, b) => a.order - b.order)
               .map((option) => {
                 const isSelected = currentQuestion.allowMultiple
@@ -336,7 +483,10 @@ function SurveyJoinQuestion() {
                       isSelected ? "selected" : ""
                     }`}
                     type="button"
-                    onClick={() => handleSelectOption(option.optionId)}
+                    onClick={() =>
+                      handleSelectOption(option.optionId)
+                    }
+                    disabled={isSubmitting}
                   >
                     <span className="survey-question-radio">
                       <span className="survey-question-radio-dot" />
@@ -356,7 +506,10 @@ function SurveyJoinQuestion() {
             className="survey-question-textarea"
             placeholder="자유롭게 입력해주세요."
             value={answers[currentQuestion.questionId] || ""}
-            onChange={(event) => handleSubjectiveChange(event.target.value)}
+            onChange={(event) =>
+              handleSubjectiveChange(event.target.value)
+            }
+            disabled={isSubmitting}
           />
         )}
 
@@ -370,6 +523,7 @@ function SurveyJoinQuestion() {
           className="survey-question-prev-button"
           type="button"
           onClick={handlePrev}
+          disabled={isSubmitting}
         >
           이전
         </button>
@@ -378,6 +532,7 @@ function SurveyJoinQuestion() {
           className="survey-question-next-button"
           type="button"
           onClick={handleNext}
+          disabled={isSubmitting}
         >
           {isLastQuestion ? "완료하기" : "다음"}
         </button>
@@ -386,7 +541,9 @@ function SurveyJoinQuestion() {
       {isSubmitModalOpen && isLogin && (
         <div className="survey-submit-modal-overlay">
           <div className="survey-submit-modal">
-            <h2 className="survey-submit-modal-title">제출하시겠습니까?</h2>
+            <h2 className="survey-submit-modal-title">
+              제출하시겠습니까?
+            </h2>
 
             <div className="survey-submit-modal-info">
               <div className="survey-submit-modal-row">
@@ -396,7 +553,9 @@ function SurveyJoinQuestion() {
 
               <div className="survey-submit-modal-row">
                 <span>건너 뛴 문항</span>
-                <span>주관식 ({skippedSubjectiveCount}문항)</span>
+                <span>
+                  주관식 ({skippedSubjectiveCount}문항)
+                </span>
               </div>
             </div>
 
@@ -412,6 +571,7 @@ function SurveyJoinQuestion() {
                 className="survey-submit-modal-cancel"
                 type="button"
                 onClick={handleCloseSubmitModal}
+                disabled={isSubmitting}
               >
                 취소
               </button>
@@ -420,8 +580,9 @@ function SurveyJoinQuestion() {
                 className="survey-submit-modal-confirm"
                 type="button"
                 onClick={handleSubmitMemberSurvey}
+                disabled={isSubmitting}
               >
-                등록
+                {isSubmitting ? "제출 중..." : "등록"}
               </button>
             </div>
           </div>
@@ -440,6 +601,7 @@ function SurveyJoinQuestion() {
                 className="survey-guest-submit-modal-cancel"
                 type="button"
                 onClick={handleCloseSubmitModal}
+                disabled={isSubmitting}
               >
                 취소
               </button>
@@ -448,8 +610,9 @@ function SurveyJoinQuestion() {
                 className="survey-guest-submit-modal-confirm"
                 type="button"
                 onClick={handleSubmitGuestSurvey}
+                disabled={isSubmitting}
               >
-                제출
+                {isSubmitting ? "제출 중..." : "제출"}
               </button>
             </div>
           </div>
@@ -459,7 +622,9 @@ function SurveyJoinQuestion() {
       {isExitModalOpen && (
         <div className="survey-exit-modal-overlay">
           <div className="survey-exit-modal">
-            <h2 className="survey-exit-modal-title">설문을 나가시겠어요?</h2>
+            <h2 className="survey-exit-modal-title">
+              설문을 나가시겠어요?
+            </h2>
 
             <p className="survey-exit-modal-description">
               지금 나가시면 입력된 내용이 저장되지 않습니다.
@@ -470,6 +635,7 @@ function SurveyJoinQuestion() {
                 className="survey-exit-modal-cancel"
                 type="button"
                 onClick={handleCloseExitModal}
+                disabled={isSubmitting}
               >
                 취소
               </button>
@@ -478,6 +644,7 @@ function SurveyJoinQuestion() {
                 className="survey-exit-modal-confirm"
                 type="button"
                 onClick={handleGoSurveyJoinFirst}
+                disabled={isSubmitting}
               >
                 메인으로 돌아가기
               </button>
