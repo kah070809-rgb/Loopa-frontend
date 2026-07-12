@@ -100,6 +100,8 @@ export const RadioCircle = styled.div`
   width: 16px;
   height: 16px;
   border-radius: 50%;
+  border: 1.5px solid
+    ${({ $isSelected }) => ($isSelected ? '#5D01C6' : '#9E77EB')};
   background-color: #ffffff;
   display: flex;
   align-items: center;
@@ -109,16 +111,15 @@ export const RadioCircle = styled.div`
 `;
 
 export const RadioDot = styled.div`
-  width: 12px; /* 20px에서 사방 2px씩 빼서 정확히 16px */
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background-color: ${({ $isSelected }) => ($isSelected ? '#A75AFF' : 'transparent')};
+  background-color: ${({ $isSelected }) => ($isSelected ? '#5D01C6' : 'transparent')};
   transition: background-color 0.15s ease-in-out;
 `;
 
 export const TabLabel = styled.span`
   font-size: 14px;
-  color: #5d01c6;
   font-family: 'Pretendard-Bold';
 `;
 
@@ -135,12 +136,26 @@ export const FormSection = styled.div`
   flex-direction: column;
 `;
 
+// ✨ 보기 라벨과 보기 에러를 가로로 수평 배정하기 위한 정렬 박스 추가 ✨
+export const LabelRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+`;
+
 export const FormLabel = styled.label`
   font-family: 'Pretendard-Bold';
   font-size: 14px;
   color: #5d01c6;
-  margin-bottom: 12px;
   text-align: left;
+`;
+
+// ✨ 보기 글자 우측에 바로 이어붙는 에러 텍스트 스타일 정의 ✨
+export const SideErrorMessage = styled.span`
+  font-family: 'Pretendard-Regular';
+  font-size: 12px;
+  color: #ff2eab;
 `;
 
 export const OptionRow = styled.div`
@@ -150,21 +165,28 @@ export const OptionRow = styled.div`
   gap: 10px;
 `;
 
-export const DragIcon = styled.span`
-  color: #d1d5db;
-  font-size: 18px;
+export const DragIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
   user-select: none;
+  flex-shrink: 0;
 `;
 
 export const OptionInput = styled.input`
   flex: 1;
   padding: 18px 24px;
   border-radius: 20px;
-  border: 2px solid #5d01c6;
+  border: 2px solid ${({ $hasError }) => ($hasError ? '#FF2EAB' : '#ecdbff')}; /* 비어있는 해당 인풋 창의 보더만 핑크 변경 */
   outline: none;
   font-size: 16px;
   color: #000000;
   box-sizing: border-box;
+
+  &:focus {
+    border-color: ${({ $hasError }) => ($hasError ? '#FF2EAB' : '#5d01c6')};
+  }
 `;
 
 export const DeleteTextBtn = styled.span`

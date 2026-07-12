@@ -58,7 +58,7 @@ export default function TextBox({
       {/* 하단 에러 메시지 및 글자 수 제한 영역 */}
       <div style={footerStyle}>
         {error ? (
-          <span style={{ color: '#EF4444', fontWeight: '500' }}>{error}</span>
+          <span style={{ color: '#FF2EAB', fontWeight: '500' }}>{error}</span>
         ) : (
           <span />
         )}

@@ -72,8 +72,8 @@ export const ProfileGreeting = styled.p`
 
 export const ProfileEmail = styled.h3`
   margin: 2px 0 0 0;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-family: 'Pretendard-SemiBold';
   color: #5d01c6;
 `;
 
@@ -89,8 +89,8 @@ export const TokenLabel = styled.span`
 
 export const TokenCount = styled.p`
   margin: 2px 0 0 0;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 12px;
+  font-family: 'pretendard-SemiBold';
   color: #5d01c6;
 `;
 

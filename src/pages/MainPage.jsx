@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // 💡 페이지 이동을 위해 추가되었습니다!
+import { useNavigate } from 'react-router-dom';
 import * as S from './Mainpage.style';
 import Loopa from '../assets/images/Loopa.svg';
 import Go from '../assets/images/Go.svg';
@@ -12,7 +12,7 @@ import { getMyInfo } from '../api/user';
 import { getAvailableSurveys } from '../api/survey';
 
 const MainPage = () => {
-  const navigate = useNavigate(); // 💡 라우터 이동용 훅 선언
+  const navigate = useNavigate(); // 라우터 이동용 훅 선언
 
   // 로그인 상태 판단 (로컬 스토리지 토큰 유무 기준)
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -111,17 +111,20 @@ const MainPage = () => {
         }
       }
     } else {
-      // 로그인 창 화면으로 이동 (프로젝트 라우터 경로 설정에 맞춤)
+      // 로그인 창 화면으로 이동
       alert('로그인 화면으로 이동합니다.');
       navigate('/login');
     }
   };
 
-  const handleProtectedAction = (actionName) => {
+  // 권한이 필요한 액션 처리 (이동 경로 매핑 추가)
+  const handleProtectedAction = (actionName, targetPath) => {
     if (!isLoggedIn) {
       setShowLoginPopup(true);
     } else {
-      alert(`[확인] 로그인 상태 - ${actionName} 화면 이동`);
+      if (targetPath) {
+        navigate(targetPath);
+      }
     }
   };
 
@@ -181,8 +184,10 @@ const MainPage = () => {
         </S.CardContainer>
       )}
 
-      {/* --- [3] 설문 만들기 배너 --- */}
-      <S.BannerCard onClick={() => handleProtectedAction('설문 만들기')}>
+      {/* --- [3] 설문 만들기 배너 (로그인 시 /create 이동) --- */}
+      <S.BannerCard
+        onClick={() => handleProtectedAction('설문 만들기', '/create')}
+      >
         <S.FlexGroup style={{ gap: '10px' }}>
           <S.BannerTitle>설문 만들기</S.BannerTitle>
           <S.BannerDesc>
@@ -198,7 +203,6 @@ const MainPage = () => {
       <div style={{ marginBottom: '32px' }}>
         <S.SectionHeader>
           <S.SectionTitle>참여 가능한 설문</S.SectionTitle>
-          {/* 💡 글자 버튼 및 플러스 아이콘 클릭 시 전체 리스트 페이지로 이동 */}
           <S.MoreBtn onClick={() => navigate('/surveys')} />
           <img
             src={Plus}
@@ -255,7 +259,8 @@ const MainPage = () => {
                     <S.ParticipateBtn
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert(`${survey.title} 설문 참여하기 화면 이동`);
+                        // 💡 설문 참여하기 버튼 클릭 시 /create로 이동합니다.
+                        navigate('/create');
                       }}
                     >
                       참여하기
@@ -270,8 +275,10 @@ const MainPage = () => {
         </S.SurveyGrid>
       </div>
 
-      {/* --- [5] 하단 공공 아카이브 --- */}
-      <S.ArchiveCard onClick={() => handleProtectedAction('공공 아카이브')}>
+      {/* --- [5] 하단 공공 아카이브 (로그인 시 /archivemain 이동) --- */}
+      <S.ArchiveCard
+        onClick={() => handleProtectedAction('공공 아카이브', '/archivemain')}
+      >
         <S.FlexGroup style={{ gap: '16px' }}>
           <img
             src={File}
@@ -310,7 +317,7 @@ const MainPage = () => {
               <S.PopupLoginBtn
                 onClick={() => {
                   setShowLoginPopup(false);
-                  navigate('/login'); // 팝업창 로그인 버튼 클릭 시 로그인 페이지로 이동
+                  navigate('/login');
                 }}
               >
                 로그인하기

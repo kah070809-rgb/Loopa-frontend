@@ -92,8 +92,8 @@ export const Greeting = styled.p`
 
 export const EmailTitle = styled.h3`
   margin: 2px 0 0 0;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 15px;
+  font-family: 'Pretendard-Bold';
   color: #5d01c6;
 `;
 
