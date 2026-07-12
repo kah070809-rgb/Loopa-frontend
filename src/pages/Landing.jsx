@@ -8,6 +8,13 @@ import main from '../assets/images/main.svg';
 function Landing() {
   const navigate = useNavigate();
 
+  const handleGuestStart = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+
+  navigate('/main');
+};
+
   return (
     <section className="landing-page">
       <div className="landing-container">
@@ -38,11 +45,11 @@ function Landing() {
           </button>
 
           <button
-            className="landing-guest-button"
-            type="button"
-            onClick={() => navigate('/main')}
+           className="landing-guest-button"
+           type="button"
+           onClick={handleGuestStart}
           >
-            게스트로 참여
+             게스트로 참여
           </button>
         </div>
 
