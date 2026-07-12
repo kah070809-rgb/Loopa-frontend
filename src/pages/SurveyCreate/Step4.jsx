@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as S from './Step4.style';
-import TextBox from '../../components/common/TextBox';
+import TextBox from '../../components/common/Textbox';
 import Button from '../../components/common/Button';
 
 // 피그마 사진 파일(Dot.svg) 임포트

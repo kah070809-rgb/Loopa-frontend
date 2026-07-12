@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as S from './Mainpage.style';
-import Loopa from '../assets/images/Loopa.svg';
 import Go from '../assets/images/Go.svg';
 import Plus from '../assets/images/Plus.svg';
 import File from '../assets/images/File.svg';
