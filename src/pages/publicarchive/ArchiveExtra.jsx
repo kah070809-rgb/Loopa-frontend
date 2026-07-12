@@ -1,9 +1,10 @@
-import { FiSearch } from 'react-icons/fi';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SurveyPreviewCard from './archivecomponents/SurveyPreviewCard';
 import { getArchiveSurveys } from '../../api/archiveApi';
-import './ArchiveExtra.css';
+import * as S from './ArchiveExtra.style';
+import BackP from '../../assets/images/BackP.svg';
+import Search from '../../assets/images/Search.svg'; // 💡 돋보기 이미지 정확하게 임포트
 
 function ArchiveExtra() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ function ArchiveExtra() {
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
   const [keyword, setKeyword] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
 
   const [nextCursor, setNextCursor] = useState(null);
   const [hasNext, setHasNext] = useState(false);
@@ -22,7 +23,7 @@ function ArchiveExtra() {
 
   const categoryList = [
     { label: '전체', value: 'ALL' },
-    { label: '진로/취업', value: 'CAREER' },
+    { label: '진로·취업', value: 'CAREER' },
     { label: 'IT·AI', value: 'IT_AI' },
     { label: '서비스·앱', value: 'SERVICE_APP' },
     { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
@@ -43,9 +44,11 @@ function ArchiveExtra() {
       setLoading(true);
       setErrorMessage('');
 
+      const apiCategory = categoryValue === 'ALL' ? '' : categoryValue;
+
       const data = await getArchiveSurveys({
         keyword: keywordValue,
-        category: categoryValue,
+        category: apiCategory,
         cursor: cursorValue,
         size: 20,
       });
@@ -69,7 +72,7 @@ function ArchiveExtra() {
   useEffect(() => {
     fetchArchiveSurveys({
       keywordValue: '',
-      categoryValue: '',
+      categoryValue: 'ALL',
       cursorValue: null,
       isLoadMore: false,
     });
@@ -86,10 +89,9 @@ function ArchiveExtra() {
 
   const handleCategoryClick = (categoryValue) => {
     setSelectedCategory(categoryValue);
-
     fetchArchiveSurveys({
       keywordValue: keyword,
-      categoryValue,
+      categoryValue: categoryValue,
       cursorValue: null,
       isLoadMore: false,
     });
@@ -107,24 +109,19 @@ function ArchiveExtra() {
   };
 
   return (
-    <section className="archive-extra-page">
-      <header className="archive-extra-header">
-        <button
-          className="archive-extra-back-button"
-          type="button"
+    <S.Container>
+      {/* ── [1] 헤더 영역 ── */}
+      <S.Header>
+        <S.HeaderIcon
+          src={BackP}
+          alt="뒤로가기"
           onClick={() => navigate('/archivemain')}
-        >
-          ←
-        </button>
+        />
+      </S.Header>
 
-        <h1 className="archive-extra-title">최근 업데이트</h1>
-      </header>
-
-      <div className="archive-extra-search-box">
-        <input
-          id="archive-extra-search"
-          name="keyword"
-          className="archive-extra-search-input"
+      {/* ── [2] 검색 바 영역 (수정: Search.svg 이미지 컴포넌트 실연동) ── */}
+      <S.SearchBarContainer>
+        <S.SearchInput
           type="text"
           placeholder="설문 제목 검색"
           value={keyword}
@@ -135,60 +132,56 @@ function ArchiveExtra() {
             }
           }}
         />
+        {/* 💡 S.SearchIcon 컴포넌트에 진짜 이미지 파일을 바인딩했습니다. */}
+        <S.SearchIcon src={Search} alt="검색" onClick={handleSearch} />
+      </S.SearchBarContainer>
 
-        <button
-          className="archive-extra-search-button"
-          type="button"
-          onClick={handleSearch}
-        >
-          <FiSearch />
-        </button>
-      </div>
-
-      <div className="archive-extra-filter-row">
+      {/* ── [3] 카테고리 칩 가로 스크롤 영역 ── */}
+      <S.CategoryScrollBox>
         {categoryList.map((category) => (
-          <button
-            key={category.value || 'all'}
-            className={`archive-extra-filter-button ${
-              selectedCategory === category.value ? 'selected' : ''
-            }`}
-            type="button"
+          <S.CategoryButton
+            key={category.value}
+            $isSelected={selectedCategory === category.value}
             onClick={() => handleCategoryClick(category.value)}
           >
             {category.label}
-          </button>
+          </S.CategoryButton>
         ))}
-      </div>
+      </S.CategoryScrollBox>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && <S.ErrorMessage>{errorMessage}</S.ErrorMessage>}
 
-      <div className="archive-extra-card-list">
-          {surveys.map((survey) => (
-             <SurveyPreviewCard
-              key={survey.surveyId}
+      {/* ── [4] 리스트 데이터 카드 구역 ── */}
+      <S.ListContainer>
+        {surveys.map((survey) => {
+          const currentSurveyId = survey.surveyId || survey.id;
+          return (
+            <SurveyPreviewCard
+              key={currentSurveyId}
               survey={survey}
-              isSelected={selectedSurveyId === survey.surveyId}
+              isSelected={selectedSurveyId === currentSurveyId}
               onClick={() => {
-               setSelectedSurveyId(survey.surveyId);
-               navigate(`/archive/surveys/${survey.surveyId}`);
+                setSelectedSurveyId(currentSurveyId);
+                navigate(`/archive/surveys/${currentSurveyId}`);
               }}
-             />
-           ))}
-      </div>
+            />
+          );
+        })}
+      </S.ListContainer>
 
-      {loading && <p>불러오는 중...</p>}
+      {loading && <S.LoadingMessage>불러오는 중...</S.LoadingMessage>}
 
+      {/* ── [5] 하단 무한 스크롤 더보기 액션 버튼 ── */}
       {hasNext && (
-        <button
-          className="archive-extra-load-more-button"
+        <S.LoadMoreButton
           type="button"
           onClick={handleLoadMore}
           disabled={loading}
         >
           더 불러오기
-        </button>
+        </S.LoadMoreButton>
       )}
-    </section>
+    </S.Container>
   );
 }
 
