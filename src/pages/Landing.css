@@ -1,79 +1,133 @@
+/* 프리텐다드 폰트 임포트 (이미 프로젝트에 있다면 생략 가능합니다) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
 .landing-page {
   width: 100%;
   min-height: 100vh;
-  background-color: white;
+  /* 시안의 '선형 50%' 배경을 부드러운 그라데이션으로 구현 */
+  background: linear-gradient(
+    180deg,
+    rgba(221, 191, 255, 0.35) 0%,
+    #ffffff 50%
+  );
   box-sizing: border-box;
+  font-family: 'Pretendard', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 60px 24px 100px;
 }
 
-.landing-header {
-  padding: 48px 24px 32px;
-}
-
-.landing-logo {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 400;
-  color: #111;
-}
-
-.landing-main {
-  padding: 0 24px;
-}
-
-.landing-subtitle {
-  margin: 0 0 32px;
-  font-size: 18px;
-  font-weight: 400;
-  color: #222;
-  line-height: 1.5;
-}
-
-.landing-main-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-  color: #000;
-  line-height: 1.55;
-}
-
-.landing-description {
-  margin-top: 36px;
-}
-
-.landing-description p {
-  margin: 0 0 14px;
-  font-size: 10px;
-  font-weight: 400;
-  color: #222;
-  line-height: 1.5;
-}
-
-.landing-button-box {
-  margin-top: 60px;
+.landing-container {
+  width: 100%;
+  max-width: 480px; /* 모바일 뷰 기준 중앙 정렬 제한 */
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  align-items: flex-start;
 }
 
+/* 상단 텍스트: 프리텐다드 미디움 16px, 5D01C6, 하단 간격 30px */
+.landing-top-text {
+  font-weight: 500;
+  font-size: 16px;
+  color: #5d01c6;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.loopa-small-logo {
+  height: 16px;
+  object-fit: contain;
+}
+
+/* 메인 타이틀: 프리텐다드 볼드 25px, 5D01C6, 하단 간격 20px */
+.landing-main-title {
+  margin: 0 0 20px 0;
+  font-weight: 700;
+  font-size: 25px;
+  color: #5d01c6;
+  line-height: 1.4;
+}
+
+/* 메인 사진: 하단 간격 40px */
+.landing-main-image {
+  width: 100%;
+  object-fit: contain;
+  margin-bottom: 40px;
+}
+
+/* 버튼 박스: 두 버튼 사이 간격 10px */
+.landing-button-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 버튼 공통 디자인: 바깥쪽 그림자 (0 4px 5px rgba 25%), 볼드체 */
 .landing-login-button,
 .landing-guest-button {
-  width: 154px;
-  height: 44px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
+  width: 100%;
+  max-width: 320px;
+  height: 50px;
+  border-radius: 25px; /* 시안처럼 둥근 형태 */
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
-}
-
-.landing-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.25);
   border: none;
-  background-color: #e0e0e0;
-  color: #111;
 }
 
+/* 로그인 버튼: 배경 DDBFFF, 글씨 5D01C6 */
+.landing-login-button {
+  background-color: #ddbfff;
+  color: #5d01c6;
+}
+
+/* 게스트 버튼: 배경 FFFFFF, 글씨 5D01C6 */
 .landing-guest-button {
-  border: 1px solid #111;
-  background-color: white;
-  color: #111;
+  background-color: #ffffff;
+  color: #5d01c6;
+}
+
+/* 하단 섹션: 버튼과 간격 80px */
+.landing-bottom-section {
+  margin-top: 80px;
+}
+
+/* 하단 타이틀: 볼드 25px, 5D01C6, 하단 간격 50px */
+.bottom-title {
+  margin: 0 0 50px 0;
+  font-weight: 700;
+  font-size: 25px;
+  color: #5d01c6;
+}
+
+/* 각 설명 아이템간의 간격 50px */
+.feature-item {
+  margin-bottom: 50px;
+}
+.feature-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 하단 서브타이틀: 세미볼드 17px, 5D01C6, 하단 간격 15px */
+.feature-subtitle {
+  margin: 0 0 15px 0;
+  font-weight: 600;
+  font-size: 17px;
+  color: #5d01c6;
+  line-height: 1.4;
+}
+
+/* 하단 설명글: 레귤러 13px, 000000 */
+.feature-desc {
+  margin: 0;
+  font-weight: 400;
+  font-size: 13px;
+  color: #000000;
+  line-height: 1.5;
 }

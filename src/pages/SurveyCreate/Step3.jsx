@@ -1,201 +1,147 @@
 import React from 'react';
+import * as S from './step3.style'; // 분리된 스타일 컴포넌트 임포트
 import Button from '../../components/common/Button';
-import Icon from '../../assets/images/Group 46.svg';
+import EmptyIconImg from '../../assets/images/Group 46.svg';
 
-export default function Step3({ formData, updateFormData, onNext, onExit }) {
+export default function Step3({
+  questions = [],
+  onAddQuestion,
+  onEditQuestion,
+  onNext,
+  onPrev,
+}) {
+  const getTypeString = (q) => {
+    if (q.type === 'subjective') return '주관식';
+    return `객관식 (${q.isMultiple ? '다중 선택' : '단일 선택'})`;
+  };
+
   return (
-    <div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          width: '100%',
-          padding: '0 30px',
-          position: 'relative',
-          paddingBottom: '50px',
-          boxSizing: 'border-box',
-          position: 'relative',
-        }}
-      >
-        {/* 상단 스텝 동그라미 인디케이터 껍데기 */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '10px 0 35px 0',
-            gap: '8px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <div
+    <S.Container>
+      {/* 상단 스텝 인디케이터 구역 */}
+      <S.IndicatorContainer>
+        <S.StepWrapper>
+          <S.InactiveCircle />
+          <S.StepLabel>기본정보</S.StepLabel>
+        </S.StepWrapper>
+        <S.StepLine />
+        <S.StepWrapper>
+          <S.ActiveCircle />
+          <S.StepLabel>문항 구성</S.StepLabel>
+        </S.StepWrapper>
+        <S.StepLine />
+        <S.StepWrapper>
+          <S.LastCircle />
+          <S.StepLabel>완료</S.StepLabel>
+        </S.StepWrapper>
+      </S.IndicatorContainer>
+
+      {/* ── [분기처리 영역] ── */}
+      {questions.length === 0 ? (
+        <S.EmptyBody>
+          <S.EmptyIcon src={EmptyIconImg} alt="문항 없음 아이콘" />
+          <S.EmptyText>
+            아직 추가된 문항이 없어요.
+            <br />
+            아래 버튼을 눌러 문항을 추가해주세요.
+          </S.EmptyText>
+          <S.ButtonContainer>
+            <Button
+              onClick={onAddQuestion}
               style={{
-                width: '32px',
-                height: '32px',
-                backgroundColor: '#DDBFFF',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '12px',
-                color: '#450093',
-                fontFamily: 'Pretendard-SemiBold',
-                marginTop: '8px',
+                backgroundColor: '#ECDBFF',
+                color: '#5D01C6',
+                width: '80%',
+                fontSize: '14px',
+                fontFamily: 'Pretendard-Bold',
+                padding: '16px',
+                borderRadius: '30px',
+                boxShadow: '2px 2px 2px rgba(0,0,0,0.25)',
               }}
             >
-              기본정보
-            </span>
-          </div>
-          <div
-            style={{
-              width: '15%',
-              height: '2.5px',
-              backgroundColor: '#DDBFFF',
-              transform: 'translateY(-9px)',
-            }}
-          />
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <div
+              문항 추가하기
+            </Button>
+          </S.ButtonContainer>
+        </S.EmptyBody>
+      ) : (
+        <>
+          <S.HeaderTitleBox>
+            <S.MainTitle>문항 구성</S.MainTitle>
+            <S.SubDescription>
+              추가한 문항을 순서대로 확인하고 편집할 수 있어요.
+            </S.SubDescription>
+          </S.HeaderTitleBox>
+
+          <S.ListWrapper>
+            {questions.map((q, index) => (
+              <S.RowContainer key={index}>
+                <S.DragIcon>
+                  <span>⋮⋮</span>
+                  <span>⋮⋮</span>
+                </S.DragIcon>
+
+                <S.SurveyCard>
+                  <S.CardContent>
+                    <S.CardTitle>
+                      Q{index + 1}. {q.title}
+                    </S.CardTitle>
+                    <S.CardType>{getTypeString(q)}</S.CardType>
+                  </S.CardContent>
+                  <S.EditBtn onClick={() => onEditQuestion(index)}>
+                    편집
+                  </S.EditBtn>
+                </S.SurveyCard>
+              </S.RowContainer>
+            ))}
+          </S.ListWrapper>
+
+          {/* 하단 제어 바 */}
+          <S.BottomFixedBar>
+            <Button
+              onClick={onAddQuestion}
               style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: '#5D01C6',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '12px',
-                color: '#450093',
-                fontFamily: 'Pretendard-SemiBold',
-                marginTop: '8px',
+                width: '100%',
+                backgroundColor: '#ECDBFF',
+                color: '#5D01C6',
+                padding: '16px',
+                borderRadius: '30px',
+                fontFamily: 'Pretendard-Bold',
+                marginBottom: '12px',
               }}
             >
-              문항 구성
-            </span>
-          </div>
-          <div
-            style={{
-              width: '15%',
-              height: '2.5px',
-              backgroundColor: '#DDBFFF',
-              transform: 'translateY(-9px)',
-            }}
-          />
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: '#E9D5FF',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '12px',
-                color: '#450093',
-                fontFamily: 'Pretendard-SemiBold',
-                marginTop: '8px',
-              }}
-            >
-              완료
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '24px',
-          paddingBottom: '140px',
-        }}
-      >
-        <img
-          src={Icon}
-          alt="문항 없음 아이콘"
-          style={{
-            width: '120px',
-            height: '120px',
-            objectFit: 'contain',
-          }}
-        />
-        <div
-          style={{
-            margin: 0,
-            fontFamily: 'Pretendard-SemiBold',
-            color: '#5D01C6',
-            fontSize: '15px',
-            lineHeight: '1.6',
-            textAlign: 'center',
-          }}
-        >
-          아직 추가된 문항이 없어요.
-          <br />
-          아래 버튼을 눌러 문항을 추가해주세요.
-        </div>
-      </div>
-
-      <div
-        style={{
-          width: '100%',
-          paddingBottom: '20px',
-          display: 'flex',
-
-          justifyContent: 'center', // 위쪽 여백을 자동으로 채워서 버튼을 아래로 내립니다.
-        }}
-      >
-        <Button
-          onClick={onNext}
-          style={{
-            backgroundColor: '#ECDBFF',
-            color: '#5D01C6',
-            width: '80%',
-            fontSize: '14px',
-            fontFamily: 'Pretendard-Bold',
-            padding: '16px',
-            borderRadius: '30px',
-            boxShadow: '2px 2px 2px rgba(0,0,0,0.25)',
-            alignItems: 'center',
-          }}
-        >
-          문항 추가하기
-        </Button>
-      </div>
-    </div>
+              문항 추가하기
+            </Button>
+            <S.BottomFlexGroup>
+              <Button
+                onClick={onPrev}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#FFF',
+                  color: '#5D01C6',
+                  border: '2px solid #ECDBFF',
+                  padding: '16px',
+                  borderRadius: '30px',
+                  fontFamily: 'Pretendard-Bold',
+                }}
+              >
+                이전
+              </Button>
+              <Button
+                onClick={onNext}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#ECDBFF',
+                  color: '#5D01C6',
+                  padding: '16px',
+                  borderRadius: '30px',
+                  fontFamily: 'Pretendard-Bold',
+                }}
+              >
+                다음
+              </Button>
+            </S.BottomFlexGroup>
+          </S.BottomFixedBar>
+        </>
+      )}
+    </S.Container>
   );
 }

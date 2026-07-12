@@ -411,3 +411,9 @@
 .survey-guest-submit-modal-confirm {
   background-color: #d8b8ff;
 }
+
+.survey-question-page button:disabled,
+.survey-question-page textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

@@ -1,704 +1,348 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import * as S from './Mainpage.style';
 import Loopa from '../assets/images/Loopa.svg';
 import Go from '../assets/images/Go.svg';
 import Plus from '../assets/images/plus.svg';
 import File from '../assets/images/File.svg';
 
+// API 세트 메뉴 임포트
+import { logout } from '../api/auth';
+import { getAvailableSurveys } from '../api/survey';
+// 💡 올려주신 user API 파일에서 getMyInfo와 getMySurveys를 정확하게 임포트합니다.
+import { getMyInfo, getMySurveys } from '../api/user';
+
 const MainPage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // 로그인 상태 판단
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem('accessToken'),
+  );
+
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
-  const [selectedSurveyId, setSelectedSurveyId] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedSurveyId, setSelectedSurveyId] = useState(null);
+
+  const [surveys, setSurveys] = useState([]);
+  // 💡 유저가 이미 완료/등록한 설문의 ID들만 격리 보관할 상태창
+  const [participatedIds, setParticipatedIds] = useState([]);
+
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    tokenBalance: 0,
+  });
 
   const categoryList = [
-    '전체',
-    '라이프스타일',
-    '학업, 진로',
-    '심리',
-    'IT·AI',
-    '서비스·앱',
-    '소비·마케팅',
-    '게임',
-    '학교생활',
-    '기타',
+    { label: '전체', value: 'ALL' },
+    { label: '진로·취업', value: 'CAREER' },
+    { label: 'IT·AI', value: 'IT_AI' },
+    { label: '서비스·앱', value: 'SERVICE_APP' },
+    { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
+    { label: '게임', value: 'GAME' },
+    { label: '학교생활', value: 'SCHOOL_LIFE' },
+    { label: '일상', value: 'DAILY' },
+    { label: '심리', value: 'PSYCHOLOGY' },
+    { label: '기타', value: 'ETC' },
   ];
 
-  const dummySurveys = [
-    {
-      surveyId: 1,
-      title: '대학생 AI 활용 실태 조사',
-      category: 'IT·AI',
-      target: '대학생 대상',
-      token: 18,
-      duration: '3분',
-    },
-    {
-      surveyId: 2,
-      title: '재택근무 만족도 조사',
-      category: '라이프스타일',
-      target: '직장인 대상',
-      token: 18,
-      duration: '3분',
-    },
-    {
-      surveyId: 3,
-      title: '숏폼 콘텐츠 이용 현황 조사',
-      category: '심리',
-      target: '대학생 대상',
-      token: 18,
-      duration: '3분',
-    },
-    {
-      surveyId: 4,
-      title: '카페 이용 패턴 조사',
-      category: '학업, 진로',
-      target: '대학생 대상',
-      token: 13,
-      duration: '2분',
-    },
-  ];
+  const isGuestMode = location.state?.isGuest || !isLoggedIn;
 
-  const filteredSurveys =
-    selectedCategory === '전체'
-      ? dummySurveys
-      : dummySurveys.filter((survey) => survey.category === selectedCategory);
+  // 1️⃣ [유저 정보 및 참여/등록 완료 설문 ID 목록 실연동 추출]
+  useEffect(() => {
+    if (isGuestMode) return;
 
-  const handleProtectedAction = (actionName) => {
-    if (!isLoggedIn) {
+    const fetchUserInfoAndHistory = async () => {
+      try {
+        // 1. 내 기본 정보 호출
+        const responseData = await getMyInfo();
+        if (responseData.isSuccess) {
+          setUserInfo({
+            email: responseData.result.email,
+            tokenBalance: responseData.result.tokenBalance,
+          });
+        }
+
+        // 2. 💡 내가 응답/등록 완료한 설문 목록을 리사이징해서 가져옵니다.
+        const mySurveysData = await getMySurveys({ size: 50 });
+        if (mySurveysData.isSuccess && mySurveysData.result?.items) {
+          // 가져온 내역 목록에서 surveyId 추출하여 배열 생성 (백엔드 필드 규격에 맞춰 매핑)
+          const ids = mySurveysData.result.items.map((item) => item.surveyId);
+          setParticipatedIds(ids);
+        }
+      } catch (error) {
+        console.error('유저 정보 및 이력 동기화 실패:', error);
+      }
+    };
+
+    fetchUserInfoAndHistory();
+  }, [isGuestMode]);
+
+  // 2️⃣ [참여 가능한 전체 설문 목록 가져오기 + 프론트 완벽 filter 스크리닝]
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const apiCategory =
+          selectedCategory === 'ALL' ? null : selectedCategory;
+
+        const responseData = await getAvailableSurveys({
+          category: apiCategory,
+          size: 20,
+        });
+
+        if (responseData.isSuccess && responseData.result?.items) {
+          // 💡 [프론트엔드 자체 스크리닝 필터링]
+          // 전체 목록 중에서, 내 기참여 리스트(participatedIds)에 겹치는 ID가 없는 것만 통과시킵니다.
+          const pureAvailableItems = responseData.result.items.filter(
+            (survey) => !participatedIds.includes(survey.surveyId),
+          );
+
+          setSurveys(pureAvailableItems);
+
+          if (pureAvailableItems.length > 0) {
+            setSelectedSurveyId(pureAvailableItems[0].surveyId);
+          } else {
+            setSelectedSurveyId(null);
+          }
+        }
+      } catch (error) {
+        console.error('설문 목록 조회 실패:', error);
+      }
+    };
+
+    fetchSurveys();
+  }, [selectedCategory, participatedIds]); // 💡 내 기참여 이력 배열이 채워지면 실시간으로 재필터링
+
+  // 3️⃣ 로그인/로그아웃 버튼 핸들러
+  const handleAuthAction = async () => {
+    if (isLoggedIn) {
+      if (window.confirm('로그아웃 하시겠습니까?')) {
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          await logout(refreshToken);
+        } catch (error) {
+          console.error('서버 로그아웃 처리 실패:', error);
+        } finally {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          setIsLoggedIn(false);
+          setUserInfo({ email: '', tokenBalance: 0 });
+          setParticipatedIds([]); // 로그아웃 시 이력 목록 청소
+          alert('로그아웃되었습니다. 게스트 모드로 전환합니다.');
+        }
+      }
+    } else {
+      alert('로그인 화면으로 이동합니다.');
+      navigate('/login');
+    }
+  };
+
+  const handleProtectedAction = (actionName, targetPath) => {
+    if (isGuestMode) {
       setShowLoginPopup(true);
     } else {
-      alert(`[확인] 로그인 상태 - ${actionName} 화면 이동`);
+      if (targetPath) {
+        navigate(targetPath);
+      }
     }
   };
 
   return (
-    <div
-      className="main-page-container"
-      style={{
-        width: '100%',
-        maxWidth: '430px',
-        margin: '0 auto',
-        padding: '30px 24px 40px 24px',
-        boxSizing: 'border-box',
-        overflowX: 'hidden',
-        minHeight: '100vh',
-        backgroundColor: '#ffffff',
-        position: 'relative',
-        fontFamily: 'Pretendard, -apple-system, sans-serif',
-      }}
-    >
-      {/* --------------------------------------------------------
-         [1] 헤더 영역 (62x27 버튼 정확히 반영)
-      -------------------------------------------------------- */}
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '24px',
-        }}
-      >
-        <img
-          src={Loopa}
-          alt="Loopa"
-          style={{ height: '28px', objectFit: 'contain' }}
-        />
-        <button
-          onClick={() => setIsLoggedIn(!isLoggedIn)}
-          style={{
-            width: '62px',
-            height: '27px',
-            borderRadius: '14px',
-            border: '1.5px solid #DDBFFF',
-            backgroundColor: '#ffffff',
-            color: '#5D01C6',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 0,
-            boxSizing: 'border-box',
-          }}
-        >
-          {isLoggedIn ? '로그아웃' : '로그인'}
-        </button>
-      </header>
+    <S.Container>
+      {/* --- [1] 헤더 영역 --- */}
+      <S.Header>
+        <S.Logo src={Loopa} alt="Loopa" />
+        <S.AuthBtn onClick={handleAuthAction}>
+          {!isGuestMode ? '로그아웃' : '로그인'}
+        </S.AuthBtn>
+      </S.Header>
 
-      {/* --------------------------------------------------------
-         [2] 상단 유저 / 게스트 카드 영역 (★ 피그마 시안 100% 정밀 싱크 매칭)
-      -------------------------------------------------------- */}
-      {isLoggedIn ? (
-        <div
-          style={{
-            backgroundColor: '#ffffff', // 배경은 무조건 순수 흰색
-            border: '1.5px solid #DDBFFF', // 얇고 연한 보라색 테두리선
-            borderRadius: '24px',
-            padding: '24px',
-            marginBottom: '24px',
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          {/* 아바타, 인사말, 보유 토큰 가로 배치 정렬 */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%',
-            }}
-          >
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  backgroundColor: '#5D01C6',
-                  flexShrink: 0,
-                }}
-              ></div>
+      {/* --- [2] 상단 카드 영역 --- */}
+      {!isGuestMode ? (
+        <S.CardContainer $isGuest={false}>
+          <S.UserInfoWrapper>
+            <S.FlexGroup>
+              <S.Avatar />
               <div>
-                <p style={{ margin: 0, fontSize: '12px', color: '#5D01C6' }}>
-                  안녕하세요,
-                </p>
-                <h3
-                  style={{
-                    margin: '2px 0 0 0',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    color: '#5D01C6',
-                  }}
-                >
-                  likelion@gmail.com님!
-                </h3>
+                <S.Greeting>안녕하세요,</S.Greeting>
+                <S.EmailTitle>{userInfo.email}님!</S.EmailTitle>
               </div>
-            </div>
+            </S.FlexGroup>
 
-            {/* 우측 정렬된 보유 토큰 영역 */}
-            <div style={{ textAlign: 'right' }}>
-              <span
-                style={{
-                  fontSize: '11px',
-                  color: '#5D01C6',
-                  fontWeight: 'bold',
-                }}
-              >
-                보유 토큰
-              </span>
-              <p
-                style={{
-                  margin: '2px 0 0 0',
-                  fontSize: '12px',
-                  color: '#5D01C6',
-                  opacity: 0.7,
-                }}
-              >
-                124개
-              </p>
-            </div>
-          </div>
+            <S.TokenBox>
+              <S.TokenLabel>보유 토큰</S.TokenLabel>
+              <S.TokenCount>{userInfo.tokenBalance}개</S.TokenCount>
+            </S.TokenBox>
+          </S.UserInfoWrapper>
 
-          {/* ★ 핵심 수정: 내 설문 보기 버튼을 우측 하단에 그라데이션 알약 형태로 배치 */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              marginTop: '12px',
-            }}
-          >
-            <button
-              onClick={() => alert('마이페이지 화면으로 이동')}
-              style={{
-                padding: '8px 24px',
-                borderRadius: '20px',
-                border: 'none',
-                background:
-                  'linear-gradient(90deg, rgba(183, 119, 255, 0.4) 0%, rgba(236, 219, 255, 0.4) 100%)', // 40% 그라데이션 스펙 준수
-                color: '#5D01C6',
-                fontWeight: 'bold',
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
-            >
+          <S.MySurveyBtnWrapper>
+            <S.MySurveyBtn onClick={() => navigate('/mypage')}>
               내 설문 보기
-            </button>
-          </div>
-        </div>
+            </S.MySurveyBtn>
+          </S.MySurveyBtnWrapper>
+        </S.CardContainer>
       ) : (
-        <div
+        <S.CardContainer
+          $isGuest={true}
           onClick={() => handleProtectedAction('게스트 상단 카드')}
-          style={{
-            backgroundColor: '#ffffff', // 배경은 무조건 순수 흰색
-            border: '1.5px solid #DDBFFF', // 얇고 연한 보라색 테두리선
-            borderRadius: '24px',
-            padding: '24px',
-            marginBottom: '24px',
-            cursor: 'pointer',
-            boxSizing: 'border-box',
-          }}
         >
-          <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: '#5D01C6',
-                flexShrink: 0,
-              }}
-            ></div>
+          <S.FlexGroup>
+            <S.Avatar />
             <div>
-              <p style={{ margin: 0, fontSize: '12px', color: '#5D01C6' }}>
-                안녕하세요,
-              </p>
-              <h3
-                style={{
-                  margin: '2px 0 8px 0',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#5D01C6',
-                }}
-              >
+              <S.Greeting>안녕하세요,</S.Greeting>
+              <S.EmailTitle style={{ marginBottom: '8px' }}>
                 현재 게스트 계정입니다.
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '12px',
-                  color: '#5D01C6',
-                  lineHeight: '1.5',
-                }}
-              >
+              </S.EmailTitle>
+              <S.GuestDesc>
                 로그인하여 설문을 만들어보세요!
                 <br />
                 설문 참여만 가능합니다.
-              </p>
+              </S.GuestDesc>
             </div>
-          </div>
-        </div>
+          </S.FlexGroup>
+        </S.CardContainer>
       )}
 
-      {/* --------------------------------------------------------
-         [3] 설문 만들기 배너
-      -------------------------------------------------------- */}
-      <div
-        onClick={() => handleProtectedAction('설문 만들기')}
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: 'linear-gradient(90deg, #B777FF 0%, #ECDBFF 51%)',
-          borderRadius: '20px',
-          padding: '20px 24px',
-          marginBottom: '32px',
-          cursor: 'pointer',
-          boxSizing: 'border-box',
-        }}
+      {/* --- [3] 설문 만들기 배너 --- */}
+      <S.BannerCard
+        onClick={() => handleProtectedAction('설문 만들기', '/create')}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <h3
-            style={{
-              margin: 0,
-              color: '#5D01C6',
-              fontSize: '16px',
-              fontWeight: 'bold',
-            }}
-          >
-            설문 만들기
-          </h3>
-          <p
-            style={{
-              margin: 0,
-              color: '#5D01C6',
-              fontSize: '11px',
-            }}
-          >
+        <S.FlexGroup style={{ gap: '10px' }}>
+          <S.BannerTitle>설문 만들기</S.BannerTitle>
+          <S.BannerDesc>
             새로운 설문을 만들고 응답자를 모집해보세요.
-          </p>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '30px',
-            height: '30px',
-            backgroundColor: '#ffffff',
-            borderRadius: '50%',
-          }}
-        >
-          <img
-            src={Go}
-            alt=""
-            style={{ width: '14px', height: '14px', objectFit: 'contain' }}
-          />
-        </div>
-      </div>
+          </S.BannerDesc>
+        </S.FlexGroup>
+        <S.CircleIconBox>
+          <img src={Go} alt="go" />
+        </S.CircleIconBox>
+      </S.BannerCard>
 
-      {/* --------------------------------------------------------
-         [4] 참여 가능한 설문 목록 섹션
-      -------------------------------------------------------- */}
+      {/* --- [4] 참여 가능한 설문 목록 섹션 --- */}
       <div style={{ marginBottom: '32px' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '16px',
-          }}
-        >
-          <h2
-            style={{
-              margin: 0,
-              fontSize: '17px',
-              color: '#5D01C6',
-              fontWeight: 'bold',
-            }}
-          >
-            참여 가능한 설문
-          </h2>
-          <div
-            onClick={() => alert('참여 가능한 설문 더보기 화면으로 이동')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-              color: '#5D01C6',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-          >
-            더보기
-            <img
-              src={Plus}
-              alt=""
-              style={{
-                height: '10px',
-                marginLeft: '2px',
-                objectFit: 'contain',
-              }}
-            />
-          </div>
-        </div>
+        <S.SectionHeader>
+          <S.SectionTitle>참여 가능한 설문</S.SectionTitle>
+          <S.MoreBtn onClick={() => navigate('/surveys')} />
+          <img src={Plus} alt="plus" onClick={() => navigate('/surveys')} />
+        </S.SectionHeader>
 
-        {/* 카테고리 칩 영역 (가로 스크롤) */}
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            gap: '8px',
-            marginBottom: '16px',
-            overflowX: 'auto',
-            whiteSpace: 'nowrap',
-            paddingBottom: '6px',
-            boxSizing: 'border-box',
-          }}
-          className="category-scroll-block"
-        >
+        <S.CategoryScrollBox>
           {categoryList.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '20px',
-                border:
-                  selectedCategory === cat ? 'none' : '1.5px solid #EADDFF',
-                backgroundColor:
-                  selectedCategory === cat ? '#DDBFFF' : '#ffffff',
-                color: '#5D01C6',
-                fontSize: '13px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                display: 'inline-block',
-                flexShrink: 0,
-                minWidth: 'max-content',
-                transition: 'all 0.15s ease',
-              }}
+            <S.CategoryButton
+              key={cat.value}
+              $isSelected={selectedCategory === cat.value}
+              onClick={() => setSelectedCategory(cat.value)}
             >
-              {cat}
-            </button>
+              {cat.label}
+            </S.CategoryButton>
           ))}
-        </div>
+        </S.CategoryScrollBox>
 
-        {/* 설문 리스트 2x2 그리드 배치 */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '12px',
-          }}
-        >
-          {filteredSurveys.length > 0 ? (
-            filteredSurveys.map((survey) => {
+        <S.SurveyGrid>
+          {surveys.length > 0 ? (
+            surveys.map((survey) => {
               const isSelected = survey.surveyId === selectedSurveyId;
 
               return (
-                <div
+                <S.SurveyCard
                   key={survey.surveyId}
+                  $isSelected={isSelected}
                   onClick={() => setSelectedSurveyId(survey.surveyId)}
-                  style={{
-                    border: isSelected ? 'none' : '2px solid #EADDFF',
-                    borderRadius: '20px',
-                    padding: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    backgroundColor: isSelected ? '#DDBFFF' : '#ffffff',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    minHeight: isSelected ? '155px' : '115px',
-                    boxSizing: 'border-box',
-                  }}
                 >
                   <div style={{ width: '100%' }}>
-                    <h4
-                      style={{
-                        margin: '0 0 12px 0',
-                        fontSize: '14px',
-                        color: '#5D01C6',
-                        fontWeight: 'bold',
-                        lineHeight: '1.4',
-                        wordBreak: 'keep-all',
-                      }}
-                    >
-                      {survey.title}
-                    </h4>
+                    <S.SurveyTitle>{survey.title}</S.SurveyTitle>
 
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        width: '100%',
-                      }}
-                    >
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: '11px',
-                          color: '#5D01C6',
-                          opacity: 0.8,
-                        }}
-                      >
-                        {survey.target} • {survey.token}토큰
-                      </p>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: '11px',
-                          color: '#5D01C6',
-                          opacity: 0.8,
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        시간: {survey.duration}
-                      </p>
-                    </div>
+                    <S.SurveyInfoGroup>
+                      <S.SurveyInfoText>
+                        {survey.target} • {survey.maxToken}토큰
+                      </S.SurveyInfoText>
+                      <S.SurveyInfoText $nowrap>
+                        시간: {survey.estimatedMinutes}분
+                      </S.SurveyInfoText>
+                    </S.SurveyInfoGroup>
                   </div>
 
-                  {/* 선택된 카드 내부에만 참여하기 버튼 노출 */}
                   {isSelected && (
-                    <button
+                    <S.ParticipateBtn
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert(`${survey.title} 설문 참여하기 화면 이동`);
-                      }}
-                      style={{
-                        marginTop: '12px',
-                        width: '100%',
-                        padding: '8px 0',
-                        borderRadius: '10px',
-                        border: 'none',
-                        backgroundColor: '#ffffff',
-                        color: '#5D01C6',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 6px rgba(93, 1, 198, 0.08)',
+
+                        // 💡 [2중 자체 방어 가드] 혹시나 예외적으로 노출되었어도 라우팅 진입을 가로막아 중복참여 차단
+                        if (participatedIds.includes(survey.surveyId)) {
+                          alert('이미 참여를 완료하신 설문조사입니다.');
+                          return;
+                        }
+
+                        navigate(`/surveyjoinfirst/${survey.surveyId}`);
                       }}
                     >
                       참여하기
-                    </button>
+                    </S.ParticipateBtn>
                   )}
-                </div>
+                </S.SurveyCard>
               );
             })
           ) : (
-            <div
-              style={{
-                gridColumn: 'span 2',
-                textAlign: 'center',
-                padding: '30px 20px',
-                color: '#5D01C6',
-                fontSize: '13px',
-              }}
-            >
-              해당 카테고리의 설문이 없습니다.
-            </div>
+            <S.EmptyMessage>
+              해당 카테고리에 참여 가능한 설문이 없습니다.
+            </S.EmptyMessage>
           )}
-        </div>
+        </S.SurveyGrid>
       </div>
 
-      {/* --------------------------------------------------------
-         [5] 하단 공공 아카이브
-      -------------------------------------------------------- */}
-      <div
-        onClick={() => handleProtectedAction('공공 아카이브')}
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: '#F8F2FF',
-          borderRadius: '20px',
-          padding: '20px 24px',
-          cursor: 'pointer',
-          boxSizing: 'border-box',
-        }}
+      {/* --- [5] 하단 공공 아카이브 --- */}
+      <S.ArchiveCard
+        onClick={() => handleProtectedAction('공공 아카이브', '/archivemain')}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <S.FlexGroup style={{ gap: '16px' }}>
           <img
             src={File}
-            alt=""
+            alt="file"
             style={{ width: '40px', height: '40px', objectFit: 'contain' }}
           />
           <div>
-            <h3
-              style={{
-                margin: '0 0 4px 0',
-                color: '#5D01C6',
-                fontSize: '16px',
-                fontWeight: 'bold',
-              }}
-            >
+            <S.BannerTitle style={{ marginBottom: '4px' }}>
               공공 아카이브
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                color: '#5D01C6',
-                fontSize: '11px',
-                lineHeight: '1.4',
-                opacity: 0.9,
-              }}
-            >
+            </S.BannerTitle>
+            <S.BannerDesc style={{ lineHeight: '1.4', opacity: 0.9 }}>
               공유된 설문 데이터를 검색하고
               <br />
               과제, 연구에 다시 활용해보세요.
-            </p>
+            </S.BannerDesc>
           </div>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '30px',
-            height: '30px',
-            backgroundColor: '#ffffff',
-            borderRadius: '50%',
-          }}
-        >
+        </S.FlexGroup>
+        <S.CircleIconBox>
           <img
             src={Go}
-            alt=""
+            alt="go"
             style={{ width: '14px', height: '14px', objectFit: 'contain' }}
           />
-        </div>
-      </div>
+        </S.CircleIconBox>
+      </S.ArchiveCard>
 
-      {/* --------------------------------------------------------
-         [6] 게스트 진입 차단 팝업
-      -------------------------------------------------------- */}
+      {/* --- [6] 게스트 진입 차단 팝업 --- */}
       {showLoginPopup && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.4)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 10000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#DDBFFF',
-              width: '280px',
-              borderRadius: '16px',
-              padding: '24px',
-              textAlign: 'center',
-            }}
-          >
-            <p
-              style={{
-                margin: '0 0 24px 0',
-                color: '#5D01C6',
-                fontSize: '15px',
-                fontWeight: 'bold',
-              }}
-            >
-              로그인이 필요한 서비스예요
-            </p>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                onClick={() => setShowLoginPopup(false)}
-                style={{
-                  flex: 1,
-                  padding: '10px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: '#ffffff',
-                  color: '#5D01C6',
-                  fontWeight: 'bold',
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                }}
-              >
+        <S.PopupOverlay>
+          <S.PopupBox>
+            <S.PopupTitle>로그인이 필요한 서비스예요</S.PopupTitle>
+            <S.PopupBtnGroup>
+              <S.PopupCancelBtn onClick={() => setShowLoginPopup(false)}>
                 취소
-              </button>
-              <button
+              </S.PopupCancelBtn>
+              <S.PopupLoginBtn
                 onClick={() => {
                   setShowLoginPopup(false);
-                  alert('로그인 화면으로 이동');
-                }}
-                style={{
-                  flex: 1,
-                  padding: '10px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: '#5D01C6',
-                  color: '#ffffff',
-                  fontWeight: 'bold',
-                  fontSize: '13px',
-                  cursor: 'pointer',
+                  navigate('/login');
                 }}
               >
                 로그인하기
-              </button>
-            </div>
-          </div>
-        </div>
+              </S.PopupLoginBtn>
+            </S.PopupBtnGroup>
+          </S.PopupBox>
+        </S.PopupOverlay>
       )}
-
-      <style>{`
-        .category-scroll-block::-webkit-scrollbar {
-          display: none !important;
-        }
-        .main-page-container div::-webkit-scrollbar {
-          display: none !important;
-        }
-      `}</style>
-    </div>
+    </S.Container>
   );
 };
 

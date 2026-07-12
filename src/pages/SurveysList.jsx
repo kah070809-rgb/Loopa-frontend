@@ -1,83 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // 💡 라우터 이동을 위해 추가
+import * as S from './surveylist.style'; // 분리된 스타일 컴포넌트 임포트
 import Backmy from '../assets/images/Backmy.svg';
 import Search from '../assets/images/Search.svg';
 
-const SurveyListPage = () => {
-  // 카테고리 상태 (기본값: '전체')
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+// 우리가 분리해두었던 '참여 가능한 설문 조회' API를 가져옵니다.
+import { getAvailableSurveys } from '../api/survey';
 
-  // 검색창 입력 상태 및 실제 검색 실행(버튼 클릭) 상태 분리
+const SurveyListPage = () => {
+  const navigate = useNavigate(); // 라우터 이동용 훅 선언
+
+  // 💡 데이터 오작동 방지를 위해 초기 선택 카테고리 상태를 'ALL'로 동기화합니다.
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 카테고리 목록
+  // API 연동을 위한 진짜 설문 목록 상태 관리
+  const [surveys, setSurveys] = useState([]);
+
+  // 카테고리 목록 (메인 페이지 규격과 완벽 매핑)
   const categoryList = [
-    '전체',
-    '라이프스타일',
-    '학업, 진로',
-    '심리',
-    'IT·AI',
-    '서비스·앱',
-    '소비·마케팅',
-    '게임',
-    '학교생활',
-    '기타',
+    { label: '전체', value: 'ALL' },
+    { label: '진로·취업', value: 'CAREER' },
+    { label: 'IT·AI', value: 'IT_AI' },
+    { label: '서비스·앱', value: 'SERVICE_APP' },
+    { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
+    { label: '게임', value: 'GAME' },
+    { label: '학교생활', value: 'SCHOOL_LIFE' },
+    { label: '일상', value: 'DAILY' },
+    { label: '심리', value: 'PSYCHOLOGY' },
+    { label: '기타', value: 'ETC' },
   ];
 
-  // 더미 데이터 (검색 및 카테고리 필터링 테스트용)
-  const dummySurveys = [
-    {
-      surveyId: 1,
-      title: '대학생 AI 활용 실태 조사',
-      category: 'IT·AI',
-      target: '대학생 대상',
-      token: 18,
-      duration: '3분',
-      isFirst: true, // 첫 번째 카드 배경색(DDBFFF) 지정을 위함
-    },
-    {
-      surveyId: 2,
-      title: '재택근무 만족도 조사',
-      category: 'IT·AI', // 피그마 이미지상 IT·AI 칩이 박혀있어 테스트용으로 통일
-      target: '직장인 대상',
-      token: 18,
-      duration: '3분',
-      isFirst: false, // 두 번째부터는 연한 배경(F8F2FF)
-    },
-    {
-      surveyId: 3,
-      title: '대학생 AI 활용 실태 조사',
-      category: 'IT·AI',
-      target: '대학생 대상',
-      token: 18,
-      duration: '3분',
-      isFirst: false,
-    },
-    {
-      surveyId: 4,
-      title: '새로운 모바일 RPG 선호도',
-      category: '게임',
-      target: '20대 대상',
-      token: 20,
-      duration: '5분',
-      isFirst: false,
-    },
-  ];
+  // 💡 [백엔드 연동 핵심] 카테고리 칩을 누르거나, 검색 버튼을 누를 때마다 서버에 새로 API를 호출합니다.
+  useEffect(() => {
+    const fetchSurveyList = async () => {
+      try {
+        // 백엔드 약속 규격에 맞춰 'ALL'일 때는 null을, 검색어가 비어있을 때도 null을 전달합니다.
+        const apiCategory =
+          selectedCategory === 'ALL' ? null : selectedCategory;
+        const apiKeyword = searchTerm.trim() === '' ? null : searchTerm;
 
-  // 필터링 로직: 1. 카테고리 필터 -> 2. 돋보기 버튼 누른 검색어 필터
-  const filteredSurveys = dummySurveys.filter((survey) => {
-    const matchCategory =
-      selectedCategory === '전체' || survey.category === selectedCategory;
-    const matchSearch = survey.title.includes(searchTerm);
-    return matchCategory && matchSearch;
-  });
+        const responseData = await getAvailableSurveys({
+          category: apiCategory,
+          keyword: apiKeyword,
+          size: 20, // 한 페이지에 20개씩 로드
+        });
 
-  // 돋보기 버튼 클릭 핸들러 (이때 필터링이 실행됨)
+        if (responseData.isSuccess) {
+          // 서버가 준 진짜 데이터 리스트 배열을 상태창에 채워넣습니다.
+          setSurveys(responseData.result.items);
+        }
+      } catch (error) {
+        console.error('설문 목록 조회 실패:', error);
+      }
+    };
+
+    fetchSurveyList();
+  }, [selectedCategory, searchTerm]); // 카테고리나 검색 확정어가 바뀔 때마다 실시간 재호출!
+
+  // 돋보기 버튼 클릭 핸들러 (검색 실행)
   const handleSearchClick = () => {
-    setSearchTerm(searchInput);
+    setSearchTerm(searchInput); // 사용자가 입력한 값을 검색 확정어로 박아 useEffect를 트리거합니다.
   };
 
-  // 엔터키 입력 시 검색 실행 (편의성 추가)
+  // 엔터키 입력 시 검색 실행
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleSearchClick();
@@ -85,215 +72,79 @@ const SurveyListPage = () => {
   };
 
   return (
-    <div
-      className="survey-list-container"
-      style={{
-        width: '100%',
-        maxWidth: '430px',
-        margin: '0 auto',
-        padding: '30px 30px 40px 30px',
-        boxSizing: 'border-box',
-        overflowX: 'hidden',
-        minHeight: '100vh',
-        backgroundColor: '#ffffff',
-        position: 'relative',
-      }}
-    >
-      {/* --------------------------------------------------------
-         [1] 헤더 영역 (이미지 에셋으로 통째로 적용)
-      -------------------------------------------------------- */}
-      <header
-        style={{ marginBottom: '24px', display: 'flex', alignItems: 'center' }}
-      >
-        <img
+    <S.Container>
+      {/* --- [1] 헤더 영역 --- */}
+      <S.Header>
+        <S.HeaderIcon
           src={Backmy}
           alt="참여 가능한 설문 타이틀"
-          onClick={() => alert('메인 화면으로 뒤로가기')}
-          style={{ height: '24px', cursor: 'pointer', objectFit: 'contain' }}
+          onClick={() => window.history.back()} // 브라우저 이전 페이지(메인)로 똑똑하게 이동
         />
-      </header>
+      </S.Header>
 
-      {/* --------------------------------------------------------
-         [2] 검색 바 영역
-      -------------------------------------------------------- */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          border: '1.5px solid #5D01C6', // 테두리 진한 보라
-          borderRadius: '30px',
-          padding: '4px 8px 4px 20px',
-          marginBottom: '24px',
-        }}
-      >
-        <input
+      {/* --- [2] 검색 바 영역 --- */}
+      <S.SearchBarContainer>
+        <S.SearchInput
           type="text"
           placeholder="설문 제목 검색"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          style={{
-            flex: 1,
-            border: 'none',
-            outline: 'none',
-            fontSize: '14px',
-            color: '#5D01C6',
-            backgroundColor: 'transparent',
-          }}
         />
-        {/* 🌟 피그마에서 추출한 돋보기 버튼 이미지 적용 */}
-        <img
-          src={Search}
-          alt="검색"
-          onClick={handleSearchClick}
-          style={{ width: '36px', height: '36px', cursor: 'pointer' }}
-        />
-      </div>
+        <S.SearchIcon src={Search} alt="검색" onClick={handleSearchClick} />
+      </S.SearchBarContainer>
 
-      {/* --------------------------------------------------------
-         [3] 카테고리 칩 가로 스크롤 영역
-      -------------------------------------------------------- */}
-      <div
-        className="category-scroll-box"
-        style={{
-          display: 'flex',
-          gap: '8px',
-          marginBottom: '24px',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          width: '100%',
-          paddingBottom: '6px',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        {categoryList.map((cat) => {
-          const isCatSelected = selectedCategory === cat;
-          return (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              style={{
-                padding: '7px 16px',
-                borderRadius: '20px',
-                border: isCatSelected ? 'none' : '1px solid #DDBFFF',
-                backgroundColor: isCatSelected ? '#DDBFFF' : '#ffffff',
-                color: '#5D01C6',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                flexShrink: 0,
-                transition: 'all 0.15s ease',
-              }}
-            >
-              {cat}
-            </button>
-          );
-        })}
-      </div>
+      {/* --- [3] 카테고리 칩 가로 스크롤 영역 --- */}
+      <S.CategoryScrollBox>
+        {categoryList.map((cat) => (
+          <S.CategoryButton
+            key={cat.value}
+            $isSelected={selectedCategory === cat.value}
+            onClick={() => setSelectedCategory(cat.value)}
+          >
+            {cat.label}
+          </S.CategoryButton>
+        ))}
+      </S.CategoryScrollBox>
 
-      {/* --------------------------------------------------------
-         [4] 설문 리스트 수직 렌더링 영역
-      -------------------------------------------------------- */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {filteredSurveys.length > 0 ? (
-          filteredSurveys.map((survey) => (
-            <div
-              key={survey.surveyId}
-              style={{
-                backgroundColor: survey.isFirst ? '#DDBFFF' : '#F8F2FF', // 첫 카드는 진한 배경, 나머지는 연한 배경
-                borderRadius: '16px',
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <h4
-                style={{
-                  margin: '0 0 8px 0',
-                  fontSize: '16px',
-                  color: '#5D01C6',
-                  fontWeight: 'bold',
-                }}
-              >
-                {survey.title}
-              </h4>
-              <p
-                style={{
-                  margin: '0 0 16px 0',
-                  fontSize: '11px',
-                  color: '#5D01C6',
-                }}
-              >
-                {survey.target} · {survey.token}토큰
-              </p>
+      {/* --- [4] 설문 리스트 렌더링 영역 --- */}
+      <S.ListContainer>
+        {surveys.length > 0 ? (
+          surveys.map((survey, index) => (
+            <S.SurveyCard key={survey.surveyId} $isFirst={index === 0}>
+              <S.CardTitle>{survey.title}</S.CardTitle>
+              <S.CardSubtitle>
+                {survey.target} · {survey.maxToken}토큰
+              </S.CardSubtitle>
 
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                {/* 하단 좌측: 카테고리 칩 + 소요 시간 */}
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
-                  <span
-                    style={{
-                      backgroundColor: '#ffffff',
-                      color: '#5D01C6',
-                      fontSize: '10px',
-                      fontWeight: 'bold',
-                      padding: '4px 10px',
-                      borderRadius: '12px',
-                    }}
-                  >
-                    {survey.category}
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#5D01C6' }}>
-                    소요 시간 {survey.duration}
-                  </span>
-                </div>
+              <S.CardFooter>
+                <S.FooterLeft>
+                  {/* 카테고리 영문 코드를 한글 칩으로 보여주기 위한 가변 매핑 */}
+                  <S.CategoryBadge>
+                    {categoryList.find((c) => c.value === survey.category)
+                      ?.label || survey.category}
+                  </S.CategoryBadge>
+                  <S.DurationText>
+                    소요 시간 {survey.estimatedMinutes}분
+                  </S.DurationText>
+                </S.FooterLeft>
 
-                {/* 하단 우측: 참여하기 버튼 */}
-                <span
-                  onClick={() => alert(`${survey.title} 참여 폼으로 이동`)}
-                  style={{
-                    fontSize: '13px',
-                    color: '#5D01C6',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                  }}
+                {/* 💡 참여하기 버튼 클릭 시 메인 페이지와 동일한 상세 폼 라우터 경로로 이동 */}
+                <S.ParticipateLink
+                  onClick={() =>
+                    navigate(`/surveyjoinfirst/${survey.surveyId}`)
+                  }
                 >
                   참여하기 &gt;
-                </span>
-              </div>
-            </div>
+                </S.ParticipateLink>
+              </S.CardFooter>
+            </S.SurveyCard>
           ))
         ) : (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '40px 0',
-              color: '#5D01C6',
-              fontSize: '14px',
-            }}
-          >
-            검색 조건에 맞는 설문이 없습니다.
-          </div>
+          <S.EmptyMessage>검색 조건에 맞는 설문이 없습니다.</S.EmptyMessage>
         )}
-      </div>
-
-      {/* 스크롤바 숨김 처리 CSS */}
-      <style>{`
-        .category-scroll-box::-webkit-scrollbar {
-          display: none !important;
-        }
-        input::placeholder {
-          color: #DDBFFF;
-        }
-      `}</style>
-    </div>
+      </S.ListContainer>
+    </S.Container>
   );
 };
 
