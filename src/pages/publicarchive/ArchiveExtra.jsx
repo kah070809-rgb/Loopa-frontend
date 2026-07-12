@@ -146,7 +146,7 @@ function ArchiveExtra() {
       </div>
 
       <div className="archive-extra-filter-row">
-        {categories.map((category) => (
+        {categoryList.map((category) => (
           <button
             key={category.value || 'all'}
             className={`archive-extra-filter-button ${
