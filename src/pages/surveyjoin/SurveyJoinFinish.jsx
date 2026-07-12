@@ -7,9 +7,15 @@ function SurveyJoinFinish() {
 
   const rewardToken = location.state?.rewardToken ?? 0;
   const userToken = location.state?.userToken ?? 0;
+  const surveyId = location.state?.surveyId;
 
   const handleGoMain = () => {
-    navigate("/surveyjoinfirst");
+    if (surveyId) {
+      navigate(`/surveyjoinfirst/${surveyId}`);
+      return;
+    }
+
+    navigate("/main");
   };
 
   return (
