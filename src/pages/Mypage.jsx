@@ -79,9 +79,18 @@ const MyPage = () => {
   };
 
   // 공유 버튼 클릭 핸들러
-  const handleShareClick = (surveyId) => {
-    // TODO: surveyId를 활용한 링크 생성 로직 추가
-    alert(`[확인] 설문 ID ${surveyId}번 링크가 클립보드에 복사되었습니다.`);
+  const handleShareClick = async (surveyId) => {
+    // 💡 설문 진행용 전체 URL 주소 생성 (프로젝트의 실제 라우터 주소 구조에 맞게 복사됩니다)
+    const shareUrl = `${window.location.origin}/survey/${surveyId}`;
+
+    try {
+      // 💡 클립보드에 주소 텍스트 복사 실행
+      await navigator.clipboard.writeText(shareUrl);
+      alert(`설문 링크가 클립보드에 복사되었습니다!\n${shareUrl}`);
+    } catch (error) {
+      console.error('링크 복사 실패:', error);
+      alert('링크 복사에 실패했습니다. 다시 시도해 주세요.');
+    }
   };
 
   // 휴지통 클릭 핸들러
@@ -203,7 +212,9 @@ const MyPage = () => {
                 <S.CardInfoText>
                   {survey.target} · 응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
-                <S.DetailLink onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}>
+                <S.DetailLink
+                  onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}
+                >
                   자세히 보기 &gt;
                 </S.DetailLink>
               </S.CardFooter>
@@ -236,7 +247,9 @@ const MyPage = () => {
                 <S.CardInfoText>
                   응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
-                <S.DetailLink onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}>
+                <S.DetailLink
+                  onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}
+                >
                   자세히 보기 &gt;
                 </S.DetailLink>
               </S.CardFooter>
