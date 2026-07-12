@@ -1,12 +1,14 @@
 .myarchive-page {
   width: 100%;
   max-width: 430px;
-  min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: 20px 14px 120px;
+  padding: 20px 14px 14px;
   box-sizing: border-box;
   background-color: #ffffff;
-  position: relative;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .myarchive-header {
@@ -193,14 +195,13 @@
 }
 
 .myarchive-share-button {
-  position: fixed;
-  left: 50%;
-  bottom: 26px;
-  transform: translateX(-50%);
+  position: sticky;
+  bottom: 14px;
 
-  width: calc(100% - 56px);
-  max-width: 374px;
+  flex-shrink: 0;
+  width: calc(100% - 28px);
   height: 48px;
+  margin: auto 14px 0;
 
   border: none;
   border-radius: 999px;
