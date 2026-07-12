@@ -34,7 +34,7 @@ function App() {
           <Route path="/surveys" element={<Surveys />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/landing" element={<Landing />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/archivemain" element={<PublicArchiveMain />} />
           <Route path="/archiveextra" element={<ArchiveExtra />} />
           <Route path="/myarchive" element={<MyArchive />} />
