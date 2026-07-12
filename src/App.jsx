@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SurveyCreatePage from './pages/SurveyCreate/SurvveyCreate';
-import Main from './pages/MainPage';
+import Main from './pages/MainPages';
 import Mypage from './pages/Mypage';
 import Surveys from './pages/SurveysList';
 import AppLayout from './styles/AppLayout';
@@ -23,6 +23,7 @@ import PasswordChangeComplete from './pages/PasswordChangeComplete';
 import GuestSurveyJoinFinish from './pages/surveyjoin/GuestSurveyJoinFinish';
 import SurveyExpired from './pages/surveyjoin/SurveyExpired';
 //import './App.css';
+
 
 function App() {
   return (
