@@ -35,7 +35,7 @@ const MainPage = () => {
   // 💡 전달해주신 영어 규격 스펙을 화면 레이블과 완벽 매핑 연동
   const categoryList = [
     { label: '전체', value: 'ALL' },
-    { label: '진로/취업', value: 'CAREER' },
+    { label: '진로·취업', value: 'CAREER' },
     { label: 'IT·AI', value: 'IT_AI' },
     { label: '서비스·앱', value: 'SERVICE_APP' },
     { label: '소비·마케팅', value: 'CONSUMER_MARKETING' },
@@ -263,8 +263,12 @@ const MainPage = () => {
                     <S.ParticipateBtn
                       onClick={(e) => {
                         e.stopPropagation();
-                        // 설문 참여하기 버튼 클릭 시 /create로 이동합니다.
-                        navigate('/create');
+
+                        // 💡 기존의 '/create'를 지우고, 해당 설문의 ID를 담아 진짜 참여 경로로 이동시킵니다!
+                        navigate(`/survey/join/${survey.surveyId}/question`);
+
+                        // 만약 참여 전 안내 페이지(/surveyjoinfirst)를 먼저 거쳐야 하는 스펙이라면 아래 주석을 해제하세요.
+                        // navigate('/surveyjoinfirst', { state: { surveyId: survey.surveyId } });
                       }}
                     >
                       참여하기

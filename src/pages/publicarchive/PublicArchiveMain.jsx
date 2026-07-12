@@ -135,14 +135,14 @@ function PublicArchiveMain() {
         <div className="archive-filter-list">
           {categoryList.map((cat) => (
             <button
-              key={cat}
+              key={cat.value}
               className={`archive-filter-button ${
-                selectedCategory === cat ? 'active' : ''
+                selectedCategory === cat.value ? 'active' : ''
               }`}
               type="button"
-              onClick={() => handleCategoryClick(cat)}
+              onClick={() => handleCategoryClick(cat.value)}
             >
-              {cat}
+              {cat.value}
             </button>
           ))}
         </div>

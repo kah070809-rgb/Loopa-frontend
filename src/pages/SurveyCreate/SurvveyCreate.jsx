@@ -215,7 +215,7 @@ export default function SurveyCreatePage() {
               <S.PopupCancelBtn onClick={() => setIsPopupOpen(false)}>
                 취소
               </S.PopupCancelBtn>
-              <S.PopupConfirmBtn onClick={() => navigate('/')}>
+              <S.PopupConfirmBtn onClick={() => navigate('/main')}>
                 메인으로 돌아가기
               </S.PopupConfirmBtn>
             </S.PopupButtonRow>
