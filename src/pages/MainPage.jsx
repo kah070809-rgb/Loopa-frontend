@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as S from './Mainpage.style';
 import Loopa from '../assets/images/Loopa.svg';
 import Go from '../assets/images/Go.svg';
@@ -8,31 +8,32 @@ import File from '../assets/images/File.svg';
 
 // API 세트 메뉴 임포트
 import { logout } from '../api/auth';
-import { getMyInfo } from '../api/user';
 import { getAvailableSurveys } from '../api/survey';
+// 💡 올려주신 user API 파일에서 getMyInfo와 getMySurveys를 정확하게 임포트합니다.
+import { getMyInfo, getMySurveys } from '../api/user';
 
 const MainPage = () => {
-  const navigate = useNavigate(); // 라우터 이동용 훅 선언
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // 로그인 상태 판단 (로컬 스토리지 토큰 유무 기준)
+  // 로그인 상태 판단
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem('accessToken'),
   );
 
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-
-  // 💡 초기 선택 상태를 영어 코드 규격에 맞춰 'ALL'로 세팅
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedSurveyId, setSelectedSurveyId] = useState(null);
 
-  // API 연동 데이터 상태창 (초기값은 디자인 잔상이 안 남도록 빈 값 세팅)
   const [surveys, setSurveys] = useState([]);
+  // 💡 유저가 이미 완료/등록한 설문의 ID들만 격리 보관할 상태창
+  const [participatedIds, setParticipatedIds] = useState([]);
+
   const [userInfo, setUserInfo] = useState({
     email: '',
     tokenBalance: 0,
   });
 
-  // 💡 전달해주신 영어 규격 스펙을 화면 레이블과 완벽 매핑 연동
   const categoryList = [
     { label: '전체', value: 'ALL' },
     { label: '진로·취업', value: 'CAREER' },
@@ -46,12 +47,15 @@ const MainPage = () => {
     { label: '기타', value: 'ETC' },
   ];
 
-  // 1️⃣ [유저 정보 가져오기] 로그인 상태일 때만 내 정보를 서버에서 불러옵니다.
-  useEffect(() => {
-    if (!isLoggedIn) return;
+  const isGuestMode = location.state?.isGuest || !isLoggedIn;
 
-    const fetchUserInfo = async () => {
+  // 1️⃣ [유저 정보 및 참여/등록 완료 설문 ID 목록 실연동 추출]
+  useEffect(() => {
+    if (isGuestMode) return;
+
+    const fetchUserInfoAndHistory = async () => {
       try {
+        // 1. 내 기본 정보 호출
         const responseData = await getMyInfo();
         if (responseData.isSuccess) {
           setUserInfo({
@@ -59,19 +63,26 @@ const MainPage = () => {
             tokenBalance: responseData.result.tokenBalance,
           });
         }
+
+        // 2. 💡 내가 응답/등록 완료한 설문 목록을 리사이징해서 가져옵니다.
+        const mySurveysData = await getMySurveys({ size: 50 });
+        if (mySurveysData.isSuccess && mySurveysData.result?.items) {
+          // 가져온 내역 목록에서 surveyId 추출하여 배열 생성 (백엔드 필드 규격에 맞춰 매핑)
+          const ids = mySurveysData.result.items.map((item) => item.surveyId);
+          setParticipatedIds(ids);
+        }
       } catch (error) {
-        console.error('유저 정보 조회 실패:', error);
+        console.error('유저 정보 및 이력 동기화 실패:', error);
       }
     };
 
-    fetchUserInfo();
-  }, [isLoggedIn]);
+    fetchUserInfoAndHistory();
+  }, [isGuestMode]);
 
-  // 2️⃣ [참여 가능한 설문 목록 가져오기] 카테고리가 바뀔 때마다 백엔드 서버에 새로 조회합니다.
+  // 2️⃣ [참여 가능한 전체 설문 목록 가져오기 + 프론트 완벽 filter 스크리닝]
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        // 💡 'ALL'일 때는 백엔드 약속에 따라 null 처리, 아닐 때는 영어 코드 직접 빌드전송
         const apiCategory =
           selectedCategory === 'ALL' ? null : selectedCategory;
 
@@ -80,10 +91,17 @@ const MainPage = () => {
           size: 20,
         });
 
-        if (responseData.isSuccess) {
-          setSurveys(responseData.result.items);
-          if (responseData.result.items.length > 0) {
-            setSelectedSurveyId(responseData.result.items[0].surveyId);
+        if (responseData.isSuccess && responseData.result?.items) {
+          // 💡 [프론트엔드 자체 스크리닝 필터링]
+          // 전체 목록 중에서, 내 기참여 리스트(participatedIds)에 겹치는 ID가 없는 것만 통과시킵니다.
+          const pureAvailableItems = responseData.result.items.filter(
+            (survey) => !participatedIds.includes(survey.surveyId),
+          );
+
+          setSurveys(pureAvailableItems);
+
+          if (pureAvailableItems.length > 0) {
+            setSelectedSurveyId(pureAvailableItems[0].surveyId);
           } else {
             setSelectedSurveyId(null);
           }
@@ -94,9 +112,9 @@ const MainPage = () => {
     };
 
     fetchSurveys();
-  }, [selectedCategory]);
+  }, [selectedCategory, participatedIds]); // 💡 내 기참여 이력 배열이 채워지면 실시간으로 재필터링
 
-  // 3️⃣ [로그인/로그아웃 버튼 핸들러] 토큰을 지우고 실시간으로 게스트 카드로 스위칭합니다.
+  // 3️⃣ 로그인/로그아웃 버튼 핸들러
   const handleAuthAction = async () => {
     if (isLoggedIn) {
       if (window.confirm('로그아웃 하시겠습니까?')) {
@@ -106,24 +124,22 @@ const MainPage = () => {
         } catch (error) {
           console.error('서버 로그아웃 처리 실패:', error);
         } finally {
-          // 로컬 스토리지 비우기 및 상태 리셋으로 게스트 카드 즉시 렌더링
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           setIsLoggedIn(false);
           setUserInfo({ email: '', tokenBalance: 0 });
+          setParticipatedIds([]); // 로그아웃 시 이력 목록 청소
           alert('로그아웃되었습니다. 게스트 모드로 전환합니다.');
         }
       }
     } else {
-      // 로그인 창 화면으로 이동
       alert('로그인 화면으로 이동합니다.');
       navigate('/login');
     }
   };
 
-  // 권한이 필요한 액션 처리 (이동 경로 매핑 추가)
   const handleProtectedAction = (actionName, targetPath) => {
-    if (!isLoggedIn) {
+    if (isGuestMode) {
       setShowLoginPopup(true);
     } else {
       if (targetPath) {
@@ -138,12 +154,12 @@ const MainPage = () => {
       <S.Header>
         <S.Logo src={Loopa} alt="Loopa" />
         <S.AuthBtn onClick={handleAuthAction}>
-          {isLoggedIn ? '로그아웃' : '로그인'}
+          {!isGuestMode ? '로그아웃' : '로그인'}
         </S.AuthBtn>
       </S.Header>
 
-      {/* --- [2] 상단 유저 / 게스트 카드 영역 --- */}
-      {isLoggedIn ? (
+      {/* --- [2] 상단 카드 영역 --- */}
+      {!isGuestMode ? (
         <S.CardContainer $isGuest={false}>
           <S.UserInfoWrapper>
             <S.FlexGroup>
@@ -188,7 +204,7 @@ const MainPage = () => {
         </S.CardContainer>
       )}
 
-      {/* --- [3] 설문 만들기 배너 (로그인 시 /create 이동) --- */}
+      {/* --- [3] 설문 만들기 배너 --- */}
       <S.BannerCard
         onClick={() => handleProtectedAction('설문 만들기', '/create')}
       >
@@ -211,7 +227,6 @@ const MainPage = () => {
           <img src={Plus} alt="plus" onClick={() => navigate('/surveys')} />
         </S.SectionHeader>
 
-        {/* 카테고리 칩 영역 */}
         <S.CategoryScrollBox>
           {categoryList.map((cat) => (
             <S.CategoryButton
@@ -219,13 +234,11 @@ const MainPage = () => {
               $isSelected={selectedCategory === cat.value}
               onClick={() => setSelectedCategory(cat.value)}
             >
-              {cat.label}{' '}
-              {/* ✅ 객체 내부의 예쁜 한글 이름(.label)만 쏙 뽑아서 그려줍니다! */}
+              {cat.label}
             </S.CategoryButton>
           ))}
         </S.CategoryScrollBox>
 
-        {/* 설문 리스트 그리드 영역 */}
         <S.SurveyGrid>
           {surveys.length > 0 ? (
             surveys.map((survey) => {
@@ -255,6 +268,12 @@ const MainPage = () => {
                       onClick={(e) => {
                         e.stopPropagation();
 
+                        // 💡 [2중 자체 방어 가드] 혹시나 예외적으로 노출되었어도 라우팅 진입을 가로막아 중복참여 차단
+                        if (participatedIds.includes(survey.surveyId)) {
+                          alert('이미 참여를 완료하신 설문조사입니다.');
+                          return;
+                        }
+
                         navigate(`/surveyjoinfirst/${survey.surveyId}`);
                       }}
                     >
@@ -265,12 +284,14 @@ const MainPage = () => {
               );
             })
           ) : (
-            <S.EmptyMessage>해당 카테고리의 설문이 없습니다.</S.EmptyMessage>
+            <S.EmptyMessage>
+              해당 카테고리에 참여 가능한 설문이 없습니다.
+            </S.EmptyMessage>
           )}
         </S.SurveyGrid>
       </div>
 
-      {/* --- [5] 하단 공공 아카이브 (로그인 시 /archivemain 이동) --- */}
+      {/* --- [5] 하단 공공 아카이브 --- */}
       <S.ArchiveCard
         onClick={() => handleProtectedAction('공공 아카이브', '/archivemain')}
       >
@@ -304,7 +325,7 @@ const MainPage = () => {
       {showLoginPopup && (
         <S.PopupOverlay>
           <S.PopupBox>
-            <S.PopupTitle>로그인이 필요한 service예요</S.PopupTitle>
+            <S.PopupTitle>로그인이 필요한 서비스예요</S.PopupTitle>
             <S.PopupBtnGroup>
               <S.PopupCancelBtn onClick={() => setShowLoginPopup(false)}>
                 취소

@@ -1,78 +1,88 @@
-.archive-survey-card {
-  width: 100%;
-  min-height: 160px;
-  padding: 28px 30px;
+.archive-preview-card {
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
-  border: none;
-  border-radius: 28px;
-  background-color: #f7efff;
-  color: #4b008c;
+  width: 100%;
   cursor: pointer;
   text-align: left;
+  transition: background-color 0.15s ease;
 }
 
-.archive-survey-card.selected {
+/* 💡 클릭되어 활성화(Selected) 되었을 때만 진한 연보라 배경 변환 */
+.archive-preview-card.active-card {
   background-color: #ddbfff;
 }
 
-.archive-card-main {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  height: 100%;
+/* 💡 기본 평상시에는 전부 동일한 연한 라벤더 배경 고정 */
+.archive-preview-card.normal-card {
+  background-color: #f8f2ff;
 }
 
-.archive-card-left {
+/* 상단 행 정렬 */
+.archive-card-top-row {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
+/* 제목 스타일 (16px, 보라색) */
 .archive-card-title {
-  margin: 0 0 22px;
-  color: #4b008c;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.archive-card-info {
-  margin: 0 0 18px;
-  color: #6d1bab;
+  margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  color: #5d01c6;
+  font-family: 'Pretendard-SemiBold', 'Pretendard-Bold';
+  line-height: 1.4;
+  flex: 1;
 }
 
-.archive-card-category {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 74px;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background-color: white;
-  color: #4b008c;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.archive-card-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-shrink: 0;
-  padding: 4px 0 6px;
-}
-
+/* 날짜 스타일 */
 .archive-card-date {
-  color: #4b008c;
-  font-size: 17px;
-  font-weight: 800;
+  font-size: 13px;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold';
+  white-space: nowrap;
 }
 
-.archive-card-detail {
-  color: #4b008c;
-  font-size: 17px;
-  font-weight: 800;
+/* 서브 캡션 (11px, 보라색) */
+.archive-card-subtitle {
+  margin: 0 0 16px 0;
+  font-size: 11px;
+  color: #5d01c6;
+  font-family: 'Pretendard-Medium';
+}
+
+/* 하단 정렬 */
+.archive-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.archive-card-footer-left {
+  display: flex;
+  align-items: center;
+}
+
+/* 카테고리 흰색 배지 */
+.archive-card-badge {
+  background-color: #ffffff;
+  color: #5d01c6;
+  font-size: 10px;
+  font-family: 'Pretendard-Bold';
+  padding: 4px 10px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+/* 우측 링크 */
+.archive-card-link {
+  font-size: 13px;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold', 'Pretendard-SemiBold';
+  cursor: pointer;
 }

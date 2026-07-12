@@ -1,4 +1,4 @@
-/* 기본 컨테이너 여백 지정 */
+/* 기본 컨테이너 여백 및 화면 최대 규격 지정 */
 .archive-page {
   width: 100%;
   max-width: 430px;
@@ -16,28 +16,23 @@
   margin-bottom: 24px;
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
 .archive-back-button {
   border: none;
   background: none;
   padding: 0;
-  font-size: 24px;
-  color: #5d01c6;
   cursor: pointer;
   display: flex;
   align-items: center;
 }
 
-/* .archive-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-  color: #5d01c6;
-} */
+.archive-back-icon-img {
+  height: 24px;
+  object-fit: contain;
+}
 
-/* --- [2] 상단 인트로 그라데이션 카드 & File.svg 배치 정렬 수치 수정 --- */
+/* --- [2] 상단 소개 배너 박스 --- */
 .archive-intro-card {
   width: 100%;
   padding: 22px 24px;
@@ -61,6 +56,7 @@
   font-size: 16px;
   font-weight: bold;
   color: #5d01c6;
+  font-family: 'Pretendard-Bold';
 }
 
 .archive-intro-text {
@@ -69,6 +65,7 @@
   line-height: 1.5;
   font-weight: 500;
   color: #5d01c6;
+  font-family: 'Pretendard-Medium';
 }
 
 .archive-intro-file-icon {
@@ -77,7 +74,7 @@
   object-fit: contain;
 }
 
-/* --- [3] 내꺼에서 그대로 가져온 검색바 정렬 디자인 --- */
+/* --- [3] 검색바 영역 --- */
 .archive-search-box {
   display: flex;
   align-items: center;
@@ -117,7 +114,7 @@
   color: #5d01c6;
 }
 
-/* --- [4] 내꺼에서 그대로 가져온 카테고리 칩 가로 스크롤 리스트 영역 --- */
+/* --- [4] 카테고리 칩 가로 스크롤 영역 --- */
 .archive-filter-list {
   display: flex;
   gap: 8px;
@@ -147,14 +144,13 @@
   transition: all 0.15s ease;
 }
 
-/* 선택되었을 때 내꺼 서식과 연보라색 완벽 동기화 */
 .archive-filter-button.active {
   border: none;
   background-color: #ddbfff;
   color: #5d01c6;
 }
 
-/* --- [5] 중간 섹션 타이틀바 영역 --- */
+/* --- [5] 중간 서브 헤더 영역 --- */
 .archive-section-header {
   display: flex;
   align-items: center;
@@ -167,6 +163,7 @@
   font-size: 16px;
   font-weight: bold;
   color: #5d01c6;
+  font-family: 'Pretendard-Bold';
 }
 
 .archive-more-button {
@@ -179,7 +176,7 @@
   cursor: pointer;
 }
 
-/* --- [6] 리스트 정렬 --- */
+/* --- [6] 카드 리스트 묶음 구역 --- */
 .archive-card-list {
   display: flex;
   flex-direction: column;
@@ -187,14 +184,15 @@
 }
 
 .archive-loading-text,
-.archive-error-text {
+.archive-error-text,
+.archive-empty-message {
   text-align: center;
-  padding: 20px 0;
+  padding: 40px 0;
   color: #5d01c6;
   font-size: 14px;
 }
 
-/* --- [7] 하단 피그마 스타일 고정 와이드 캡슐 버튼 바 --- */
+/* --- [7] 하단 와이드 캡슐 버튼 바 --- */
 .archive-bottom-container {
   position: absolute;
   bottom: 24px;
