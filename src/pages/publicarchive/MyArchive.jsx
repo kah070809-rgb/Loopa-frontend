@@ -207,18 +207,18 @@ function MyArchive() {
       )}
 
       <button
-        className="myarchive-share-button"
-        type="button"
-        disabled={
-          selectedSurveyIds.length === 0 ||
-          isLoading ||
-          isSharing
-        }
+       className="myarchive-share-button"
+       type="button"
+       disabled={
+        selectedSurveyIds.length === 0 ||
+        isLoading ||
+        isSharing
+       }
         onClick={handleShareSurveys}
       >
-        {isSharing
-          ? "공유 중..."
-          : `공유하고 ${rewardToken} 토큰 받기`}
+       {isSharing
+        ? "공유 중..."
+        : `공유하고 ${rewardToken} 토큰 받기`}
       </button>
 
       {isPopupOpen && shareResult && (

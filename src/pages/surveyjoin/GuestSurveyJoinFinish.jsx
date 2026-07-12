@@ -5,7 +5,7 @@ function GuestSurveyJoinFinish() {
   const navigate = useNavigate();
 
   const handleGoMain = () => {
-    navigate("/surveyjoinfirst");
+    navigate("/main");
   };
 
   return (

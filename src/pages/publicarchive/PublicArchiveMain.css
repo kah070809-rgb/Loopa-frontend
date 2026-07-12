@@ -1,180 +1,221 @@
+/* 기본 컨테이너 여백 및 화면 최대 규격 지정 */
 .archive-page {
   width: 100%;
-  min-height: 100vh;
-  padding: 20px 24px 40px;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 30px 30px 120px 30px;
   box-sizing: border-box;
-  background-color: white;
-  color: #4b008c;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background-color: #ffffff;
+  position: relative;
 }
 
+/* --- [1] 헤더 영역 --- */
 .archive-header {
+  margin-bottom: 24px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 36px;
 }
 
 .archive-back-button {
   border: none;
   background: none;
   padding: 0;
-  font-size: 34px;
-  font-weight: 500;
-  color: #7b1fd1;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-.archive-title {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  color: #4b008c;
+.archive-back-icon-img {
+  height: 24px;
+  object-fit: contain;
 }
 
+/* --- [2] 상단 소개 배너 박스 --- */
 .archive-intro-card {
   width: 100%;
-  height: 184px;
-  padding: 36px 40px;
+  padding: 22px 24px;
   box-sizing: border-box;
   border-radius: 24px;
-  background: linear-gradient(90deg, #f5e7ff 0%, #d7a7ff 52%, #a843ff 100%);
-  margin-bottom: 28px;
+  background: linear-gradient(90deg, #f3e8ff 0%, #ddbfff 60%, #b87eff 100%);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.archive-intro-content {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .archive-intro-title {
-  margin: 0 0 24px;
-  font-size: 26px;
-  font-weight: 800;
-  color: #4b008c;
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold';
 }
 
 .archive-intro-text {
   margin: 0;
-  font-size: 17px;
-  line-height: 1.7;
-  font-weight: 600;
-  color: #5b159d;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #5d01c6;
+  font-family: 'Pretendard-Medium';
 }
 
+.archive-intro-file-icon {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+/* --- [3] 검색바 영역 --- */
 .archive-search-box {
-  width: 100%;
-  height: 78px;
-  border: 3px solid #e2b6ff;
-  border-radius: 999px;
   display: flex;
   align-items: center;
-  padding: 0 10px 0 32px;
+  border: 1.5px solid #5d01c6;
+  border-radius: 30px;
+  padding: 4px 8px 4px 20px;
+  margin-bottom: 24px;
+  height: 46px;
   box-sizing: border-box;
-  margin-bottom: 28px;
 }
 
 .archive-search-input {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 22px;
-  font-weight: 500;
-  color: #4b008c;
-  background: transparent;
+  font-size: 14px;
+  color: #5d01c6;
+  background-color: transparent;
 }
 
 .archive-search-input::placeholder {
-  color: #d9b7ee;
+  color: #ddbfff;
 }
 
-.archive-search-button {
-  width: 58px;
-  height: 58px;
-  border: none;
-  border-radius: 50%;
-  background-color: #ddb3ff;
-  color: #4b008c;
-  font-size: 25px;
+.archive-search-icon-wrapper {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
 
-.archive-search-button svg {
-  width: 28px;
-  height: 28px;
+.archive-search-fi-icon {
+  width: 20px;
+  height: 20px;
+  color: #5d01c6;
 }
 
+/* --- [4] 카테고리 칩 가로 스크롤 영역 --- */
 .archive-filter-list {
   display: flex;
-  gap: 14px;
-  margin-bottom: 42px;
+  gap: 8px;
+  margin-bottom: 24px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  white-space: nowrap;
+  width: 100%;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .archive-filter-list::-webkit-scrollbar {
-  display: none;
+  display: none !important;
 }
 
 .archive-filter-button {
-  min-width: 126px;
-  height: 54px;
-  border: 2px solid #e2b6ff;
-  border-radius: 999px;
-  background-color: white;
-  color: #4b008c;
-  font-size: 18px;
-  font-weight: 800;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid #ddbfff;
+  background-color: #ffffff;
+  color: #5d01c6;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
 }
 
 .archive-filter-button.active {
   border: none;
-  background-color: #ddb3ff;
+  background-color: #ddbfff;
+  color: #5d01c6;
 }
 
+/* --- [5] 중간 서브 헤더 영역 --- */
 .archive-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-  padding: 0 4px;
+  margin-bottom: 16px;
 }
 
 .archive-section-title {
   margin: 0;
-  font-size: 26px;
-  font-weight: 900;
-  color: #4b008c;
+  font-size: 16px;
+  font-weight: bold;
+  color: #5d01c6;
+  font-family: 'Pretendard-Bold';
 }
 
 .archive-more-button {
   border: none;
   background: none;
   padding: 0;
-  color: #4b008c;
-  font-size: 17px;
-  font-weight: 800;
+  color: #5d01c6;
+  font-size: 13px;
+  font-weight: bold;
   cursor: pointer;
 }
 
+/* --- [6] 카드 리스트 묶음 구역 --- */
 .archive-card-list {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
-.archive-add-button {
-  position: fixed;
-  right: 28px;
-  bottom: 34px;
-  width: 74px;
-  height: 74px;
+.archive-loading-text,
+.archive-error-text,
+.archive-empty-message {
+  text-align: center;
+  padding: 40px 0;
+  color: #5d01c6;
+  font-size: 14px;
+}
+
+/* --- [7] 하단 와이드 캡슐 버튼 바 --- */
+.archive-bottom-container {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+.archive-add-wide-button {
+  width: 100%;
+  background-color: #ecdbff;
+  color: #5d01c6;
   border: none;
-  border-radius: 50%;
-  background-color: #8f35ff;
-  color: white;
-  font-size: 42px;
-  font-weight: 400;
-  line-height: 1;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: 'Pretendard-Bold';
+  padding: 16px;
+  border-radius: 30px;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(143, 53, 255, 0.28);
+  transition: background-color 0.15s ease;
+}
+
+.archive-add-wide-button:hover {
+  background-color: #ddbfff;
 }
