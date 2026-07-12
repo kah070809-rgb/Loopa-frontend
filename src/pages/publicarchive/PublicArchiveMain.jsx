@@ -91,7 +91,7 @@ function PublicArchiveMain() {
           <button
             className="archive-back-button"
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/main")}
           >
             <img src={BackP} alt="뒤로가기" className="archive-back-icon-img" />
           </button>

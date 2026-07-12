@@ -175,6 +175,7 @@ function SurveyPurchase() {
       <button
         className="survey-purchase-button"
         type="button"
+        disabled={isPurchasing}
         onClick={() => {
           if (isPurchased) {
             navigate(`/surveydetail/${surveyId}`);
@@ -201,6 +202,7 @@ function SurveyPurchase() {
               <button
                 className="survey-purchase-modal-cancel"
                 type="button"
+                disabled={isPurchasing}
                 onClick={() => setIsModalOpen(false)}
               >
                 취소
@@ -208,9 +210,10 @@ function SurveyPurchase() {
               <button
                 className="survey-purchase-modal-confirm"
                 type="button"
+                disabled={isPurchasing}
                 onClick={handlePurchaseConfirm}
               >
-                열람하기
+                {isPurchasing ? "처리 중..." : "열람하기"}
               </button>
             </div>
           </div>
