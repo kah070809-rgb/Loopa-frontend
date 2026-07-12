@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // 💡 라우터 이동을 위해 추가
-import * as S from './surveylist.style'; // 분리된 스타일 컴포넌트 임포트
+import * as S from './SurveyList.style';
 import Backmy from '../assets/images/Backmy.svg';
 import Search from '../assets/images/Search.svg';
 

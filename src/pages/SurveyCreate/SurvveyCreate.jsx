@@ -10,7 +10,7 @@ import Back from '../../assets/images/Back.svg';
 
 import { createSurvey } from '../../api/survey';
 // 모달창 스타일 적용을 위해 step2.style.js에서 팝업 스타일 컴포넌트들을 임포트합니다.
-import * as S from './step2.style';
+import * as S from './Step2.style';
 
 export default function SurveyCreatePage() {
   const navigate = useNavigate();
