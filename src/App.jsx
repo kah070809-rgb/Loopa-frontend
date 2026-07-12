@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SurveyCreatePage from './pages/SurveyCreate/SurvveyCreate';
-import MainPage from './pages/Mainpage';
+import MainPage from './pages/MainPage';
 import Mypage from './pages/Mypage';
 import Surveys from './pages/SurveysList';
 import AppLayout from './styles/AppLayout';
