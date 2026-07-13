@@ -175,7 +175,9 @@ const MyPage = () => {
                   <img
                     src={Download}
                     alt="공유"
-                    onClick={() => handleShareClick(survey.surveyId)}
+                    onClick={() =>
+                      handleShareClick(`/surveyjoinfirst/${survey.surveyId}`)
+                    }
                     style={{
                       width: '18px',
                       height: '18px',
