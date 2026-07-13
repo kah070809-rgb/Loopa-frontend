@@ -80,8 +80,7 @@ const MyPage = () => {
 
   // 공유 버튼 클릭 핸들러
   const handleShareClick = async (surveyId) => {
-    const shareUrl = `${window.location.origin}/survey/join/${surveyId}/question`;
-
+    const shareUrl = `${window.location.origin}/surveyjoinfirst/${surveyId}`;
     try {
       // 클립보드에 게스트 참여 링크 복사 실행
       await navigator.clipboard.writeText(shareUrl);
@@ -184,9 +183,7 @@ const MyPage = () => {
                   <img
                     src={Download}
                     alt="공유"
-                    onClick={() =>
-                      handleShareClick(`/surveyjoinfirst/${survey.surveyId}`)
-                    }
+                    onClick={() => handleShareClick(survey.surveyId)}
                     style={{
                       width: '18px',
                       height: '18px',
