@@ -48,3 +48,12 @@ export const submitSurveyResponse = async (surveyId, requestBody) => {
 
   return response.data.result;
 };
+
+/**
+ * 내 설문 결과 조회 (생성자 전용, 진행중도 가능)
+ * GET /surveys/{surveyId}/result
+ */
+export const getSurveyResult = async (surveyId) => {
+  const response = await api.get(`/surveys/${surveyId}/result`);
+  return response.data;
+};
