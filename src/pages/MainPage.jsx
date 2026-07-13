@@ -108,19 +108,17 @@ const MainPage = () => {
   // 3️⃣ 로그인/로그아웃 버튼 핸들러
   const handleAuthAction = async () => {
     if (isLoggedIn) {
-      if (window.confirm('로그아웃 하시겠습니까?')) {
-        try {
-          const refreshToken = localStorage.getItem('refreshToken');
-          await logout(refreshToken);
-        } catch (error) {
-          console.error('서버 로그아웃 처리 실패:', error);
-        } finally {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          setIsLoggedIn(false);
-          setUserInfo({ email: '', tokenBalance: 0 });
-          setParticipatedIds([]);
-        }
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        await logout(refreshToken);
+      } catch (error) {
+        console.error('서버 로그아웃 처리 실패:', error);
+      } finally {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setIsLoggedIn(false);
+        setUserInfo({ email: '', tokenBalance: 0 });
+        setParticipatedIds([]);
       }
     } else {
       navigate('/login');
