@@ -71,8 +71,11 @@ export const getArchiveSurveyResults = async (surveyId, filters = null) => {
   if (filters) {
     params.filters = filters;
   }
-  const response = await axiosInstance.get(`/surveys/${surveyId}/result`, {
-    params,
-  });
+  const response = await axiosInstance.get(
+    `/archive/surveys/${surveyId}/results`,
+    {
+      params,
+    },
+  );
   return response.data;
 };

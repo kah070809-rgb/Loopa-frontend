@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getArchiveSurveyResults } from '../../api/archiveApi';
+import { getSurveyResult } from '../../api/surveyApi';
 import Line from '../../assets/images/Line.svg'; // 💡 Line.svg 매핑 추가
 import './SurveyDetail.css';
 
 function SurveyDetail() {
   const navigate = useNavigate();
   const { surveyId } = useParams();
+  const location = useLocation();
+  const isMyRegistered = location.state?.from === 'registered';
 
   const [activeTab, setActiveTab] = useState('info');
   const [surveyInfo, setSurveyInfo] = useState(null);
@@ -20,7 +23,9 @@ function SurveyDetail() {
       setIsLoading(true);
       setErrorMessage('');
       const filterParam = filterArray.length > 0 ? filterArray.join(',') : null;
-      const response = await getArchiveSurveyResults(surveyId, filterParam);
+      const response = isMyRegistered
+        ? await getSurveyResult(surveyId)
+        : await getArchiveSurveyResults(surveyId, filterParam);
 
       if (response && response.isSuccess && response.result) {
         const res = response.result;

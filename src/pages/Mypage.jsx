@@ -210,7 +210,13 @@ const MyPage = () => {
                   {survey.target} · 응답자 수 : {survey.respondentCount}명
                 </S.CardInfoText>
                 <S.DetailLink
-                  onClick={() => navigate(`/surveydetail/${survey.surveyId}`)}
+                  onClick={() =>
+                    navigate(`/surveydetail/${survey.surveyId}`, {
+                      state: {
+                        from: 'registered',
+                      },
+                    })
+                  }
                 >
                   자세히 보기 &gt;
                 </S.DetailLink>
