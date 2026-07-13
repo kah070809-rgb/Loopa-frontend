@@ -96,7 +96,6 @@ export default function SurveyCreatePage() {
       }
     } catch (error) {
       console.error('설문지 최종 서버 등록 에러:', error);
-      alert('설문 등록에 실패했습니다. 입력 양식을 다시 확인해 주세요.');
     }
   };
 

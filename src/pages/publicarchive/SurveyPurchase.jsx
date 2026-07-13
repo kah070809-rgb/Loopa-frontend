@@ -127,7 +127,6 @@ function SurveyPurchase() {
       if (errorCode === 'TOKEN_001' || payError.response?.status === 400) {
         setIsTokenShortModalOpen(true);
       } else {
-        alert(errorData?.message || '열람권 획득 중 서버 오류가 발생했습니다.');
       }
     } finally {
       setIsLoading(false);

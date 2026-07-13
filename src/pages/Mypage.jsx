@@ -71,7 +71,7 @@ const MyPage = () => {
       } finally {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        alert('로그아웃 되었습니다.');
+
         // 보통 여기서 메인이나 로그인 화면으로 튕겨줍니다.
         window.location.href = '/';
       }
@@ -102,7 +102,6 @@ const MyPage = () => {
       const response = await deleteSurvey(selectedForDelete);
 
       if (response.isSuccess) {
-        alert('설문이 정상적으로 삭제되었습니다.');
         // 삭제 성공 후 내가 등록한 설문 목록 상태에서 방금 지운 걸 걸러내어 화면을 새로고침 없이 바로 업데이트합니다.
         setRegisteredSurveys((prev) =>
           prev.filter((s) => s.surveyId !== selectedForDelete),

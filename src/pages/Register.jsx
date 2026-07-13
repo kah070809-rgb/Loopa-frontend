@@ -292,16 +292,12 @@ function Register() {
       }
 
       if (code === 'COMMON_400') {
-        alert(message || '입력한 회원가입 정보를 다시 확인해주세요.');
         return;
       }
 
       if (code === 'COMMON_500') {
-        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
         return;
       }
-
-      alert(message || '회원가입에 실패했습니다.');
     }
   };
 
