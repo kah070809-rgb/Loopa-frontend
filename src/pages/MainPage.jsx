@@ -120,11 +120,9 @@ const MainPage = () => {
           setIsLoggedIn(false);
           setUserInfo({ email: '', tokenBalance: 0 });
           setParticipatedIds([]);
-          alert('로그아웃되었습니다. 게스트 모드로 전환합니다.');
         }
       }
     } else {
-      alert('로그인 화면으로 이동합니다.');
       navigate('/login');
     }
   };
