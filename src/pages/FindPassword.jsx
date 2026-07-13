@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import './FindPassword.css';
+import Line from '../assets/images/Line.svg';
 
 import {
   sendVerificationCode,
@@ -207,7 +208,14 @@ function FindPassword() {
         onClick={handleBack}
         aria-label="로그인 화면으로 돌아가기"
       >
-        ←
+        <img
+          src={Line}
+          alt="뒤로가기"
+          style={{
+            objectFit: 'contain',
+            height: '20px',
+          }}
+        />
       </button>
 
       <h1 className="find-password-title">비밀번호 찾기</h1>

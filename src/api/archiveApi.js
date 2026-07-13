@@ -76,7 +76,8 @@ export const getArchiveSurveyResults = async (surveyId, filters = null) => {
   // 💡 또한 컴포넌트 원본의 구조 분해 조건(if (response && response.isSuccess && response.result))과
   // 완벽히 맞물리도록 .result를 깎지 않고 response.data(통짜 객체)를 그대로 반환합니다.
   const response = await axiosInstance.get(
-    `/archive/surveys/${surveyId}/results`,
+    `/surveys/${surveyId}/result`,
+
     {
       params,
     },

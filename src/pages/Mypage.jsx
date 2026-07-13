@@ -80,13 +80,14 @@ const MyPage = () => {
 
   // 공유 버튼 클릭 핸들러
   const handleShareClick = async (surveyId) => {
-    // 💡 설문 진행용 전체 URL 주소 생성 (프로젝트의 실제 라우터 주소 구조에 맞게 복사됩니다)
-    const shareUrl = `${window.location.origin}/survey/${surveyId}`;
+    const shareUrl = `${window.location.origin}/survey/join/${surveyId}/question`;
 
     try {
-      // 💡 클립보드에 주소 텍스트 복사 실행
+      // 클립보드에 게스트 참여 링크 복사 실행
       await navigator.clipboard.writeText(shareUrl);
-      alert(`설문 링크가 클립보드에 복사되었습니다!\n${shareUrl}`);
+      alert(
+        `게스트 참여용 설문 링크가 클립보드에 복사되었습니다!\n\n${shareUrl}`,
+      );
     } catch (error) {
       console.error('링크 복사 실패:', error);
       alert('링크 복사에 실패했습니다. 다시 시도해 주세요.');
@@ -183,7 +184,9 @@ const MyPage = () => {
                   <img
                     src={Download}
                     alt="공유"
-                    onClick={() => handleShareClick(survey.surveyId)}
+                    onClick={() =>
+                      handleShareClick(`/surveyjoinfirst/${survey.surveyId}`)
+                    }
                     style={{
                       width: '18px',
                       height: '18px',

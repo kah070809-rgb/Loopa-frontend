@@ -11,6 +11,7 @@ import {
 export default function TextBox({
   guide,
   error,
+  errorColor = '#FF2EAB',
   isTextArea = false,
   limit,
   currentLength = 0,
@@ -37,7 +38,7 @@ export default function TextBox({
         <textarea
           className="custom-textbox-input"
           style={{
-            ...getContainerStyle(error),
+            ...getContainerStyle(error, errorColor),
             height: '140px',
             resize: 'none',
           }}
@@ -47,10 +48,8 @@ export default function TextBox({
       ) : (
         <input
           className="custom-textbox-input"
-          type="text"
-          style={getContainerStyle(error)}
+          style={getContainerStyle(error, errorColor)}
           maxLength={limit}
-
           {...props}
         />
       )}
@@ -58,7 +57,7 @@ export default function TextBox({
       {/* 하단 에러 메시지 및 글자 수 제한 영역 */}
       <div style={footerStyle}>
         {error ? (
-          <span style={{ color: '#FF2EAB', fontWeight: '500' }}>{error}</span>
+          <span style={{ color: errorColor, fontWeight: '500' }}>{error}</span>
         ) : (
           <span />
         )}
