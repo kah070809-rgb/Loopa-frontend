@@ -91,7 +91,7 @@ export const ListContainer = styled.div`
 `;
 
 export const SurveyCard = styled.div`
-  background-color: ${({ $isFirst }) => ($isFirst ? '#DDBFFF' : '#F8F2FF')};
+  background-color: #f8f2ff;
   border-radius: 16px;
   padding: 20px;
   display: flex;
