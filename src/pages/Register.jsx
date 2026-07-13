@@ -113,7 +113,7 @@ function Register() {
   };
 
   const handleSendAuthCode = async () => {
-    await requestAuthCode('인증번호가 발송되었습니다.');
+    await requestAuthCode('되었습니다.');
   };
 
   const handleResendAuthCode = async () => {
