@@ -119,7 +119,6 @@ const SurveyListPage = () => {
 
               <S.CardFooter>
                 <S.FooterLeft>
-                  {/* 카테고리 영문 코드를 한글 칩으로 보여주기 위한 가변 매핑 */}
                   <S.CategoryBadge>
                     {categoryList.find((c) => c.value === survey.category)
                       ?.label || survey.category}
@@ -129,7 +128,6 @@ const SurveyListPage = () => {
                   </S.DurationText>
                 </S.FooterLeft>
 
-                {/* 💡 참여하기 버튼 클릭 시 메인 페이지와 동일한 상세 폼 라우터 경로로 이동 */}
                 <S.ParticipateLink
                   onClick={() =>
                     navigate(`/surveyjoinfirst/${survey.surveyId}`)
