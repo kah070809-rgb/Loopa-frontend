@@ -81,7 +81,7 @@ const MainPage = () => {
 
         const responseData = await getAvailableSurveys({
           category: apiCategory,
-          size: 20,
+          size: 4,
         });
 
         if (responseData.isSuccess && responseData.result?.items) {
