@@ -60,21 +60,17 @@ const MyPage = () => {
     fetchAllData();
   }, []);
 
-  // 2️⃣ [로그아웃 핸들러] 버튼 클릭 시 토큰 비우고 상태 리셋
   const handleLogout = async () => {
-    if (window.confirm('로그아웃 하시겠습니까?')) {
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        await logout(refreshToken);
-      } catch (error) {
-        console.error('서버 로그아웃 실패:', error);
-      } finally {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      await logout(refreshToken);
+    } catch (error) {
+      console.error('서버 로그아웃 실패:', error);
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
 
-        // 보통 여기서 메인이나 로그인 화면으로 튕겨줍니다.
-        window.location.href = '/';
-      }
+      window.location.href = '/';
     }
   };
 
